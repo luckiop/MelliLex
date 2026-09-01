@@ -9,6 +9,7 @@ import type {
 } from '../types';
 import { getErrorMessage, ERROR_MESSAGES } from '../utils/errorHandler';
 import { applyTypographyOption, DEFAULT_TYPOGRAPHY_OPTION } from '../utils/typography';
+import { setDevLogEnabled } from '../utils/devLog';
 import { ExportSettingsStore } from './ExportSettingsStore';
 
 const createDefaultExportSettings = (): ExportSettings => ({
@@ -31,6 +32,7 @@ export class SettingsStore {
     technicalQuery: false,
     vocabNoteEnabled: false,
     vocabNotePath: '',
+    devLogEnabled: false,
   };
   loading: boolean = false;
   error: string | null = null;
@@ -69,6 +71,7 @@ export class SettingsStore {
         this.applyTypography(this.settings.typographyMode);
         
         this.exportSettingsStore.loadFromSettings(this.settings.exportSettings);
+        setDevLogEnabled(this.settings.devLogEnabled ?? false);
       });
     } catch (err) {
       runInAction(() => {
@@ -95,6 +98,7 @@ export class SettingsStore {
       runInAction(() => {
         this.settings = updated;
         this.applyTypography(updated.typographyMode);
+        setDevLogEnabled(updated.devLogEnabled ?? false);
       });
     } catch (err) {
       runInAction(() => {

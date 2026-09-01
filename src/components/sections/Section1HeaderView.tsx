@@ -1,5 +1,5 @@
 import type { WordSection1Header } from '../../types';
-import { Volume2, Eye, Share2, Globe, Layers, Star, Cpu } from 'lucide-react';
+import { Volume2, Eye, Share2, Globe, Layers, Cpu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
@@ -8,6 +8,7 @@ import { ExportWordDialog } from '../ExportWordDialog';
 import { useTranslation } from 'react-i18next';
 import { useStores } from '../../stores/RootStore';
 import { snippetsFromMeanings } from '../../utils/vocab';
+import { VocabStarIcons } from '../vocab/VocabStarIcons';
 
 interface Props {
   data: WordSection1Header;
@@ -72,7 +73,12 @@ export const Section1HeaderView = observer(({ data }: Props) => {
         progressiveWordStore.meaningsSection?.meanings,
         data.tldr
       );
-      await vocabStore.cycleStars(lookupWord, notes);
+      const result = await vocabStore.cycleStars(lookupWord, notes);
+      if (result?.noteError) {
+        toast.error(result.noteError);
+      } else if (result?.noteAppended) {
+        toast.success(t('vocab.noteAppended'));
+      }
     } catch {
       toast.error(t('vocab.updateFailed'));
     }
@@ -173,6 +179,9 @@ export const Section1HeaderView = observer(({ data }: Props) => {
           type="button"
           onClick={handleCycleStars}
           aria-pressed={stars > 0}
+          aria-label={
+            stars === 0 ? t('vocab.add') : stars === 1 ? t('vocab.oneStar') : t('vocab.twoStars')
+          }
           title={t('vocab.starHint')}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
             stars > 0
@@ -180,12 +189,8 @@ export const Section1HeaderView = observer(({ data }: Props) => {
               : 'border-border bg-card hover:bg-accent hover:border-foreground'
           }`}
         >
-          <Star className={`w-4 h-4 ${stars > 0 ? 'fill-current' : ''}`} />
-          {stars === 0
-            ? t('vocab.add')
-            : stars === 1
-              ? t('vocab.oneStar')
-              : t('vocab.twoStars')}
+          <VocabStarIcons count={stars} className="w-4 h-4" />
+          {stars === 0 ? t('vocab.add') : null}
         </button>
         <button
           type="button"

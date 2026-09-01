@@ -84,6 +84,7 @@ export interface AppSettings {
   technicalQuery?: boolean; // Prefer CS/control/robotics sense first in meanings
   vocabNoteEnabled?: boolean;
   vocabNotePath?: string;
+  devLogEnabled?: boolean;
 }
 
 export type VocabCategory = 'daily' | 'technical';
@@ -94,6 +95,13 @@ export interface VocabEntry {
   category: VocabCategory;
   addedAt: number;
   updatedAt: number;
+  shortDefinition?: string;
+}
+
+export interface VocabUpsertResult {
+  entry: VocabEntry;
+  noteAppended: boolean;
+  noteError?: string | null;
 }
 
 export interface VocabNoteSnippet {

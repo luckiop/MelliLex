@@ -161,6 +161,7 @@ mod tests {
             technical_query: false,
             vocab_note_enabled: false,
             vocab_note_path: None,
+            dev_log_enabled: false,
         }
     }
 
@@ -183,6 +184,7 @@ mod tests {
             technical_query: false,
             vocab_note_enabled: false,
             vocab_note_path: None,
+            dev_log_enabled: false,
         }
     }
 

@@ -77,6 +77,7 @@ impl RetriableClient {
 
         loop {
             attempts += 1;
+            log::debug!("[RetriableClient] {} attempt {}/{}", label, attempts, max_attempts);
             let result = operation(&self.client).await;
             match result {
                 Ok(response) => {

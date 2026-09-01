@@ -174,7 +174,11 @@
       "checkingUpdates": "Checking for updates...",
       "upToDate": "You are on the latest version",
       "updateAvailable": "Update available: {{version}}",
-      "updateCheckFailed": "Failed to check for updates"
+      "updateCheckFailed": "Failed to check for updates",
+      "devLog": "Developer logs",
+      "devLogDesc": "Write a full runtime trace (debug/trace plus errors) to the log files. Lookup, cache, and API usage stay the same.",
+      "devLogPath": "Log folder",
+      "openLogs": "Open log folder"
     },
     "update": {
       "title": "Update Available",
@@ -352,9 +356,10 @@
     "settingsEnableDesc": "When a word is first added, append 1–2 senses and an example to the markdown file",
     "settingsPath": "Markdown file path",
     "settingsPathPlaceholder": "D:\\notes\\vocab.md",
-    "settingsPathHint": "Must be an absolute path. New entries are appended; star and category changes are not.",
+    "settingsPathHint": "Must be an absolute file path. Missing folders and the .md file are created automatically. New entries are appended; star and category changes are not.",
     "settingsSaveFailed": "Failed to save vocab settings",
-    "browse": "Browse"
+    "browse": "Browse",
+    "noteAppended": "Appended to vocab notes"
   },
   "errors": {
     "cacheOperation": "Failed to perform cache operation",

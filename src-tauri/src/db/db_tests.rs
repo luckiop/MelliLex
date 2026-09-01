@@ -73,6 +73,7 @@ fn sample_settings_payload() -> AppSettings {
         technical_query: false,
         vocab_note_enabled: false,
         vocab_note_path: None,
+        dev_log_enabled: false,
     }
 }
 
@@ -200,22 +201,26 @@ fn secrets_are_stored_encrypted() {
 fn vocab_upsert_cycles_and_filters() {
     let (db, _dir) = create_db();
 
-    let (first, inserted) = db.upsert_vocab_entry("Gain", 1, "technical").unwrap();
+    let (first, inserted) = db
+        .upsert_vocab_entry("Gain", 1, "technical", "loop gain")
+        .unwrap();
     assert!(inserted);
     assert_eq!(first.word, "Gain");
     assert_eq!(first.stars, 1);
     assert_eq!(first.category, "technical");
+    assert_eq!(first.short_definition, "loop gain");
 
     let loaded = db.get_vocab_entry("gain").unwrap().expect("entry");
     assert_eq!(loaded.stars, 1);
 
-    let (second, inserted_again) = db.upsert_vocab_entry("gain", 2, "daily").unwrap();
+    let (second, inserted_again) = db.upsert_vocab_entry("gain", 2, "daily", "").unwrap();
     assert!(!inserted_again);
     assert_eq!(second.stars, 2);
     assert_eq!(second.category, "daily");
     assert_eq!(second.added_at, first.added_at);
+    assert_eq!(second.short_definition, "loop gain");
 
-    db.upsert_vocab_entry("loop", 1, "technical").unwrap();
+    db.upsert_vocab_entry("loop", 1, "technical", "closed path").unwrap();
 
     let technical = db.list_vocab_entries(None, Some("technical")).unwrap();
     assert_eq!(technical.len(), 1);

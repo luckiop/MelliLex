@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BookMarked, Star } from 'lucide-react';
+import { BookMarked } from 'lucide-react';
+import { VocabStarIcons } from '../components/vocab/VocabStarIcons';
 import { useStores } from '../stores/RootStore';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { toast } from 'sonner';
@@ -113,10 +114,16 @@ export const Vocab = observer(() => {
               onClick={() => handleWordClick(item.word)}
               className="grid grid-cols-[1fr_auto_auto_40px] gap-3 items-center px-4 py-2.5 border-b border-border last:border-b-0 hover:bg-accent transition-colors cursor-pointer"
             >
-              <div className="font-medium text-sm">{item.word}</div>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Star className="w-3.5 h-3.5 fill-current" />
-                {item.stars === 1 ? t('vocab.oneStar') : t('vocab.twoStars')}
+              <div className="min-w-0">
+                <div className="font-medium text-sm">{item.word}</div>
+                {item.shortDefinition ? (
+                  <div className="text-xs text-muted-foreground truncate">
+                    {item.shortDefinition}
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex items-center text-muted-foreground">
+                <VocabStarIcons count={item.stars} className="w-3.5 h-3.5" />
               </div>
               <div className="bg-muted px-1.5 py-0.5 rounded text-[11px] font-medium text-muted-foreground">
                 {item.category === 'technical' ? t('vocab.technical') : t('vocab.daily')}

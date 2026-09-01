@@ -1,9 +1,37 @@
 use crate::errors::AppError;
-use tauri::AppHandle;
+use tauri::{AppHandle, Manager};
 
 #[tauri::command]
 pub fn is_store_version() -> bool {
     crate::utils::platform::is_store_build()
+}
+
+#[tauri::command]
+pub fn get_log_dir(app: AppHandle) -> Result<String, AppError> {
+    let dir = app
+        .path()
+        .app_log_dir()
+        .map_err(|err| AppError::FileSystem(format!("Log directory is not available: {err}")))?;
+    std::fs::create_dir_all(&dir)?;
+    Ok(dir.to_string_lossy().to_string())
+}
+
+#[tauri::command]
+pub fn dev_log(message: String) {
+    let trimmed = message.trim();
+    if trimmed.is_empty() {
+        return;
+    }
+    let preview: String = trimmed.chars().take(2000).collect();
+    log::debug!("[ui] {preview}");
+}
+
+#[tauri::command]
+pub fn log_client_error(message: String) {
+    let preview: String = message.trim().chars().take(4000).collect();
+    if !preview.is_empty() {
+        log::error!("[ui] {preview}");
+    }
 }
 
 #[tauri::command]

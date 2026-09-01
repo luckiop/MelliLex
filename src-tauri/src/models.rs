@@ -281,6 +281,16 @@ pub struct VocabEntry {
     pub category: String,
     pub added_at: i64,
     pub updated_at: i64,
+    #[serde(default)]
+    pub short_definition: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct VocabUpsertResult {
+    pub entry: VocabEntry,
+    pub note_appended: bool,
+    pub note_error: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -319,6 +329,9 @@ pub struct AppSettings {
     pub vocab_note_enabled: bool,
     #[serde(default)]
     pub vocab_note_path: Option<String>,
+    /// Persist debug/trace logs. Does not change lookup or API behavior.
+    #[serde(default)]
+    pub dev_log_enabled: bool,
 }
 
 fn default_enable_global_lookup() -> bool {

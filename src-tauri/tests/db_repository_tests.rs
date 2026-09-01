@@ -212,6 +212,7 @@ fn test_settings_persistence() {
         technical_query: false,
         vocab_note_enabled: false,
         vocab_note_path: None,
+        dev_log_enabled: false,
     };
 
     // Save settings

@@ -197,7 +197,8 @@ impl SchemaManager {
                 stars INTEGER NOT NULL,
                 category TEXT NOT NULL,
                 added_at INTEGER NOT NULL,
-                updated_at INTEGER NOT NULL
+                updated_at INTEGER NOT NULL,
+                short_definition TEXT NOT NULL DEFAULT ''
             )",
             [],
         )?;
@@ -214,6 +215,30 @@ impl SchemaManager {
             [],
         )?;
 
+        Self::ensure_column(
+            conn,
+            "vocab_entries",
+            "short_definition",
+            "ALTER TABLE vocab_entries ADD COLUMN short_definition TEXT NOT NULL DEFAULT ''",
+        )?;
+
+        Ok(())
+    }
+
+    fn ensure_column(
+        conn: &Connection,
+        table: &str,
+        column: &str,
+        alter_sql: &str,
+    ) -> Result<(), AppError> {
+        let mut stmt = conn.prepare(&format!("PRAGMA table_info({table})"))?;
+        let names = stmt.query_map([], |row| row.get::<_, String>(1))?;
+        for name in names {
+            if name? == column {
+                return Ok(());
+            }
+        }
+        conn.execute(alter_sql, [])?;
         Ok(())
     }
 }

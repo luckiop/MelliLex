@@ -194,9 +194,15 @@ impl Database {
         word: &str,
         stars: i32,
         category: &str,
+        short_definition: &str,
     ) -> Result<(VocabEntry, bool), AppError> {
-        self.vocab_repo
-            .upsert(&word.to_lowercase(), word, stars, category)
+        self.vocab_repo.upsert(
+            &word.to_lowercase(),
+            word,
+            stars,
+            category,
+            short_definition,
+        )
     }
 
     pub fn delete_vocab_entry(&self, word: &str) -> Result<(), AppError> {

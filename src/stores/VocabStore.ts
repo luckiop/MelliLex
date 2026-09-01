@@ -1,6 +1,6 @@
 import { makeObservable, observable, action, runInAction } from 'mobx';
 import { api } from '../services/api';
-import type { VocabCategory, VocabEntry, VocabNoteSnippet } from '../types';
+import type { VocabCategory, VocabEntry, VocabNoteSnippet, VocabUpsertResult } from '../types';
 import { getErrorMessage, ERROR_MESSAGES } from '../utils/errorHandler';
 import { nextVocabStars } from '../utils/vocab';
 import { BaseStore } from './BaseStore';
@@ -57,7 +57,7 @@ export class VocabStore extends BaseStore {
     }
   }
 
-  async cycleStars(word: string, notes: VocabNoteSnippet[]) {
+  async cycleStars(word: string, notes: VocabNoteSnippet[]): Promise<VocabUpsertResult | undefined> {
     const next = nextVocabStars(this.currentEntry?.stars);
     try {
       if (next == null) {
@@ -69,15 +69,16 @@ export class VocabStore extends BaseStore {
             (item) => item.word.toLowerCase() !== word.toLowerCase()
           );
         });
-        return;
+        return undefined;
       }
 
       const category = this.activeCategory;
-      const entry = await api.upsertVocabEntry(word, next, category, notes);
+      const result = await api.upsertVocabEntry(word, next, category, notes);
       runInAction(() => {
-        this.currentEntry = entry;
-        this.upsertLocal(entry);
+        this.currentEntry = result.entry;
+        this.upsertLocal(result.entry);
       });
+      return result;
     } catch (err) {
       runInAction(() => {
         this.error = getErrorMessage(err, ERROR_MESSAGES.UPDATE_VOCAB_FAILED);
@@ -96,10 +97,10 @@ export class VocabStore extends BaseStore {
     }
 
     try {
-      const entry = await api.upsertVocabEntry(word, this.currentEntry.stars, next);
+      const result = await api.upsertVocabEntry(word, this.currentEntry.stars, next);
       runInAction(() => {
-        this.currentEntry = entry;
-        this.upsertLocal(entry);
+        this.currentEntry = result.entry;
+        this.upsertLocal(result.entry);
       });
     } catch (err) {
       runInAction(() => {

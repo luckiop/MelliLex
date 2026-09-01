@@ -32,5 +32,6 @@ pub async fn search_word_progressive(
     db: State<'_, Database>,
     orchestrator: State<'_, CommandOrchestrator>,
 ) -> Result<(), AppError> {
+    log::info!("[Command] search_word_progressive '{}'", word);
     orchestrator.search_word_progressive(&word, &app, &db).await
 }

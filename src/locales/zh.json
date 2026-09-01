@@ -161,6 +161,10 @@
       "upToDate": "已是最新版本",
       "updateAvailable": "有可用更新: {{version}}",
       "updateCheckFailed": "检查更新失败",
+      "devLog": "开发者日志",
+      "devLogDesc": "把完整运行轨迹（调试信息与报错）写入日志文件。不影响查词、缓存或 API 用量。",
+      "devLogPath": "日志目录",
+      "openLogs": "打开日志文件夹",
       "tagline": "AI 驱动词典",
       "about": "关于",
       "features": "功能",
@@ -359,9 +363,10 @@
     "settingsEnableDesc": "第一次加入生词时，把一两则释义和例句追加到指定 Markdown 文件末尾",
     "settingsPath": "Markdown 文件路径",
     "settingsPathPlaceholder": "D:\\notes\\vocab.md",
-    "settingsPathHint": "必须是系统绝对路径。只在首次加入时追加，改星级或类别不会再写。",
+    "settingsPathHint": "必须是系统绝对路径。如果文件夹或 md 文件还不存在，会自动创建。只在首次加入时追加，改星级或类别不会再写。",
     "settingsSaveFailed": "保存生词本设置失败",
-    "browse": "浏览"
+    "browse": "浏览",
+    "noteAppended": "已追加到生词笔记"
   },
   "errors": {
     "cacheOperation": "缓存操作失败",

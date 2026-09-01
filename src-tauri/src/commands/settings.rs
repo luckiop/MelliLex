@@ -3,6 +3,7 @@ use crate::errors::AppError;
 use crate::models::AppSettings;
 use crate::services::ai_provider::AiModel;
 use crate::services::command_orchestrator::CommandOrchestrator;
+use crate::services::vocab_note::{ensure_note_file, resolve_note_path};
 use crate::utils::blocking::BlockingExecutor;
 use tauri::State;
 
@@ -18,7 +19,23 @@ pub async fn update_settings(
     db: State<'_, Database>,
 ) -> Result<(), AppError> {
     let db = db.inner().clone();
-    BlockingExecutor::run(move || db.save_settings(&settings)).await
+    let dev_log_enabled = settings.dev_log_enabled;
+    BlockingExecutor::run(move || {
+        if settings.vocab_note_enabled {
+            if let Some(path) = settings
+                .vocab_note_path
+                .as_deref()
+                .filter(|path| !path.trim().is_empty())
+            {
+                let resolved = resolve_note_path(path)?;
+                ensure_note_file(&resolved)?;
+            }
+        }
+        db.save_settings(&settings)
+    })
+    .await?;
+    crate::logging::set_dev_log_enabled(dev_log_enabled);
+    Ok(())
 }
 
 #[tauri::command]

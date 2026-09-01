@@ -149,6 +149,10 @@ pub fn run() {
                 err_msg
             })?;
 
+            if let Ok(settings) = database.get_settings() {
+                crate::logging::set_dev_log_enabled(settings.dev_log_enabled);
+            }
+
             log::info!("Database initialized successfully");
             write_crash_log("Step 8: Database initialized, managing state");
             app.manage(database);
@@ -263,6 +267,9 @@ pub fn run() {
             // System commands
             is_store_version,
             check_for_app_updates,
+            get_log_dir,
+            dev_log,
+            log_client_error,
         ])
         .run(context);
     

@@ -4,18 +4,27 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
-pub fn validate_note_path(path: &str) -> Result<PathBuf, AppError> {
-    let trimmed = path.trim();
+pub fn resolve_note_path(path: &str) -> Result<PathBuf, AppError> {
+    let trimmed = path
+        .trim()
+        .trim_matches(|c| c == '"' || c == '\'')
+        .trim();
     if trimmed.is_empty() {
         return Err(AppError::validation("Vocab note path is empty"));
     }
 
-    let path = PathBuf::from(trimmed);
+    let mut path = PathBuf::from(trimmed);
     if !path.is_absolute() {
         return Err(AppError::validation(
             "Vocab note path must be an absolute path",
         ));
     }
+
+    let looks_like_dir = trimmed.ends_with(['/', '\\']) || path.is_dir() || path.extension().is_none();
+    if looks_like_dir {
+        path.push("vocab.md");
+    }
+
     Ok(path)
 }
 
@@ -62,14 +71,28 @@ pub fn append_vocab_note(
     category: &str,
     snippets: &[VocabNoteSnippet],
 ) -> Result<(), AppError> {
+    ensure_note_file(path)?;
+    let mut file = OpenOptions::new().create(true).append(true).open(path)?;
+    file.write_all(format_vocab_note(word, stars, category, snippets).as_bytes())?;
+    file.flush()?;
+    Ok(())
+}
+
+pub fn ensure_note_file(path: &Path) -> Result<(), AppError> {
     if let Some(parent) = path.parent() {
         if !parent.as_os_str().is_empty() {
             std::fs::create_dir_all(parent)?;
         }
     }
 
-    let mut file = OpenOptions::new().create(true).append(true).open(path)?;
-    file.write_all(format_vocab_note(word, stars, category, snippets).as_bytes())?;
+    if path.exists() {
+        return Ok(());
+    }
+
+    let mut file = OpenOptions::new().create(true).write(true).open(path)?;
+    file.write_all(b"# Vocab\n\n")?;
+    file.flush()?;
+    log::info!("Created vocab note file at {}", path.display());
     Ok(())
 }
 
@@ -105,8 +128,50 @@ mod tests {
 
     #[test]
     fn rejects_relative_note_path() {
-        let err = validate_note_path("notes/vocab.md").unwrap_err();
+        let err = resolve_note_path("notes/vocab.md").unwrap_err();
         assert!(err.to_string().contains("absolute"));
+    }
+
+    #[test]
+    fn directory_path_becomes_vocab_md() {
+        let dir = tempfile::tempdir().unwrap();
+        let resolved = resolve_note_path(dir.path().to_str().unwrap()).unwrap();
+        assert_eq!(resolved.file_name().unwrap(), "vocab.md");
+    }
+
+    #[test]
+    fn creates_missing_folders_and_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("nested").join("notes").join("vocab.md");
+        assert!(!path.exists());
+
+        append_vocab_note(
+            &path,
+            "gain",
+            1,
+            "daily",
+            &[VocabNoteSnippet {
+                part_of_speech: String::new(),
+                definition: "to obtain".into(),
+                example: None,
+            }],
+        )
+        .unwrap();
+
+        let body = std::fs::read_to_string(&path).unwrap();
+        assert!(body.starts_with("# Vocab\n\n"));
+        assert!(body.contains("## gain · ★ · 日常"));
+        assert!(body.contains("- to obtain"));
+    }
+
+    #[test]
+    fn ensure_note_file_creates_once() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("missing").join("vocab.md");
+        ensure_note_file(&path).unwrap();
+        ensure_note_file(&path).unwrap();
+        let body = std::fs::read_to_string(&path).unwrap();
+        assert_eq!(body, "# Vocab\n\n");
     }
 
     #[test]

@@ -47,6 +47,7 @@ impl SettingsRepository {
                 technical_query: false,
                 vocab_note_enabled: false,
                 vocab_note_path: None,
+                dev_log_enabled: false,
             }),
             Err(e) => Err(AppError::from(e)),
         }

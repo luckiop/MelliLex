@@ -11,6 +11,7 @@
     "core:window:allow-close",
     "core:window:allow-show",
     "opener:default",
+    "opener:allow-open-path",
     "log:default",
     "updater:default",
     "dialog:allow-save"

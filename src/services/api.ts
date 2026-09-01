@@ -9,16 +9,29 @@ import type {
   SpellCheckResponse,
   VocabEntry,
   VocabNoteSnippet,
+  VocabUpsertResult,
 } from '../types';
+import { isDevLogEnabled, reportClientError } from '../utils/devLog';
 
 const wrapInvoke = async <T>(command: string, args?: Record<string, unknown>): Promise<T> => {
+  const started = Date.now();
+  if (isDevLogEnabled()) {
+    logger.debug(`[API] ${command} start`);
+  }
   try {
-    return await invoke<T>(command, args);
+    const result = await invoke<T>(command, args);
+    if (isDevLogEnabled()) {
+      logger.debug(`[API] ${command} ok ${Date.now() - started}ms`);
+    }
+    return result;
   } catch (error) {
     // Log raw error for debugging
     console.error('[wrapInvoke] Raw error from Tauri:', JSON.stringify(error, null, 2));
     console.error('[wrapInvoke] Error type:', typeof error);
     console.error('[wrapInvoke] Error keys:', error && typeof error === 'object' ? Object.keys(error) : 'N/A');
+    const elapsed = Date.now() - started;
+    logger.error(`[API] ${command} failed ${elapsed}ms`);
+    reportClientError(`${command} failed ${elapsed}ms: ${JSON.stringify(error)}`);
     throw parseError(error);
   }
 };
@@ -88,8 +101,8 @@ export const api = {
     stars: number,
     category: string,
     notes?: VocabNoteSnippet[]
-  ): Promise<VocabEntry> {
-    return await wrapInvoke<VocabEntry>('upsert_vocab_entry', {
+  ): Promise<VocabUpsertResult> {
+    return await wrapInvoke<VocabUpsertResult>('upsert_vocab_entry', {
       word,
       stars,
       category,
@@ -270,5 +283,9 @@ export const api = {
     const isStore = await wrapInvoke<boolean>('is_store_version');
     logger.info(`[API] Platform detection: ${isStore ? 'Microsoft Store' : 'Direct download'}`);
     return isStore;
+  },
+
+  async getLogDir(): Promise<string> {
+    return await wrapInvoke<string>('get_log_dir');
   },
 };

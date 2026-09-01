@@ -21,6 +21,9 @@ export const VocabSection = observer(() => {
   const handleEnabledToggle = async (next: boolean) => {
     try {
       await settingsStore.updateSettings({ vocabNoteEnabled: next });
+      if (settingsStore.error) {
+        toast.error(settingsStore.error);
+      }
     } catch {
       toast.error(t('vocab.settingsSaveFailed'));
     }
@@ -29,8 +32,13 @@ export const VocabSection = observer(() => {
   const handlePathChange = async (next: string) => {
     try {
       await settingsStore.updateSettings({ vocabNotePath: next });
+      if (settingsStore.error) {
+        toast.error(settingsStore.error);
+        setPath(storedPath);
+      }
     } catch {
       toast.error(t('vocab.settingsSaveFailed'));
+      setPath(storedPath);
     }
   };
 

@@ -1,5 +1,5 @@
 import { screen, fireEvent } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Section1HeaderView } from '../sections/Section1HeaderView';
 import { renderWithProviders, createMockRootStore } from '../../test/test-utils';
 import type { WordSection1Header } from '../../types';
@@ -88,5 +88,24 @@ describe('Section1HeaderView', () => {
     expect(cycleStars).toHaveBeenCalledWith('eloquent', [
       { partOfSpeech: '', definition: 'Fluent or persuasive in speaking or writing.' },
     ]);
+  });
+
+  it('shows two stars when the word is already two-star vocab', () => {
+    renderWithProviders(<Section1HeaderView data={sampleHeader} />, {
+      store: createMockRootStore({
+        vocabStore: {
+          currentEntry: {
+            word: 'eloquent',
+            stars: 2,
+            category: 'daily',
+            addedAt: 0,
+            updatedAt: 0,
+          },
+          activeCategory: 'daily',
+        },
+      }),
+    });
+
+    expect(screen.getByRole('button', { name: /2 stars/i })).toBeInTheDocument();
   });
 });

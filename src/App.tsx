@@ -13,6 +13,7 @@ import { TitleBar } from "./components/layout/TitleBar";
 import { Toaster } from "./components/ui/sonner";
 import { api } from "./services/api";
 import { LANGUAGE_MAP } from "./i18n";
+import { reportClientError } from "./utils/devLog";
 import { useGlobalLookup } from "./hooks/useGlobalLookup";
 import { useUpdateChecker } from "./hooks/useUpdateChecker";
 import { UpdateDialog } from "./components/UpdateDialog";
@@ -21,6 +22,21 @@ const rootStore = new RootStore();
 
 function App() {
   const { i18n } = useTranslation();
+
+  useEffect(() => {
+    const onError = (event: ErrorEvent) => {
+      reportClientError(event.message || 'window error');
+    };
+    const onRejection = (event: PromiseRejectionEvent) => {
+      reportClientError(String(event.reason ?? 'unhandled rejection'));
+    };
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onRejection);
+    return () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onRejection);
+    };
+  }, []);
 
   useEffect(() => {
     const initLanguage = async () => {
