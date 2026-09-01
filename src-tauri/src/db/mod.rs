@@ -121,6 +121,23 @@ impl Database {
             .cache_word_progressive(word, data, provider)
     }
 
+    pub fn get_cached_zh_en(
+        &self,
+        query: &str,
+        provider: &str,
+    ) -> Result<Option<crate::models::ZhEnResult>, AppError> {
+        self.cache_repo.zh_en(query, provider)
+    }
+
+    pub fn cache_zh_en(
+        &self,
+        query: &str,
+        data: &crate::models::ZhEnResult,
+        provider: &str,
+    ) -> Result<(), AppError> {
+        self.cache_repo.cache_zh_en(query, data, provider)
+    }
+
     pub fn get_cached_exploration_feature<T: DeserializeOwned>(
         &self,
         word: &str,

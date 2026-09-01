@@ -125,6 +125,9 @@ pub struct WordSection2Meanings {
 pub struct MeaningItem {
     pub number: u32,
     pub part_of_speech: String,
+    /// Short label for vocab notes / list (2–8 CJK or 1–4 English words).
+    #[serde(default)]
+    pub brief_gloss: String,
     pub definition: String,
     pub memory_tip: String,
     #[serde(default)]
@@ -298,9 +301,35 @@ pub struct VocabUpsertResult {
 pub struct VocabNoteSnippet {
     #[serde(default)]
     pub part_of_speech: String,
+    #[serde(default)]
+    pub brief_gloss: String,
     pub definition: String,
     #[serde(default)]
     pub example: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct ZhEnEquivalent {
+    #[serde(default)]
+    pub expression: String,
+    #[serde(default)]
+    pub part_of_speech: String,
+    #[serde(default)]
+    pub gloss: String,
+    #[serde(default)]
+    pub example: String,
+    #[serde(default)]
+    pub occasion: String,
+    #[serde(default)]
+    pub contrast: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct ZhEnResult {
+    pub query: String,
+    pub equivalents: Vec<ZhEnEquivalent>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -329,6 +358,8 @@ pub struct AppSettings {
     pub vocab_note_enabled: bool,
     #[serde(default)]
     pub vocab_note_path: Option<String>,
+    #[serde(default)]
+    pub vocab_note_split_files: bool,
     /// Persist debug/trace logs. Does not change lookup or API behavior.
     #[serde(default)]
     pub dev_log_enabled: bool,
@@ -961,5 +992,55 @@ mod practice_tests {
             created_at: 1234567890,
         };
         assert!((session.accuracy() - 80.0).abs() < 0.001);
+    }
+
+    #[test]
+    fn parses_zh_en_equivalents_json() {
+        let json = r#"{
+            "query": "餐桌",
+            "equivalents": [
+                {
+                    "expression": "dining table",
+                    "partOfSpeech": "n.",
+                    "gloss": "用餐的桌子",
+                    "example": "They sat around the dining table.",
+                    "occasion": "家居请客",
+                    "contrast": "比 table 更具体。"
+                }
+            ]
+        }"#;
+        let parsed: ZhEnResult = serde_json::from_str(json).unwrap();
+        assert_eq!(parsed.query, "餐桌");
+        assert_eq!(parsed.equivalents[0].expression, "dining table");
+        assert_eq!(parsed.equivalents[0].part_of_speech, "n.");
+        assert!(parsed.equivalents[0].contrast.contains("table"));
+    }
+
+    #[test]
+    fn meaning_item_defaults_missing_brief_gloss() {
+        let json = r#"{
+            "number": 1,
+            "partOfSpeech": "n.",
+            "definition": "A small on-chip computer",
+            "memoryTip": "micro + controller",
+            "examples": []
+        }"#;
+        let parsed: MeaningItem = serde_json::from_str(json).unwrap();
+        assert_eq!(parsed.brief_gloss, "");
+        assert_eq!(parsed.definition, "A small on-chip computer");
+    }
+
+    #[test]
+    fn meaning_item_parses_brief_gloss() {
+        let json = r#"{
+            "number": 1,
+            "partOfSpeech": "n.",
+            "briefGloss": "微控制器",
+            "definition": "微控制器是一种将处理器、存储器和输入输出接口集成在单个芯片上的小型计算机。",
+            "memoryTip": "micro + controller",
+            "examples": []
+        }"#;
+        let parsed: MeaningItem = serde_json::from_str(json).unwrap();
+        assert_eq!(parsed.brief_gloss, "微控制器");
     }
 }

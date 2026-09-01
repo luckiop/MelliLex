@@ -1,6 +1,6 @@
 use crate::models::{
     WordSection1Header, WordSection2Meanings, WordMistakes, WordSection3Related,
-    TokenUsage,
+    TokenUsage, ZhEnResult,
 };
 use crate::services::ai_provider::PromptSender;
 use crate::services::prompt_manager::PromptManager;
@@ -141,6 +141,35 @@ impl DictionaryService {
         log_token_usage(&token_usage, "Section 3 (related)");
 
         Ok((related, token_usage))
+    }
+
+    pub async fn generate_zh_en(&self, query: &str) -> Result<(ZhEnResult, Option<TokenUsage>)> {
+        log::info!("Generating zh-en equivalents for: {}", query);
+
+        let prompt = self
+            .prompt_manager
+            .render_zh_en(query)
+            .ok_or_else(|| anyhow::anyhow!("Template 'zh_en_equivalents' not found"))?;
+        let (response, token_usage) = self.ai_provider.send_prompt(&prompt).await?;
+
+        let mut result: ZhEnResult =
+            ResponseParser::parse_partial(&response, "zh_en_equivalents")?;
+        if result.query.trim().is_empty() {
+            result.query = query.to_string();
+        }
+        result.equivalents.truncate(5);
+        if result.equivalents.is_empty() {
+            return Err(anyhow::anyhow!("Zh-en payload had no equivalents"));
+        }
+
+        log::info!(
+            "Zh-en completed: {} equivalents for '{}'",
+            result.equivalents.len(),
+            result.query
+        );
+        log_token_usage(&token_usage, "Zh-en equivalents");
+
+        Ok((result, token_usage))
     }
 
     fn ensure_related_has_entries(

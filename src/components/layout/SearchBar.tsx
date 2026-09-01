@@ -7,12 +7,13 @@ import { useStores } from '../../stores/RootStore';
 import { SpellCheckDialog } from '../SpellCheckDialog';
 import type { SpellCheckResponse } from '../../types';
 import { createSearchStrategy } from '../../services/search/SearchContextStrategy';
+import { containsHan } from '../../utils/inputDetection';
 
 export const SearchBar = observer(() => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const { searchCoordinator, progressiveWordStore, historyStore, settingsStore } = useStores();
+  const { searchCoordinator, progressiveWordStore, historyStore, settingsStore, zhEnStore } = useStores();
   const [searchQuery, setSearchQuery] = useState('');
   const [spellCheckData, setSpellCheckData] = useState<SpellCheckResponse | null>(null);
   const [showSpellCheckDialog, setShowSpellCheckDialog] = useState(false);
@@ -45,8 +46,8 @@ export const SearchBar = observer(() => {
       return;
     }
 
-    setSearchQuery(progressiveWordStore.currentWord || '');
-  }, [searchStrategy.type, progressiveWordStore.currentWord]);
+    setSearchQuery(zhEnStore.currentQuery || progressiveWordStore.currentWord || '');
+  }, [searchStrategy.type, progressiveWordStore.currentWord, zhEnStore.currentQuery]);
 
   useEffect(() => {
     if (searchStrategy.type !== 'history') {
@@ -77,7 +78,7 @@ export const SearchBar = observer(() => {
     const trimmed = searchQuery.trim();
     if (!trimmed || searchStrategy.isBusy()) return;
 
-    if (searchStrategy.requiresSpellCheck) {
+    if (searchStrategy.requiresSpellCheck && !containsHan(trimmed)) {
       const spellCheck = await searchCoordinator.checkSpelling(trimmed);
       if (spellCheck) {
         setSpellCheckData(spellCheck);

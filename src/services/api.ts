@@ -10,6 +10,7 @@ import type {
   VocabEntry,
   VocabNoteSnippet,
   VocabUpsertResult,
+  ZhEnResult,
 } from '../types';
 import { isDevLogEnabled, reportClientError } from '../utils/devLog';
 
@@ -67,6 +68,13 @@ export const api = {
     logger.info(`[API] Invoking search_phrase_progressive: ${phrase}`);
     await wrapInvoke('search_phrase_progressive', { phrase });
     logger.info('[API] search_phrase_progressive invoked (backend processing...)');
+  },
+
+  async searchZhEn(query: string): Promise<ZhEnResult> {
+    logger.info(`[API] Invoking search_zh_en: ${query}`);
+    const result = await wrapInvoke<ZhEnResult>('search_zh_en', { query });
+    logger.info(`[API] search_zh_en complete: ${result.equivalents?.length ?? 0} equivalents`);
+    return result;
   },
 
   // History

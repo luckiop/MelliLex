@@ -35,6 +35,7 @@ fn test_parse_partial_section2() {
             "partOfSpeech": "verb",
             "definition": "To examine or try out",
             "memoryTip": "Think of testing something out",
+            "briefGloss": "检验",
             "examples": ["Test the water before diving"]
         }]
     }"#;
@@ -45,6 +46,24 @@ fn test_parse_partial_section2() {
     let section2 = result.unwrap();
     assert_eq!(section2.meanings.len(), 1);
     assert_eq!(section2.meanings[0].part_of_speech, "verb");
+    assert_eq!(section2.meanings[0].brief_gloss, "检验");
+}
+
+#[test]
+fn test_parse_partial_section2_defaults_missing_brief_gloss() {
+    let response = r#"{
+        "meanings": [{
+            "number": 1,
+            "partOfSpeech": "noun",
+            "definition": "A small computer on a chip",
+            "memoryTip": "micro + controller",
+            "examples": ["The MCU runs the loop"]
+        }]
+    }"#;
+
+    let section2 = ResponseParser::parse_partial::<WordSection2Meanings>(response, "section2")
+        .expect("Should parse section2 without briefGloss");
+    assert_eq!(section2.meanings[0].brief_gloss, "");
 }
 
 #[test]

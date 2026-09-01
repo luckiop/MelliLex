@@ -14,10 +14,11 @@ import {
   WordSection3RelatedView,
 } from '../components/sections';
 import { PhraseCard } from '../components/phrase';
+import { ZhEnResultsView } from '../components/zhen/ZhEnResultsView';
 
 export const Home = observer(() => {
   const { t } = useTranslation();
-  const { progressiveWordStore, phraseStore, searchCoordinator, lastPageStore } = useStores();
+  const { progressiveWordStore, phraseStore, zhEnStore, searchCoordinator, lastPageStore } = useStores();
   
   useEffect(() => {
     lastPageStore.setLastPage('/');
@@ -37,12 +38,18 @@ export const Home = observer(() => {
     phraseStore.contextSection ||
     phraseStore.relatedSection;
 
-  const hasAnyData = hasWordData || hasPhraseData;
+  const hasZhEnData = Boolean(zhEnStore.result) || zhEnStore.isLoading || zhEnStore.hasError;
+  const hasAnyData = hasWordData || hasPhraseData || hasZhEnData;
   const isWordLoading = progressiveWordStore.isLoading;
   const isPhraseLoading = phraseStore.isLoading;
-  const isLoading = isWordLoading || isPhraseLoading;
+  const isLoading = isWordLoading || isPhraseLoading || zhEnStore.isLoading;
   
-  const showPhraseUI = hasPhraseData || (isPhraseLoading && searchCoordinator.currentInputType === 'phrase');
+  const showZhEnUI =
+    hasZhEnData ||
+    (zhEnStore.isLoading && searchCoordinator.currentInputType === 'zh-en');
+  const showPhraseUI =
+    !showZhEnUI &&
+    (hasPhraseData || (isPhraseLoading && searchCoordinator.currentInputType === 'phrase'));
 
   const handleWordRetry = () => {
     const word = progressiveWordStore.currentWord?.trim();
@@ -60,7 +67,7 @@ export const Home = observer(() => {
 
   return (
     <div className="container mx-auto px-8 py-12 max-w-3xl">
-      {!hasAnyData && !isLoading && !progressiveWordStore.hasError && !phraseStore.hasError && (
+      {!hasAnyData && !isLoading && !progressiveWordStore.hasError && !phraseStore.hasError && !zhEnStore.hasError && (
         <div className="max-w-xl mx-auto text-center py-20">
           <h1 className="text-7xl font-bold text-foreground mb-8 tracking-tight">
             {t('home.title')}
@@ -91,9 +98,11 @@ export const Home = observer(() => {
         />
       )}
 
+      {showZhEnUI && <ZhEnResultsView />}
+
       {showPhraseUI && <PhraseCard />}
 
-      {!showPhraseUI && isWordLoading && (
+      {!showZhEnUI && !showPhraseUI && isWordLoading && (
         <div className="space-y-4">
           <Card className="p-6 define-card define-card--accent-blue">
             {progressiveWordStore.headerSection ? (
@@ -136,7 +145,7 @@ export const Home = observer(() => {
         </div>
       )}
 
-      {!showPhraseUI && !isWordLoading && hasWordData && (
+      {!showZhEnUI && !showPhraseUI && !isWordLoading && hasWordData && (
         <div className="space-y-4">
           {progressiveWordStore.headerSection && (
             <Card className="p-6 define-card define-card--accent-blue">

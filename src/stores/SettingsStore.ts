@@ -32,6 +32,7 @@ export class SettingsStore {
     technicalQuery: false,
     vocabNoteEnabled: false,
     vocabNotePath: '',
+    vocabNoteSplitFiles: false,
     devLogEnabled: false,
   };
   loading: boolean = false;

@@ -1,7 +1,9 @@
 use crate::db::Database;
 use crate::errors::AppError;
 use crate::models::{VocabEntry, VocabNoteSnippet, VocabUpsertResult};
-use crate::services::vocab_note::{append_vocab_note, resolve_note_path};
+use crate::services::vocab_note::{
+    heading_gloss, remove_from_split_files, resolve_note_path, sync_vocab_notes, NoteSyncKind,
+};
 use crate::utils::blocking::BlockingExecutor;
 use crate::validation;
 use tauri::State;
@@ -23,26 +25,12 @@ fn normalize_stars(stars: i32) -> Result<i32, AppError> {
     }
 }
 
-const SHORT_DEFINITION_MAX_CHARS: usize = 180;
-
 fn short_definition_from_notes(notes: &[VocabNoteSnippet]) -> String {
-    let text = notes
+    notes
         .first()
-        .map(|note| note.definition.trim().to_string())
+        .map(heading_gloss)
         .filter(|text| !text.is_empty())
-        .unwrap_or_default();
-    truncate_short_definition(&text)
-}
-
-fn truncate_short_definition(text: &str) -> String {
-    let char_count = text.chars().count();
-    if char_count <= SHORT_DEFINITION_MAX_CHARS {
-        return text.to_string();
-    }
-    format!(
-        "{}…",
-        text.chars().take(SHORT_DEFINITION_MAX_CHARS).collect::<String>()
-    )
+        .unwrap_or_default()
 }
 
 #[tauri::command]
@@ -103,11 +91,7 @@ pub async fn upsert_vocab_entry(
             inserted,
             entry.stars
         );
-        let (note_appended, note_error) = if inserted {
-            append_note_if_enabled(&db, &entry, &notes)
-        } else {
-            (false, None)
-        };
+        let (note_appended, note_error) = sync_notes_if_enabled(&db, &entry, &notes);
         Ok(VocabUpsertResult {
             entry,
             note_appended,
@@ -121,10 +105,17 @@ pub async fn upsert_vocab_entry(
 pub async fn delete_vocab_entry(word: String, db: State<'_, Database>) -> Result<(), AppError> {
     let validated = validation::validate_word_query(&word)?;
     let db = db.inner().clone();
-    BlockingExecutor::run(move || db.delete_vocab_entry(&validated)).await
+    BlockingExecutor::run(move || {
+        db.delete_vocab_entry(&validated)?;
+        if let Err(err) = remove_split_notes_if_enabled(&db, &validated) {
+            log::warn!("Failed to remove vocab from split notes: {}", err);
+        }
+        Ok(())
+    })
+    .await
 }
 
-fn append_note_if_enabled(
+fn sync_notes_if_enabled(
     db: &Database,
     entry: &VocabEntry,
     notes: &[VocabNoteSnippet],
@@ -155,15 +146,80 @@ fn append_note_if_enabled(
         }
     };
 
-    match append_vocab_note(&path, &entry.word, entry.stars, &entry.category, notes) {
-        Ok(()) => {
+    match sync_vocab_notes(
+        &path,
+        settings.vocab_note_split_files,
+        &entry.word,
+        entry.stars,
+        &entry.category,
+        notes,
+    ) {
+        Ok(NoteSyncKind::Appended) => {
             log::info!("Appended vocab note for '{}' to {:?}", entry.word, path);
             (true, None)
         }
+        Ok(NoteSyncKind::Updated) => {
+            log::info!("Updated vocab note for '{}' in {:?}", entry.word, path);
+            (false, None)
+        }
+        Ok(NoteSyncKind::Skipped) => (false, None),
         Err(err) => {
             let message = format!("Failed to write vocab note: {}", err);
             log::warn!("{} ({})", message, path.display());
             (false, Some(message))
         }
+    }
+}
+
+fn remove_split_notes_if_enabled(db: &Database, word: &str) -> Result<(), AppError> {
+    let settings = db.get_settings()?;
+    if !settings.vocab_note_enabled || !settings.vocab_note_split_files {
+        return Ok(());
+    }
+    let Some(path) = settings.vocab_note_path.filter(|path| !path.trim().is_empty()) else {
+        return Ok(());
+    };
+    let path = resolve_note_path(&path)?;
+    remove_from_split_files(&path, word)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn snippet(brief_gloss: &str, definition: &str) -> VocabNoteSnippet {
+        VocabNoteSnippet {
+            part_of_speech: "n.".into(),
+            brief_gloss: brief_gloss.into(),
+            definition: definition.into(),
+            example: None,
+        }
+    }
+
+    #[test]
+    fn short_definition_uses_brief_gloss_not_full_definition() {
+        let notes = [snippet(
+            "微控制器",
+            "微控制器是一种将处理器、存储器和输入输出接口集成在单个芯片上的小型计算机。",
+        )];
+        assert_eq!(short_definition_from_notes(&notes), "微控制器");
+    }
+
+    #[test]
+    fn short_definition_falls_back_to_cjk_prefix() {
+        let notes = [snippet(
+            "",
+            "微控制器是一种将处理器、存储器和输入输出接口集成在单个芯片上的小型计算机。",
+        )];
+        assert_eq!(short_definition_from_notes(&notes), "微控制器是一种将");
+    }
+
+    #[test]
+    fn short_definition_truncates_overflow() {
+        let notes = [snippet("一二三四五六七八九十十一十二十三", "ignored")];
+        assert_eq!(
+            short_definition_from_notes(&notes).chars().count(),
+            16
+        );
     }
 }

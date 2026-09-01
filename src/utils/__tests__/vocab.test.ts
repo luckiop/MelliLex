@@ -15,6 +15,7 @@ describe('vocab helpers', () => {
       {
         number: 1,
         partOfSpeech: 'n.',
+        briefGloss: '增益',
         definition: 'loop gain',
         memoryTip: '',
         examples: ['The loop gain determines stability.', 'extra'],
@@ -38,6 +39,7 @@ describe('vocab helpers', () => {
     expect(snippetsFromMeanings(meanings, 'fallback')).toEqual([
       {
         partOfSpeech: 'n.',
+        briefGloss: '增益',
         definition: 'loop gain',
         example: 'The loop gain determines stability.',
       },

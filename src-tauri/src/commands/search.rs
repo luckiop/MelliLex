@@ -1,6 +1,6 @@
 use crate::db::Database;
 use crate::errors::AppError;
-use crate::models::SpellCheckResponse;
+use crate::models::{SpellCheckResponse, ZhEnResult};
 use crate::services::command_orchestrator::CommandOrchestrator;
 use tauri::{AppHandle, State};
 
@@ -34,4 +34,14 @@ pub async fn search_word_progressive(
 ) -> Result<(), AppError> {
     log::info!("[Command] search_word_progressive '{}'", word);
     orchestrator.search_word_progressive(&word, &app, &db).await
+}
+
+#[tauri::command]
+pub async fn search_zh_en(
+    query: String,
+    db: State<'_, Database>,
+    orchestrator: State<'_, CommandOrchestrator>,
+) -> Result<ZhEnResult, AppError> {
+    log::info!("[Command] search_zh_en '{}'", query);
+    orchestrator.search_zh_en(&query, &db).await
 }

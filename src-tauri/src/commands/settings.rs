@@ -3,7 +3,7 @@ use crate::errors::AppError;
 use crate::models::AppSettings;
 use crate::services::ai_provider::AiModel;
 use crate::services::command_orchestrator::CommandOrchestrator;
-use crate::services::vocab_note::{ensure_note_file, resolve_note_path};
+use crate::services::vocab_note::{ensure_note_file, ensure_split_files, resolve_note_path};
 use crate::utils::blocking::BlockingExecutor;
 use tauri::State;
 
@@ -29,6 +29,9 @@ pub async fn update_settings(
             {
                 let resolved = resolve_note_path(path)?;
                 ensure_note_file(&resolved)?;
+                if settings.vocab_note_split_files {
+                    ensure_split_files(&resolved)?;
+                }
             }
         }
         db.save_settings(&settings)

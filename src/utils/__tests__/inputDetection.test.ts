@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { detectInputType, normalizePhrase, sanitizeDisplayText } from '../inputDetection';
+import {
+  containsHan,
+  detectInputType,
+  normalizePhrase,
+  sanitizeDisplayText,
+} from '../inputDetection';
 
 describe('inputDetection', () => {
   describe('detectInputType', () => {
@@ -28,6 +33,13 @@ describe('inputDetection', () => {
     it('should handle empty input as word', () => {
       expect(detectInputType('')).toBe('word');
       expect(detectInputType('   ')).toBe('word');
+    });
+
+    it('should detect Chinese queries as zh-en before phrase splitting', () => {
+      expect(detectInputType('餐桌')).toBe('zh-en');
+      expect(detectInputType('  一次性 用品  ')).toBe('zh-en');
+      expect(containsHan('餐桌')).toBe(true);
+      expect(containsHan('table')).toBe(false);
     });
   });
 
@@ -60,6 +72,11 @@ describe('inputDetection', () => {
     it('should preserve internal non-alphanumeric characters', () => {
       expect(sanitizeDisplayText('self-esteem')).toBe('self-esteem');
       expect(sanitizeDisplayText("don't")).toBe("don't");
+    });
+
+    it('should keep Chinese queries instead of stripping them', () => {
+      expect(sanitizeDisplayText('餐桌')).toBe('餐桌');
+      expect(sanitizeDisplayText('  一次性用品  ')).toBe('一次性用品');
     });
   });
 });

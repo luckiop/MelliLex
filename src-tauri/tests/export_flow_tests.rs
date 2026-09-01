@@ -31,6 +31,7 @@ fn test_export_word_to_markdown() {
             meanings: vec![MeaningItem {
                 number: 1,
                 part_of_speech: "verb".to_string(),
+                brief_gloss: String::new(),
                 definition: "To express grief or regret".to_string(),
                 memory_tip: "Think of expressing sorrow".to_string(),
                 examples: vec!["She lamented the loss".to_string()],
@@ -172,6 +173,7 @@ fn test_markdown_formatting() {
                 MeaningItem {
                     number: 1,
                     part_of_speech: "noun".to_string(),
+                    brief_gloss: String::new(),
                     definition: "The occurrence of events by chance".to_string(),
                     memory_tip: "Think of happy accidents".to_string(),
                     examples: vec!["A fortunate stroke of serendipity".to_string()],
@@ -179,6 +181,7 @@ fn test_markdown_formatting() {
                 MeaningItem {
                     number: 2,
                     part_of_speech: "noun".to_string(),
+                    brief_gloss: String::new(),
                     definition: "The faculty of making happy discoveries".to_string(),
                     memory_tip: "".to_string(),
                     examples: vec![],

@@ -191,4 +191,51 @@ describe('Home page', () => {
     expect(screen.getByText('break the ice')).toBeInTheDocument();
     expect(screen.queryByText('serendipity')).toBeNull();
   });
+
+  it('renders zh-en results instead of the English header', () => {
+    const store = createMockRootStore({
+      progressiveWordStore: {
+        headerSection: sampleHeader,
+        meaningsSection: sampleMeanings,
+        relatedSection: sampleRelated,
+        isLoading: false,
+        hasError: false,
+        error: null,
+        currentWord: 'serendipity',
+        hasHeaderSection: true,
+        searchWord: vi.fn(),
+        clearCurrentWord: vi.fn(),
+        cleanup: vi.fn(),
+      },
+      zhEnStore: {
+        currentQuery: '餐桌',
+        result: {
+          query: '餐桌',
+          equivalents: [
+            {
+              expression: 'dining table',
+              partOfSpeech: 'n.',
+              gloss: '用餐的桌子',
+              example: 'They sat around the dining table.',
+              occasion: '家居/请客',
+              contrast: '比 table 更具体。',
+            },
+          ],
+        },
+        isLoading: false,
+        hasError: false,
+        error: null,
+      },
+      searchCoordinator: {
+        search: vi.fn(),
+        checkSpelling: vi.fn(),
+        currentInputType: 'zh-en' as const,
+        isBusy: false,
+      },
+    });
+    renderWithProviders(<Home />, { store, route: '/' });
+    expect(screen.getByText('餐桌')).toBeInTheDocument();
+    expect(screen.getByText('dining table')).toBeInTheDocument();
+    expect(screen.queryByText('serendipity')).toBeNull();
+  });
 });

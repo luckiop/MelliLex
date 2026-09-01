@@ -19,7 +19,7 @@
     "close": "关闭"
   },
   "search": {
-    "placeholder": "输入单词或短语...",
+    "placeholder": "输入单词、短语或中文...",
     "clear": "清除",
     "submit": "搜索",
     "technical": "技术",
@@ -39,7 +39,7 @@
     "title": "MelliLex",
     "subtitle": "AI 驱动的词汇与短语探索",
     "prompt": "在上方的搜索框中输入单词或短语",
-    "tryWords": "试试：\"eloquent\"、\"break the ice\" 或 \"serendipity\""
+    "tryWords": "试试：\"eloquent\"、\"餐桌\" 或 \"break the ice\""
   },
   "sections": {
     "meanings": "释义",
@@ -360,13 +360,20 @@
     "settingsTitle": "生词本",
     "settingsDescription": "可选：把新加入的生词追加到 Markdown 笔记",
     "settingsEnable": "自动生成生词笔记",
-    "settingsEnableDesc": "第一次加入生词时，把一两则释义和例句追加到指定 Markdown 文件末尾",
+    "settingsEnableDesc": "维护一份总表 Markdown。新词只加一次；改星级或类别只更新原词条，不会整段删掉你的笔记。",
     "settingsPath": "Markdown 文件路径",
     "settingsPathPlaceholder": "D:\\notes\\vocab.md",
-    "settingsPathHint": "必须是系统绝对路径。如果文件夹或 md 文件还不存在，会自动创建。只在首次加入时追加，改星级或类别不会再写。",
+    "settingsPathHint": "必须是系统绝对路径。缺失的文件夹和 md 会自动创建。总表用 #### 分块。可选的 4 个分册写在同一目录。",
+    "settingsSplit": "按星级/场合拆成 4 个文件",
+    "settingsSplitDesc": "在总表旁边再维护 1星/2星 × 日常/技术 四个文件。改星级会把词条整段搬到对应文件，保留你写的笔记。",
     "settingsSaveFailed": "保存生词本设置失败",
     "browse": "浏览",
-    "noteAppended": "已追加到生词笔记"
+    "noteAppended": "已写入生词笔记"
+  },
+  "zhEn": {
+    "title": "中译英",
+    "subtitle": "对照场合选最贴切的英文",
+    "contrast": "和其他选项的差别"
   },
   "errors": {
     "cacheOperation": "缓存操作失败",

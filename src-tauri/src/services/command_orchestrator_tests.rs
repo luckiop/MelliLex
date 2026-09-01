@@ -32,6 +32,7 @@ mod progressive_updates_tests {
                 meanings: vec![crate::models::MeaningItem {
                     number: 1,
                     part_of_speech: "verb".to_string(),
+                    brief_gloss: String::new(),
                     definition: "Stored for quick retrieval".to_string(),
                     memory_tip: "Think of a treasure cache".to_string(),
                     examples: vec!["The data is cached".to_string()],
@@ -100,6 +101,7 @@ mod progressive_updates_tests {
                 meanings: vec![crate::models::MeaningItem {
                     number: 1,
                     part_of_speech: "noun".to_string(),
+                    brief_gloss: String::new(),
                     definition: "Data served from fallback provider cache".to_string(),
                     memory_tip: "Fallback avoids unnecessary live generation".to_string(),
                     examples: vec!["The app served fallback cached sections".to_string()],
@@ -161,6 +163,7 @@ mod progressive_updates_tests {
                 meanings: vec![crate::models::MeaningItem {
                     number: 1,
                     part_of_speech: "adjective".to_string(),
+                    brief_gloss: String::new(),
                     definition: "Happening gradually".to_string(),
                     memory_tip: "Progress happens progressively".to_string(),
                     examples: vec!["Progressive loading".to_string()],
@@ -238,6 +241,7 @@ mod progressive_updates_tests {
                 meanings: vec![crate::models::MeaningItem {
                     number: 1,
                     part_of_speech: "verb".to_string(),
+                    brief_gloss: String::new(),
                     definition: "Stored for quick retrieval".to_string(),
                     memory_tip: "Think of a treasure cache".to_string(),
                     examples: vec!["The data is cached".to_string()],

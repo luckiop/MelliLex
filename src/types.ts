@@ -33,6 +33,8 @@ export interface WordSection2Meanings {
 export interface MeaningItem {
   number: number;
   partOfSpeech: string;
+  /** Short label (2–8 CJK / 1–4 English words), not the full definition. */
+  briefGloss?: string;
   definition: string;
   memoryTip: string;
   examples: string[];
@@ -84,6 +86,7 @@ export interface AppSettings {
   technicalQuery?: boolean; // Prefer CS/control/robotics sense first in meanings
   vocabNoteEnabled?: boolean;
   vocabNotePath?: string;
+  vocabNoteSplitFiles?: boolean;
   devLogEnabled?: boolean;
 }
 
@@ -106,6 +109,7 @@ export interface VocabUpsertResult {
 
 export interface VocabNoteSnippet {
   partOfSpeech: string;
+  briefGloss?: string;
   definition: string;
   example?: string;
 }
@@ -264,7 +268,21 @@ export type PhraseRegion =
   | 'british' 
   | 'australian';
 
-export type InputType = 'word' | 'phrase';
+export type InputType = 'word' | 'phrase' | 'zh-en';
+
+export interface ZhEnEquivalent {
+  expression: string;
+  partOfSpeech: string;
+  gloss: string;
+  example: string;
+  occasion: string;
+  contrast: string;
+}
+
+export interface ZhEnResult {
+  query: string;
+  equivalents: ZhEnEquivalent[];
+}
 
 // Section 1: Overview
 export interface PhraseSection1Overview {

@@ -198,6 +198,58 @@ impl CacheRepository {
         Ok(())
     }
 
+    fn zh_en_cache_key(provider: &str, query: &str) -> String {
+        format!("{}:zhen:{}", provider, query.trim())
+    }
+
+    pub fn zh_en(
+        &self,
+        query: &str,
+        provider: &str,
+    ) -> Result<Option<crate::models::ZhEnResult>, AppError> {
+        let cache_key = Self::zh_en_cache_key(provider, query);
+        let conn = sync::lock(&self.conn, "zh-en cache connection")?;
+        let result = conn.query_row(
+            "SELECT definition FROM cached_definitions WHERE cache_key = ? LIMIT 1",
+            [&cache_key],
+            |row| {
+                let json: String = row.get(0)?;
+                Ok(json)
+            },
+        );
+
+        match result {
+            Ok(json) => {
+                let data = serde_json::from_str(&json).map_err(|e| {
+                    AppError::Parse(format!("Failed to parse cached zh-en data: {}", e))
+                })?;
+                Ok(Some(data))
+            }
+            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+            Err(e) => Err(AppError::from(e)),
+        }
+    }
+
+    pub fn cache_zh_en(
+        &self,
+        query: &str,
+        data: &crate::models::ZhEnResult,
+        provider: &str,
+    ) -> Result<(), AppError> {
+        let cache_key = Self::zh_en_cache_key(provider, query);
+        let json = serde_json::to_string(data)
+            .map_err(|e| AppError::Parse(format!("Failed to serialize zh-en data: {}", e)))?;
+        let cached_at = chrono::Utc::now().timestamp();
+        let conn = sync::lock(&self.conn, "cache zh-en connection")?;
+        conn.execute(
+            "INSERT OR REPLACE INTO cached_definitions (cache_key, word, definition, provider, cached_at)
+             VALUES (?1, ?2, ?3, ?4, ?5)",
+            params![&cache_key, query, &json, provider, cached_at],
+        )
+        .map_err(AppError::from)?;
+        Ok(())
+    }
+
     fn exploration_cache_key(provider: &str, feature: &str, word: &str) -> String {
         format!("{}:explore:{}:{}", provider, feature, word.to_lowercase())
     }

@@ -13,11 +13,12 @@ Return valid JSON matching this schema:
       "maxItems": 3,
       "items": {
         "type": "object",
-        "required": ["number", "partOfSpeech", "definition", "memoryTip", "examples"],
+        "required": ["number", "partOfSpeech", "briefGloss", "definition", "memoryTip", "examples"],
         "properties": {
           "number": {"type": "integer"},
           "partOfSpeech": {"type": "string"},
-          "definition": {"type": "string", "description": "Clear one-sentence definition"},
+          "briefGloss": {"type": "string", "description": "简要含义: a very short label, not a definition"},
+          "definition": {"type": "string", "description": "Clear one-sentence full definition / 详细释义"},
           "memoryTip": {"type": "string", "description": "Creative mnemonic using wordplay/associations/imagery"},
           "examples": {"type": "array", "items": {"type": "string"}, "minItems": 2, "description": "Natural sentences in varied contexts"}
         }
@@ -27,3 +28,9 @@ Return valid JSON matching this schema:
 }
 
 Order meanings by frequency. Prioritize quality over quantity.
+
+briefGloss (简要含义) vs definition (释义):
+- briefGloss is a short equivalent/label for the heading slot, NEVER a full definition.
+- Chinese explanations: 2–8 个汉字的对应说法/标签（如 microcontroller → 微控制器；gain 技术义 → 增益）。不要写成完整句子，不要用「是一种…」「指…」等释义句式。
+- English-only fallback: 1–4 words, no sentence.
+- Keep definition as the full detailed 释义 (one clear sentence). Do not copy definition into briefGloss.

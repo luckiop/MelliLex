@@ -1,10 +1,11 @@
 import type { ProgressiveWordStore } from '../stores/ProgressiveWordStore';
 import type { PhraseStore } from '../stores/PhraseStore';
+import type { ZhEnStore } from '../stores/ZhEnStore';
 import type { HistoryStore } from '../stores/HistoryStore';
 import type { NavigationStore } from '../stores/NavigationStore';
 import type { SpellCheckResponse, InputType } from '../types';
 import { api } from './api';
-import { detectInputType } from '../utils/inputDetection';
+import { containsHan, detectInputType } from '../utils/inputDetection';
 
 export interface SearchOptions {
   source?: string;
@@ -45,6 +46,7 @@ export class SearchCoordinator {
   constructor(
     private progressiveWordStore: ProgressiveWordStore,
     private phraseStore: PhraseStore,
+    private zhEnStore: ZhEnStore,
     private historyStore: HistoryStore,
     private navigationStore: NavigationStore
   ) {}
@@ -55,6 +57,15 @@ export class SearchCoordinator {
     return this._currentInputType;
   }
 
+  get isBusy(): boolean {
+    return (
+      this.searchInProgress ||
+      this.progressiveWordStore.isLoading ||
+      this.phraseStore.isLoading ||
+      this.zhEnStore.isLoading
+    );
+  }
+
   /**
    * Check spelling before search. Returns spell check data if misspelled.
    * 
@@ -63,7 +74,7 @@ export class SearchCoordinator {
    */
   async checkSpelling(word: string): Promise<SpellCheckResponse | null> {
     const trimmedWord = word.trim();
-    if (!trimmedWord) {
+    if (!trimmedWord || containsHan(trimmedWord)) {
       return null;
     }
 
@@ -104,17 +115,33 @@ export class SearchCoordinator {
     const inputType = detectInputType(trimmedInput);
     this._currentInputType = inputType;
 
-    const handler = inputType === 'phrase'
-      ? {
-        store: this.phraseStore,
-        clearOther: () => this.progressiveWordStore.clearSearch(),
-        runSearch: () => this.phraseStore.searchPhrase(trimmedInput),
-      }
-      : {
-        store: this.progressiveWordStore,
-        clearOther: () => this.phraseStore.clearSearch(),
-        runSearch: () => this.progressiveWordStore.searchWord(trimmedInput),
-      };
+    const handler =
+      inputType === 'zh-en'
+        ? {
+            store: this.zhEnStore,
+            clearOther: () => {
+              this.progressiveWordStore.clearSearch();
+              this.phraseStore.clearSearch();
+            },
+            runSearch: () => this.zhEnStore.search(trimmedInput),
+          }
+        : inputType === 'phrase'
+          ? {
+              store: this.phraseStore,
+              clearOther: () => {
+                this.progressiveWordStore.clearSearch();
+                this.zhEnStore.clearSearch();
+              },
+              runSearch: () => this.phraseStore.searchPhrase(trimmedInput),
+            }
+          : {
+              store: this.progressiveWordStore,
+              clearOther: () => {
+                this.phraseStore.clearSearch();
+                this.zhEnStore.clearSearch();
+              },
+              runSearch: () => this.progressiveWordStore.searchWord(trimmedInput),
+            };
 
     if (this.searchInProgress || handler.store.isLoading) {
       console.info(

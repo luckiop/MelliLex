@@ -91,6 +91,7 @@ mod tests {
             technical_query: false,
             vocab_note_enabled: false,
             vocab_note_path: None,
+            vocab_note_split_files: false,
             dev_log_enabled: false,
         }
     }

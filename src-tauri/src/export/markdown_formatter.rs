@@ -318,6 +318,7 @@ mod tests {
                 meanings: vec![MeaningItem {
                     number: 1,
                     part_of_speech: "adjective".to_string(),
+                    brief_gloss: "短暂的".to_string(),
                     definition: "Lasting for a very short time".to_string(),
                     memory_tip: "Think of 'ephemeral' as something that disappears quickly, like morning dew".to_string(),
                     examples: vec![

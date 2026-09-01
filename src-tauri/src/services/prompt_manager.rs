@@ -12,7 +12,8 @@ Also give a specialist definition aimed at computer science, control engineering
 - The technical definition must name the field, be one precise sentence, and use domain examples.\n\
 - If the word is not a standard term in those fields, meaning 1 should say so briefly and give the \
 closest technical usage, then continue with general senses.\n\
-- Keep the same JSON schema; do not drop memoryTip or examples.";
+- Keep the same JSON schema; do not drop briefGloss, memoryTip, or examples.\n\
+- Technical briefGloss should be a short domain label (e.g. 增益), not a full sentence.";
 
 #[derive(Clone)]
 pub struct PromptManager {
@@ -76,6 +77,10 @@ impl PromptManager {
             "phrase_section3_related".to_string(),
             include_str!("../../prompts/phrase_section3_related.txt").to_string(),
         );
+        templates.insert(
+            "zh_en_equivalents".to_string(),
+            include_str!("../../prompts/zh_en_equivalents.txt").to_string(),
+        );
 
         PromptManager { templates }
     }
@@ -84,6 +89,10 @@ impl PromptManager {
         self.templates
             .get(template_name)
             .map(|template| replace_placeholders(template, word, None))
+    }
+
+    pub fn render_zh_en(&self, query: &str) -> Option<String> {
+        self.render("zh_en_equivalents", query)
     }
 
     pub fn render_with_language(
@@ -124,7 +133,7 @@ impl PromptManager {
     fn get_language_instruction(&self, language: &str) -> String {
         format!(
                 "LANGUAGE INSTRUCTION:\n\
-                 1. Write EVERY descriptive string value (definitions, explanations, contexts, descriptions, questions, answers, memory tips, collocations) entirely in {}.\n\
+                 1. Write EVERY descriptive string value (definitions, briefGloss labels, explanations, contexts, descriptions, questions, answers, memory tips, collocations) entirely in {}.\n\
                  2. Keep JSON keys and enumerated values exactly as specified (e.g., level, patternType, exerciseType stay in English).\n\
                  3. Keep the English headword itself in English.\n\
                  4. Example sentences should remain in English, followed immediately by a {} translation in parentheses.\n\
@@ -134,11 +143,12 @@ impl PromptManager {
                  8. Ensure valid UTF-8 characters and proper JSON escaping.\n\
                  \n\
                  Example format (for guidance only):\n\
+                 - briefGloss: \"[2–8 character {} label, not a sentence]\"\n\
                  - definition: \"[Definition written in {}]\"\n\
                  - memoryTip: \"[Mnemonic in {} referencing local culture]\"\n\
                  - example: \"She jumped for joy. ([{} translation here])\"\n\
                  - relatedWords: [\"word1\", \"word2\", \"word3\"] (NOT objects with definitions)",
-                language, language, language, language, language, language, language
+                language, language, language, language, language, language, language, language
             )
     }
 
@@ -215,8 +225,8 @@ mod tests {
         let manager = PromptManager::new();
         assert_eq!(
             manager.templates.len(),
-            12,
-            "Expected 12 templates (5 exploration + 4 word sections + 3 phrase sections)"
+            13,
+            "Expected 13 templates (5 exploration + 4 word sections + 3 phrase sections + zh-en)"
         );
         // Exploration templates
         assert!(manager.templates.contains_key("formality_analysis"));
@@ -233,6 +243,7 @@ mod tests {
         assert!(manager.templates.contains_key("phrase_section1_overview"));
         assert!(manager.templates.contains_key("phrase_section2_context"));
         assert!(manager.templates.contains_key("phrase_section3_related"));
+        assert!(manager.templates.contains_key("zh_en_equivalents"));
     }
 
     #[test]
@@ -255,10 +266,11 @@ mod tests {
             .render_with_language("section1_header", "test", "English")
             .expect("section1_header template not found")
             .contains("test"));
-        assert!(manager
+        let section2 = manager
             .render_with_language("section2_meanings", "test", "English")
-            .expect("section2_meanings template not found")
-            .contains("test"));
+            .expect("section2_meanings template not found");
+        assert!(section2.contains("test"));
+        assert!(section2.contains("briefGloss"));
         assert!(manager
             .render_with_language("phrase_section1_overview", "test phrase", "English")
             .expect("phrase_section1_overview template not found")
@@ -279,6 +291,28 @@ mod tests {
         assert!(!normal.contains("TECHNICAL SENSE"));
         assert!(technical.contains("TECHNICAL SENSE"));
         assert!(technical.contains("robotics"));
+        assert!(technical.contains("briefGloss"));
         assert!(technical.starts_with(&normal));
+    }
+
+    #[test]
+    fn section2_prompt_requires_brief_gloss() {
+        let manager = PromptManager::new();
+        let prompt = manager
+            .render_section2_meanings("microcontroller", "Chinese (Simplified)", false)
+            .expect("section2");
+        assert!(prompt.contains("briefGloss"));
+        assert!(prompt.contains("简要含义"));
+        assert!(prompt.contains("微控制器"));
+        assert!(prompt.contains("不要写成完整句子"));
+    }
+
+    #[test]
+    fn render_zh_en_inserts_query() {
+        let manager = PromptManager::new();
+        let prompt = manager.render_zh_en("餐桌").expect("zh_en template");
+        assert!(prompt.contains("餐桌"));
+        assert!(prompt.contains("equivalents"));
+        assert!(!prompt.contains("{{word}}"));
     }
 }

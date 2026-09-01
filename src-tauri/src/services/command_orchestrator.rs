@@ -4,6 +4,7 @@ use crate::errors::AppError;
 use crate::models::{
     AppSettings, CachedExploreFeatures, CachedFormalityData, DomainExploration,
     FormalityAlternative, MistakeItem, PracticeExercise, SpellCheckResponse, UsagePattern,
+    ZhEnResult,
 };
 use crate::services::ai_provider::AiModel;
 use crate::services::dictionary_service::DictionaryService;
@@ -244,6 +245,33 @@ impl CommandOrchestrator {
         info!("Completed progressive word search for: {}", word);
 
         Ok(())
+    }
+
+    pub async fn search_zh_en(&self, query: &str, db: &Database) -> Result<ZhEnResult, AppError> {
+        let validated = validation::validate_word_query(query)?;
+        info!("Zh-en search for: {}", validated);
+
+        let settings = self.load_settings(db)?;
+        let (dictionary_service, provider_name) = self.create_dictionary_service(&settings)?;
+        let cache_scope = format!("{}:zhen", provider_name);
+
+        if let Some(cached) = db.get_cached_zh_en(&validated, &cache_scope)? {
+            info!("Zh-en cache hit for '{}'", validated);
+            return Ok(cached);
+        }
+
+        let (mut result, _) = dictionary_service.generate_zh_en(&validated).await?;
+        if result.query.trim().is_empty() {
+            result.query = validated.clone();
+        }
+        db.cache_zh_en(&validated, &result, &cache_scope)?;
+        db.add_to_history(&validated, &provider_name)?;
+        info!(
+            "Completed zh-en search for '{}' ({} equivalents)",
+            validated,
+            result.equivalents.len()
+        );
+        Ok(result)
     }
 
     pub async fn search_phrase_progressive(

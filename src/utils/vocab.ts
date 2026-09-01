@@ -16,11 +16,15 @@ export function snippetsFromMeanings(
 ): VocabNoteSnippet[] {
   const fromMeanings = (meanings ?? [])
     .slice(0, 2)
-    .map((meaning) => ({
-      partOfSpeech: meaning.partOfSpeech ?? '',
-      definition: meaning.definition?.trim() ?? '',
-      example: meaning.examples?.[0]?.trim() || undefined,
-    }))
+    .map((meaning) => {
+      const briefGloss = meaning.briefGloss?.trim();
+      return {
+        partOfSpeech: meaning.partOfSpeech ?? '',
+        ...(briefGloss ? { briefGloss } : {}),
+        definition: meaning.definition?.trim() ?? '',
+        example: meaning.examples?.[0]?.trim() || undefined,
+      };
+    })
     .filter((snippet) => snippet.definition.length > 0);
 
   if (fromMeanings.length > 0) {

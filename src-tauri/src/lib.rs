@@ -90,6 +90,12 @@ pub fn run() {
     write_crash_log("Step 14: Context generated, calling run()");
     
     let result = builder
+        .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
+            log::info!("Second instance ignored (argv={argv:?}, cwd={cwd:?})");
+            if let Err(err) = crate::window_controls::show_main_window(app) {
+                log::warn!("Failed to focus existing window: {err}");
+            }
+        }))
         .plugin(
             tauri_plugin_window_state::Builder::new()
                 .with_state_flags(
@@ -224,6 +230,7 @@ pub fn run() {
             check_spelling,
             get_word_variations,
             search_word_progressive,
+            search_zh_en,
             // Phrase commands
             search_phrase_progressive,
             // History commands

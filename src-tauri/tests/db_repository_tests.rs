@@ -111,6 +111,7 @@ fn test_progressive_cache_operations() {
         meanings: vec![MeaningItem {
             number: 1,
             part_of_speech: "verb".to_string(),
+            brief_gloss: String::new(),
             definition: "To express grief or regret".to_string(),
             memory_tip: "Think of 'lament' as expressing deep sadness".to_string(),
             examples: vec!["She lamented the loss of her friend".to_string()],
@@ -212,6 +213,7 @@ fn test_settings_persistence() {
         technical_query: false,
         vocab_note_enabled: false,
         vocab_note_path: None,
+        vocab_note_split_files: false,
         dev_log_enabled: false,
     };
 

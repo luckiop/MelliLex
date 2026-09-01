@@ -19,7 +19,7 @@
     "close": "Close"
   },
   "search": {
-    "placeholder": "Enter word or phrase...",
+    "placeholder": "Enter word, phrase, or Chinese...",
     "clear": "Clear search",
     "submit": "Submit search",
     "technical": "Tech",
@@ -39,7 +39,7 @@
     "title": "MelliLex",
     "subtitle": "AI-powered word & phrase exploration",
     "prompt": "Type a word or phrase in the search box above",
-    "tryWords": "Try: \"eloquent\", \"break the ice\", or \"serendipity\""
+    "tryWords": "Try: \"eloquent\", \"餐桌\", or \"break the ice\""
   },
   "sections": {
     "meanings": "Meanings",
@@ -353,13 +353,20 @@
     "settingsTitle": "Vocab",
     "settingsDescription": "Optional markdown notes for new vocab words",
     "settingsEnable": "Auto-append vocab notes",
-    "settingsEnableDesc": "When a word is first added, append 1–2 senses and an example to the markdown file",
+    "settingsEnableDesc": "Keep a master markdown notebook. New words are added once; star and category changes update the existing entry.",
     "settingsPath": "Markdown file path",
     "settingsPathPlaceholder": "D:\\notes\\vocab.md",
-    "settingsPathHint": "Must be an absolute file path. Missing folders and the .md file are created automatically. New entries are appended; star and category changes are not.",
+    "settingsPathHint": "Absolute path. Missing folders and the .md file are created automatically. The master file always uses #### sections. Optional split files live next to it.",
+    "settingsSplit": "Split into 4 notebooks",
+    "settingsSplitDesc": "Also keep 1-star/2-star × daily/technical files beside the master notebook. Changing stars moves the entry between those files without deleting your notes.",
     "settingsSaveFailed": "Failed to save vocab settings",
     "browse": "Browse",
-    "noteAppended": "Appended to vocab notes"
+    "noteAppended": "Added to vocab notes"
+  },
+  "zhEn": {
+    "title": "Chinese → English",
+    "subtitle": "Pick the wording that matches the situation",
+    "contrast": "Vs other choices"
   },
   "errors": {
     "cacheOperation": "Failed to perform cache operation",

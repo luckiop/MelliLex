@@ -53,7 +53,7 @@ class WordLookupSearchStrategy implements SearchContextStrategy {
   }) {}
 
   isBusy(): boolean {
-    return this.deps.progressiveWordStore.isLoading;
+    return this.deps.searchCoordinator.isBusy;
   }
 
   getSyncedValue(): string {

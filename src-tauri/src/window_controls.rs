@@ -9,6 +9,7 @@ pub fn handle_window_event(window: &Window, event: &WindowEvent) {
 
 pub fn show_main_window<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
     if let Some(window) = app.get_webview_window("main") {
+        let _ = window.unminimize();
         window.show()?;
         window.set_focus()?;
     }

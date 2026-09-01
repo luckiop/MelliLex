@@ -48,6 +48,7 @@ export function createMockRootStore(overrides: Record<string, unknown> = {}): Ro
     search: vi.fn(),
     checkSpelling: vi.fn(),
     currentInputType: 'word' as const,
+    isBusy: false,
     ...overrides.searchCoordinator as object,
   };
   
@@ -112,6 +113,17 @@ export function createMockRootStore(overrides: Record<string, unknown> = {}): Ro
     isLoading: false,
     error: null,
     ...overrides.vocabStore as object,
+  };
+
+  store.zhEnStore = {
+    currentQuery: '',
+    result: null,
+    isLoading: false,
+    hasError: false,
+    error: null,
+    search: vi.fn().mockResolvedValue(undefined),
+    clearSearch: vi.fn(),
+    ...overrides.zhEnStore as object,
   };
   
   store.cleanup = vi.fn();
