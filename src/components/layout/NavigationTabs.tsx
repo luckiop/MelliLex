@@ -14,6 +14,7 @@ export function NavigationTabs() {
   const tabs = [
     { path: '/', label: t('navigation.home') },
     { path: '/history', label: t('navigation.history') },
+    { path: '/vocab', label: t('navigation.vocab') },
   ];
 
   return (
@@ -48,6 +49,7 @@ export function MobileNavigationTabs() {
   const tabs = [
     { path: '/', label: t('navigation.home') },
     { path: '/history', label: t('navigation.history') },
+    { path: '/vocab', label: t('navigation.vocab') },
   ];
 
   return (

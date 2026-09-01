@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Home } from "./pages/Home";
 import { History } from "./pages/History";
+import { Vocab } from "./pages/Vocab";
 import ExplorePage from "./pages/ExplorePage";
 import { Settings } from "./pages/Settings";
 import { RootStore, RootStoreContext } from "./stores/RootStore";
@@ -67,6 +68,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/history" element={<History />} />
+          <Route path="/vocab" element={<Vocab />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </AppLayout>

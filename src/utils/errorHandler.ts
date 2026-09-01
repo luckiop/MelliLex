@@ -131,6 +131,8 @@ export const getProviderConfigErrorMessage = (error: unknown): string => {
  */
 export const ERROR_MESSAGES = {
   LOAD_HISTORY_FAILED: 'Failed to load history',
+  LOAD_VOCAB_FAILED: 'Failed to load vocab notebook',
+  UPDATE_VOCAB_FAILED: 'Failed to update vocab notebook',
   CLEAR_HISTORY_FAILED: 'Failed to clear history',
   DELETE_ITEM_FAILED: 'Failed to delete item',
   LOAD_SETTINGS_FAILED: 'Failed to load settings',

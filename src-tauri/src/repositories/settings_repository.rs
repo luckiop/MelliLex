@@ -45,6 +45,8 @@ impl SettingsRepository {
                 enable_global_lookup: true,
                 typography_mode: "classic".to_string(),
                 technical_query: false,
+                vocab_note_enabled: false,
+                vocab_note_path: None,
             }),
             Err(e) => Err(AppError::from(e)),
         }

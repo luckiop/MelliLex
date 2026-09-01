@@ -7,6 +7,8 @@ import type {
   AiModel,
   CachedExploreFeatures,
   SpellCheckResponse,
+  VocabEntry,
+  VocabNoteSnippet,
 } from '../types';
 
 const wrapInvoke = async <T>(command: string, args?: Record<string, unknown>): Promise<T> => {
@@ -65,6 +67,38 @@ export const api = {
 
   async deleteHistoryItem(id: string): Promise<void> {
   return await wrapInvoke('delete_history_item', { id });
+  },
+
+  async getVocabEntry(word: string): Promise<VocabEntry | null> {
+    return await wrapInvoke<VocabEntry | null>('get_vocab_entry', { word });
+  },
+
+  async listVocabEntries(filters?: {
+    stars?: number;
+    category?: string;
+  }): Promise<VocabEntry[]> {
+    return await wrapInvoke<VocabEntry[]>('list_vocab_entries', {
+      stars: filters?.stars,
+      category: filters?.category,
+    });
+  },
+
+  async upsertVocabEntry(
+    word: string,
+    stars: number,
+    category: string,
+    notes?: VocabNoteSnippet[]
+  ): Promise<VocabEntry> {
+    return await wrapInvoke<VocabEntry>('upsert_vocab_entry', {
+      word,
+      stars,
+      category,
+      notes,
+    });
+  },
+
+  async deleteVocabEntry(word: string): Promise<void> {
+    return await wrapInvoke('delete_vocab_entry', { word });
   },
 
   // Settings

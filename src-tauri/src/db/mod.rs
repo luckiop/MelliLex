@@ -4,12 +4,14 @@ pub use schema_manager::SchemaManager;
 
 use crate::errors::AppError;
 use crate::models::{
-    AiWordDefinition, AppSettings, PhraseDefinitionData, WordProgressiveData, WordHistory,
+    AiWordDefinition, AppSettings, PhraseDefinitionData, VocabEntry, WordProgressiveData,
+    WordHistory,
 };
 use crate::repositories::cache_repository::CacheRepository;
 use crate::repositories::history_repository::HistoryRepository;
 use crate::repositories::phrase_cache_repository::PhraseCacheRepository;
 use crate::repositories::settings_repository::SettingsRepository;
+use crate::repositories::vocab_repository::VocabRepository;
 use crate::security::secret_store::SecretStore;
 use crate::utils::sync;
 use rusqlite::Connection;
@@ -25,6 +27,7 @@ pub struct Database {
     cache_repo: CacheRepository,
     phrase_cache_repo: PhraseCacheRepository,
     settings_repo: SettingsRepository,
+    vocab_repo: VocabRepository,
     secret_store: SecretStore,
 }
 
@@ -48,6 +51,7 @@ impl Database {
             cache_repo: CacheRepository::new(conn.clone()),
             phrase_cache_repo: PhraseCacheRepository::new(conn.clone()),
             settings_repo: SettingsRepository::new(conn.clone()),
+            vocab_repo: VocabRepository::new(conn.clone()),
             secret_store,
         };
 
@@ -169,6 +173,34 @@ impl Database {
         self.secret_store.persist_provider_secrets(settings)?;
         let sanitized = SecretStore::sanitize_settings(settings);
         self.settings_repo.save(&sanitized)
+    }
+
+    // ============== VOCAB OPERATIONS ==============
+
+    pub fn get_vocab_entry(&self, word: &str) -> Result<Option<VocabEntry>, AppError> {
+        self.vocab_repo.get(&word.to_lowercase())
+    }
+
+    pub fn list_vocab_entries(
+        &self,
+        stars: Option<i32>,
+        category: Option<&str>,
+    ) -> Result<Vec<VocabEntry>, AppError> {
+        self.vocab_repo.list(stars, category)
+    }
+
+    pub fn upsert_vocab_entry(
+        &self,
+        word: &str,
+        stars: i32,
+        category: &str,
+    ) -> Result<(VocabEntry, bool), AppError> {
+        self.vocab_repo
+            .upsert(&word.to_lowercase(), word, stars, category)
+    }
+
+    pub fn delete_vocab_entry(&self, word: &str) -> Result<(), AppError> {
+        self.vocab_repo.delete(&word.to_lowercase())
     }
 
     // ============== CACHE STATS & CLEANUP ==============

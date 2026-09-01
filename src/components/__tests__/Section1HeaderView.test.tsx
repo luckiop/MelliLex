@@ -1,7 +1,7 @@
 import { screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Section1HeaderView } from '../sections/Section1HeaderView';
-import { renderWithProviders } from '../../test/test-utils';
+import { renderWithProviders, createMockRootStore } from '../../test/test-utils';
 import type { WordSection1Header } from '../../types';
 
 // Mock sonner toast
@@ -74,5 +74,19 @@ describe('Section1HeaderView', () => {
     fireEvent.click(screen.getByLabelText(/pronounce/i));
     expect(mockSpeak).toHaveBeenCalled();
     expect(mockUtterance).toHaveBeenCalledWith('eloquent');
+  });
+
+  it('adds the word to the vocab notebook from the header', () => {
+    const cycleStars = vi.fn().mockResolvedValue(undefined);
+    renderWithProviders(<Section1HeaderView data={sampleHeader} />, {
+      store: createMockRootStore({
+        vocabStore: { cycleStars },
+      }),
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /add/i }));
+    expect(cycleStars).toHaveBeenCalledWith('eloquent', [
+      { partOfSpeech: '', definition: 'Fluent or persuasive in speaking or writing.' },
+    ]);
   });
 });

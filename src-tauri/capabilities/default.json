@@ -12,6 +12,7 @@
     "core:window:allow-show",
     "opener:default",
     "log:default",
-    "updater:default"
+    "updater:default",
+    "dialog:allow-save"
   ]
 }

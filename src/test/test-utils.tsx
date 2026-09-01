@@ -65,6 +65,7 @@ export function createMockRootStore(overrides: Record<string, unknown> = {}): Ro
       theme: 'light',
       enableGlobalLookup: false,
       technicalQuery: false,
+      vocabNoteEnabled: false,
       exportSettings: {},
     },
     updateSettings: vi.fn().mockResolvedValue(undefined),
@@ -90,7 +91,27 @@ export function createMockRootStore(overrides: Record<string, unknown> = {}): Ro
   
   store.lastPageStore = {
     setLastPage: vi.fn(),
+    page: '/',
     ...overrides.lastPageStore as object,
+  };
+
+  store.vocabStore = {
+    currentEntry: null,
+    pendingCategory: 'daily',
+    activeCategory: 'daily',
+    items: [],
+    starFilter: 'all',
+    categoryFilter: 'all',
+    loadForWord: vi.fn().mockResolvedValue(undefined),
+    cycleStars: vi.fn().mockResolvedValue(undefined),
+    toggleCategory: vi.fn().mockResolvedValue(undefined),
+    loadList: vi.fn().mockResolvedValue(undefined),
+    deleteWord: vi.fn().mockResolvedValue(undefined),
+    setStarFilter: vi.fn(),
+    setCategoryFilter: vi.fn(),
+    isLoading: false,
+    error: null,
+    ...overrides.vocabStore as object,
   };
   
   store.cleanup = vi.fn();

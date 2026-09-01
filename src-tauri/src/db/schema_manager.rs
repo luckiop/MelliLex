@@ -14,6 +14,7 @@ impl SchemaManager {
         Self::create_cache_tables(conn)?;
         Self::create_settings_tables(conn)?;
         Self::create_phrase_tables(conn)?;
+        Self::create_vocab_table(conn)?;
 
         Ok(())
     }
@@ -182,6 +183,34 @@ impl SchemaManager {
         conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_saved_phrases_date 
              ON saved_phrases(saved_at DESC)",
+            [],
+        )?;
+
+        Ok(())
+    }
+
+    fn create_vocab_table(conn: &Connection) -> Result<(), AppError> {
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS vocab_entries (
+                word_key TEXT PRIMARY KEY,
+                word TEXT NOT NULL,
+                stars INTEGER NOT NULL,
+                category TEXT NOT NULL,
+                added_at INTEGER NOT NULL,
+                updated_at INTEGER NOT NULL
+            )",
+            [],
+        )?;
+
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_vocab_updated
+             ON vocab_entries(updated_at DESC)",
+            [],
+        )?;
+
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_vocab_filter
+             ON vocab_entries(category, stars)",
             [],
         )?;
 

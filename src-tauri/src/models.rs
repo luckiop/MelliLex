@@ -273,6 +273,26 @@ pub struct WordHistory {
     pub ai_provider: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct VocabEntry {
+    pub word: String,
+    pub stars: i32,
+    pub category: String,
+    pub added_at: i64,
+    pub updated_at: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct VocabNoteSnippet {
+    #[serde(default)]
+    pub part_of_speech: String,
+    pub definition: String,
+    #[serde(default)]
+    pub example: Option<String>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AppSettings {
@@ -295,6 +315,10 @@ pub struct AppSettings {
     /// When true, the meanings prompt asks for a CS/control/robotics sense first.
     #[serde(default)]
     pub technical_query: bool,
+    #[serde(default)]
+    pub vocab_note_enabled: bool,
+    #[serde(default)]
+    pub vocab_note_path: Option<String>,
 }
 
 fn default_enable_global_lookup() -> bool {

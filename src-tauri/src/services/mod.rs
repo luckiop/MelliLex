@@ -25,4 +25,5 @@ pub mod provider_registry;
 pub mod response_parser;
 pub mod response_processing;
 pub mod settings_service;
+pub mod vocab_note;
 pub mod text_processing;

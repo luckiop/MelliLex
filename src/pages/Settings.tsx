@@ -13,6 +13,7 @@ import {
   Palette,
   Languages,
   Keyboard,
+  BookMarked,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { 
@@ -24,6 +25,7 @@ import {
   UILanguageSection,
   GlobalLookupSection,
   AboutSection,
+  VocabSection,
 } from '../components/settings';
 
 interface SettingsSection {
@@ -74,6 +76,12 @@ export const Settings = observer(() => {
       title: t('settings.export.title'),
       description: t('settings.export.description'),
       icon: <Share2 className="w-5 h-5" />
+    },
+    {
+      id: 'vocab',
+      title: t('vocab.settingsTitle'),
+      description: t('vocab.settingsDescription'),
+      icon: <BookMarked className="w-5 h-5" />
     },
     {
       id: 'about',
@@ -296,6 +304,7 @@ export const Settings = observer(() => {
                 )}
                 {section.id === 'cache' && <CacheSection />}
                 {section.id === 'export' && <ExportSection />}
+                {section.id === 'vocab' && <VocabSection />}
                 {section.id === 'about' && <AboutSection />}
               </div>
             </div>

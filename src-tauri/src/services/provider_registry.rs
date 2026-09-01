@@ -159,6 +159,8 @@ mod tests {
             enable_global_lookup: true,
             typography_mode: "classic".into(),
             technical_query: false,
+            vocab_note_enabled: false,
+            vocab_note_path: None,
         }
     }
 
@@ -179,6 +181,8 @@ mod tests {
             enable_global_lookup: true,
             typography_mode: "classic".into(),
             technical_query: false,
+            vocab_note_enabled: false,
+            vocab_note_path: None,
         }
     }
 

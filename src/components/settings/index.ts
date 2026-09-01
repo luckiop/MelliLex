@@ -6,3 +6,4 @@ export { LanguageSection } from './LanguageSection';
 export { UILanguageSection } from './UILanguageSection';
 export { GlobalLookupSection } from './GlobalLookupSection';
 export { AboutSection } from './AboutSection';
+export { VocabSection } from './VocabSection';

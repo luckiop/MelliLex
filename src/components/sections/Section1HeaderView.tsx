@@ -1,17 +1,28 @@
 import type { WordSection1Header } from '../../types';
-import { Volume2, Eye, Share2, Globe, Layers } from 'lucide-react';
+import { Volume2, Eye, Share2, Globe, Layers, Star, Cpu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
 import { toast } from 'sonner';
 import { ExportWordDialog } from '../ExportWordDialog';
 import { useTranslation } from 'react-i18next';
+import { useStores } from '../../stores/RootStore';
+import { snippetsFromMeanings } from '../../utils/vocab';
 
 interface Props {
   data: WordSection1Header;
 }
 
-export const Section1HeaderView = ({ data }: Props) => {
+export const Section1HeaderView = observer(({ data }: Props) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { progressiveWordStore, settingsStore, vocabStore } = useStores();
+  const lookupWord = progressiveWordStore.currentWord || data.word;
+
+  useEffect(() => {
+    const defaultCategory = settingsStore.settings.technicalQuery ? 'technical' : 'daily';
+    void vocabStore.loadForWord(lookupWord, defaultCategory);
+  }, [lookupWord, settingsStore.settings.technicalQuery, vocabStore]);
 
   const getOriginDisplay = (origin: string) => {
     const firstWord = origin.split(' ')[0];
@@ -54,6 +65,29 @@ export const Section1HeaderView = ({ data }: Props) => {
       }
     }
   };
+
+  const handleCycleStars = async () => {
+    try {
+      const notes = snippetsFromMeanings(
+        progressiveWordStore.meaningsSection?.meanings,
+        data.tldr
+      );
+      await vocabStore.cycleStars(lookupWord, notes);
+    } catch {
+      toast.error(t('vocab.updateFailed'));
+    }
+  };
+
+  const handleToggleCategory = async () => {
+    try {
+      await vocabStore.toggleCategory(lookupWord);
+    } catch {
+      toast.error(t('vocab.updateFailed'));
+    }
+  };
+
+  const stars = vocabStore.currentEntry?.stars ?? 0;
+  const category = vocabStore.activeCategory;
 
   return (
     <div className="space-y-6">
@@ -135,6 +169,37 @@ export const Section1HeaderView = ({ data }: Props) => {
       </div>
 
       <div className="flex gap-2 flex-wrap pt-2">
+        <button
+          type="button"
+          onClick={handleCycleStars}
+          aria-pressed={stars > 0}
+          title={t('vocab.starHint')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
+            stars > 0
+              ? 'border-primary bg-primary text-primary-foreground'
+              : 'border-border bg-card hover:bg-accent hover:border-foreground'
+          }`}
+        >
+          <Star className={`w-4 h-4 ${stars > 0 ? 'fill-current' : ''}`} />
+          {stars === 0
+            ? t('vocab.add')
+            : stars === 1
+              ? t('vocab.oneStar')
+              : t('vocab.twoStars')}
+        </button>
+        <button
+          type="button"
+          onClick={handleToggleCategory}
+          title={t('vocab.categoryHint')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
+            category === 'technical'
+              ? 'border-primary bg-primary text-primary-foreground'
+              : 'border-border bg-card hover:bg-accent hover:border-foreground'
+          }`}
+        >
+          <Cpu className="w-4 h-4" />
+          {category === 'technical' ? t('vocab.technical') : t('vocab.daily')}
+        </button>
         <button 
           onClick={handleExplore}
           className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-all text-sm font-medium"
@@ -153,4 +218,4 @@ export const Section1HeaderView = ({ data }: Props) => {
       </div>
     </div>
   );
-};
+});

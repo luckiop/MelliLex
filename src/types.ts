@@ -82,6 +82,24 @@ export interface AppSettings {
   enableGlobalLookup: boolean; // Enable global lookup feature
   typographyMode?: TypographyOption; // Preferred typography pairing
   technicalQuery?: boolean; // Prefer CS/control/robotics sense first in meanings
+  vocabNoteEnabled?: boolean;
+  vocabNotePath?: string;
+}
+
+export type VocabCategory = 'daily' | 'technical';
+
+export interface VocabEntry {
+  word: string;
+  stars: number;
+  category: VocabCategory;
+  addedAt: number;
+  updatedAt: number;
+}
+
+export interface VocabNoteSnippet {
+  partOfSpeech: string;
+  definition: string;
+  example?: string;
 }
 
 // Must match Rust SUPPORTED_LANGUAGES in models.rs

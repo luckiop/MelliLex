@@ -71,6 +71,8 @@ fn sample_settings_payload() -> AppSettings {
         enable_global_lookup: true,
         typography_mode: "classic".to_string(),
         technical_query: false,
+        vocab_note_enabled: false,
+        vocab_note_path: None,
     }
 }
 
@@ -192,4 +194,37 @@ fn secrets_are_stored_encrypted() {
         .and_then(|cfg| cfg.capacities)
         .expect("capacities missing");
     assert_eq!(capacities.api_token, "secret-token");
+}
+
+#[test]
+fn vocab_upsert_cycles_and_filters() {
+    let (db, _dir) = create_db();
+
+    let (first, inserted) = db.upsert_vocab_entry("Gain", 1, "technical").unwrap();
+    assert!(inserted);
+    assert_eq!(first.word, "Gain");
+    assert_eq!(first.stars, 1);
+    assert_eq!(first.category, "technical");
+
+    let loaded = db.get_vocab_entry("gain").unwrap().expect("entry");
+    assert_eq!(loaded.stars, 1);
+
+    let (second, inserted_again) = db.upsert_vocab_entry("gain", 2, "daily").unwrap();
+    assert!(!inserted_again);
+    assert_eq!(second.stars, 2);
+    assert_eq!(second.category, "daily");
+    assert_eq!(second.added_at, first.added_at);
+
+    db.upsert_vocab_entry("loop", 1, "technical").unwrap();
+
+    let technical = db.list_vocab_entries(None, Some("technical")).unwrap();
+    assert_eq!(technical.len(), 1);
+    assert_eq!(technical[0].word, "loop");
+
+    let two_star = db.list_vocab_entries(Some(2), None).unwrap();
+    assert_eq!(two_star.len(), 1);
+    assert_eq!(two_star[0].word, "gain");
+
+    db.delete_vocab_entry("GAIN").unwrap();
+    assert!(db.get_vocab_entry("gain").unwrap().is_none());
 }

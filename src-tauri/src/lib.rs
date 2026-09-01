@@ -226,6 +226,11 @@ pub fn run() {
             get_history,
             clear_history,
             delete_history_item,
+            // Vocab notebook
+            get_vocab_entry,
+            list_vocab_entries,
+            upsert_vocab_entry,
+            delete_vocab_entry,
             // Settings & provider commands
             get_settings,
             update_settings,

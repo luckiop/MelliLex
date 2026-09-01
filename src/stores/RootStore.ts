@@ -6,6 +6,7 @@ import { SettingsStore } from './SettingsStore';
 import { NavigationStore } from './NavigationStore';
 import { ExploreStore } from './ExploreStore';
 import { LastPageStore } from './LastPageStore';
+import { VocabStore } from './VocabStore';
 import { EventListenerService } from '../services/EventListenerService';
 import { TimeoutService } from '../services/TimeoutService';
 import { TauriLoggerService } from '../services/LoggerService';
@@ -27,6 +28,7 @@ export class RootStore {
   navigationStore: NavigationStore;
   exploreStore: ExploreStore;
   lastPageStore: LastPageStore;
+  vocabStore: VocabStore;
   
   // Service coordinators
   searchCoordinator: SearchCoordinator;
@@ -36,6 +38,7 @@ export class RootStore {
     this.historyStore = new HistoryStore();
     this.settingsStore = new SettingsStore();
     this.lastPageStore = new LastPageStore();
+    this.vocabStore = new VocabStore();
     this.settingsStore.loadSettings();
 
     this.progressiveWordStore = new ProgressiveWordStore(

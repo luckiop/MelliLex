@@ -29,6 +29,8 @@ export class SettingsStore {
     enableGlobalLookup: true,
     typographyMode: DEFAULT_TYPOGRAPHY_OPTION,
     technicalQuery: false,
+    vocabNoteEnabled: false,
+    vocabNotePath: '',
   };
   loading: boolean = false;
   error: string | null = null;
