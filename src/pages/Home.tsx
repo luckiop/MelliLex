@@ -15,6 +15,8 @@ import {
 } from '../components/sections';
 import { PhraseCard } from '../components/phrase';
 import { ZhEnResultsView } from '../components/zhen/ZhEnResultsView';
+import { HomeFeatureGrid } from '../components/onboarding/HomeFeatureGrid';
+import { PageHint } from '../components/onboarding/PageHintBanner';
 
 export const Home = observer(() => {
   const { t } = useTranslation();
@@ -67,12 +69,13 @@ export const Home = observer(() => {
 
   return (
     <div className="container mx-auto px-8 py-12 max-w-3xl">
+      <PageHint pageId="home" />
       {!hasAnyData && !isLoading && !progressiveWordStore.hasError && !phraseStore.hasError && !zhEnStore.hasError && (
-        <div className="max-w-xl mx-auto text-center py-20">
-          <h1 className="text-7xl font-bold text-foreground mb-8 tracking-tight">
+        <div className="max-w-xl mx-auto text-center py-8">
+          <h1 className="text-7xl font-bold text-foreground mb-6 tracking-tight">
             {t('home.title')}
           </h1>
-          <p className="text-xl text-muted-foreground mb-16">
+          <p className="text-xl text-muted-foreground mb-8">
             {t('home.subtitle')}
           </p>
           <div className="space-y-2 text-sm text-muted-foreground">
@@ -81,6 +84,7 @@ export const Home = observer(() => {
               {t('home.tryWords')}
             </p>
           </div>
+          <HomeFeatureGrid />
         </div>
       )}
 

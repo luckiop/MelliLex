@@ -39,7 +39,39 @@
     "title": "MelliLex",
     "subtitle": "AI-powered word & phrase exploration",
     "prompt": "Type a word or phrase in the search box above",
-    "tryWords": "Try: \"eloquent\", \"餐桌\", or \"break the ice\""
+    "tryWords": "Try: \"eloquent\", \"餐桌\", or \"break the ice\"",
+    "features": {
+      "define": {
+        "title": "Definitions",
+        "desc": "Meanings are generated on the fly. There is no local word bank."
+      },
+      "vocab": {
+        "title": "Vocab notebook",
+        "desc": "One or two stars, daily or technical."
+      },
+      "notes": {
+        "title": "Markdown notes",
+        "desc": "Starred words can be written to a markdown file automatically."
+      },
+      "technical": {
+        "title": "Technical lookup",
+        "desc": "Turn on Technical to prefer CS, control, and robotics senses."
+      },
+      "history": {
+        "title": "History",
+        "desc": "Revisit words you have already looked up."
+      },
+      "settings": {
+        "title": "Settings",
+        "desc": "API keys, appearance, and notebook path."
+      }
+    }
+  },
+  "pageHints": {
+    "home": "Meanings are generated as you search. Use Technical for specialist senses, or type Chinese for English equivalents.",
+    "vocab": "Star a word to save it. The list shows a short gloss. Settings can auto-write markdown notes.",
+    "settings": "Add an AI API key to look up words. Vocab notes can point at a markdown path; folders are created on save.",
+    "explore": "See register, usage, and practice for the current word. Open Explore from a lookup result."
   },
   "sections": {
     "meanings": "Meanings",

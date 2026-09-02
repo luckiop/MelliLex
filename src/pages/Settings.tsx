@@ -16,6 +16,7 @@ import {
   BookMarked,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { PageHint } from '../components/onboarding/PageHintBanner';
 import { 
   AIProviderSection,
   AppearanceSection,
@@ -200,6 +201,7 @@ export const Settings = observer(() => {
 
   return (
     <div className="container mx-auto px-8 py-12 max-w-3xl">
+      <PageHint pageId="settings" />
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-foreground mb-6">{t('settings.title')}</h1>
         <div className="flex gap-1 border-b border-border pb-2 overflow-x-auto">

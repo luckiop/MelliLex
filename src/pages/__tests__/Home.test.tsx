@@ -1,6 +1,7 @@
-import { screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { fireEvent, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Home } from '../../pages/Home';
+import { PageHintService } from '../../services/PageHintService';
 import { renderWithProviders, createMockRootStore } from '../../test/test-utils';
 import type { WordSection1Header, WordSection2Meanings, WordSection3Related, PhraseSection1Overview } from '../../types';
 
@@ -60,11 +61,32 @@ const samplePhraseOverview: PhraseSection1Overview = {
 };
 
 describe('Home page', () => {
+  beforeEach(() => {
+    PageHintService.resetForTests();
+  });
+
+  afterEach(() => {
+    PageHintService.resetForTests();
+  });
+
   it('shows welcome screen when no data and not loading', () => {
     renderWithProviders(<Home />, { route: '/' });
     expect(screen.getByText('MelliLex')).toBeInTheDocument();
     expect(screen.getByText(/AI-powered word/)).toBeInTheDocument();
     expect(screen.getByText(/Type a word or phrase/)).toBeInTheDocument();
+    expect(screen.getByText('Definitions')).toBeInTheDocument();
+    expect(screen.getByText('Vocab notebook')).toBeInTheDocument();
+    expect(screen.getByText('Markdown notes')).toBeInTheDocument();
+    expect(screen.getByText('Technical lookup')).toBeInTheDocument();
+    expect(screen.getByText('History')).toBeInTheDocument();
+    expect(screen.getByText('Settings')).toBeInTheDocument();
+    expect(screen.getByText(/Meanings are generated as you search/)).toBeInTheDocument();
+  });
+
+  it('hides the page hint after it is dismissed', () => {
+    renderWithProviders(<Home />, { route: '/' });
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    expect(screen.queryByText(/Meanings are generated as you search/)).not.toBeInTheDocument();
   });
 
   it('shows ProviderErrorAlert when word store has error', () => {

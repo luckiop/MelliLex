@@ -12,6 +12,7 @@ import { UsageCard } from '../components/explore/UsageCard';
 import { MistakesCard } from '../components/explore/MistakesCard';
 import { CustomContextCard } from '../components/explore/CustomContextCard';
 import { PracticeCard } from '../components/explore/PracticeCard';
+import { PageHint } from '../components/onboarding/PageHintBanner';
 
 type SectionId = 'formality' | 'domains' | 'usage' | 'mistakes' | 'custom' | 'practice';
 
@@ -62,9 +63,10 @@ const ExplorePage = observer(() => {
     { id: 'practice', label: t('explore.practice') },
   ];
 
-  if (!currentWord) {
-    return (
-      <div className="container mx-auto px-8 py-12 max-w-3xl">
+  return (
+    <div className="container mx-auto px-8 py-12 max-w-3xl">
+      <PageHint pageId="explore" />
+      {!currentWord ? (
         <div className="text-center py-20">
           <div className="flex justify-center mb-4">
             <Search className="h-14 w-14 text-muted-foreground" />
@@ -74,12 +76,8 @@ const ExplorePage = observer(() => {
             {t('explore.searchPrompt')}
           </p>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto px-8 py-12 max-w-3xl">
+      ) : (
+        <>
       <div className="mb-8">
         <Button
           variant="ghost"
@@ -172,6 +170,8 @@ const ExplorePage = observer(() => {
           />
         )}
       </div>
+        </>
+      )}
     </div>
   );
 });

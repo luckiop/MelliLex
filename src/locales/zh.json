@@ -39,7 +39,39 @@
     "title": "MelliLex",
     "subtitle": "AI 驱动的词汇与短语探索",
     "prompt": "在上方的搜索框中输入单词或短语",
-    "tryWords": "试试：\"eloquent\"、\"餐桌\" 或 \"break the ice\""
+    "tryWords": "试试：\"eloquent\"、\"餐桌\" 或 \"break the ice\"",
+    "features": {
+      "define": {
+        "title": "定义",
+        "desc": "释义由模型即时生成，没有预置词库。"
+      },
+      "vocab": {
+        "title": "生词本",
+        "desc": "一星或两星，日常或技术。"
+      },
+      "notes": {
+        "title": "笔记",
+        "desc": "收藏时自动写入 Markdown。"
+      },
+      "technical": {
+        "title": "技术查询",
+        "desc": "点「技术」优先专业义项。"
+      },
+      "history": {
+        "title": "历史",
+        "desc": "回看查过的词。"
+      },
+      "settings": {
+        "title": "设置",
+        "desc": "密钥、外观、笔记路径。"
+      }
+    }
+  },
+  "pageHints": {
+    "home": "释义当场生成；可开「技术」；输入中文会给出英语对译。",
+    "vocab": "点星星收藏；列表是简要含义；设置里可自动写 Markdown。",
+    "settings": "先填 AI 密钥；生词笔记可指定 md 路径，保存时会建文件夹。",
+    "explore": "围绕当前词看语域、用法和练习；从查词结果进探索。"
   },
   "sections": {
     "meanings": "释义",

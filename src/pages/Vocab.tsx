@@ -6,6 +6,7 @@ import { BookMarked } from 'lucide-react';
 import { VocabStarIcons } from '../components/vocab/VocabStarIcons';
 import { useStores } from '../stores/RootStore';
 import { Alert, AlertDescription } from '../components/ui/alert';
+import { PageHint } from '../components/onboarding/PageHintBanner';
 import { toast } from 'sonner';
 import type { VocabCategory } from '../types';
 
@@ -46,6 +47,7 @@ export const Vocab = observer(() => {
 
   return (
     <div className="mx-auto px-6 py-12 max-w-3xl">
+      <PageHint pageId="vocab" />
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2">{t('vocab.title')}</h1>
         <p className="text-muted-foreground">{t('vocab.description')}</p>
