@@ -1,6 +1,8 @@
 use crate::constants::providers;
 use crate::errors::AppError;
-use crate::models::{AnthropicConfig, AppSettings, GeminiConfig, OllamaConfig, OpenAiConfig};
+use crate::models::{
+    AnthropicConfig, AppSettings, DeepSeekConfig, GeminiConfig, OllamaConfig, OpenAiConfig,
+};
 use log::{debug, info, warn};
 use serde::de::DeserializeOwned;
 use serde_json::Value;
@@ -23,6 +25,11 @@ impl ProviderSettingsService {
                 let parsed: OpenAiConfig = Self::parse_config(config, "OpenAI")?;
                 info!("OpenAI configuration updated");
                 settings.open_ai_config = Some(parsed);
+            }
+            providers::DEEPSEEK => {
+                let parsed: DeepSeekConfig = Self::parse_config(config, "DeepSeek")?;
+                info!("DeepSeek configuration updated");
+                settings.deepseek_config = Some(parsed);
             }
             providers::ANTHROPIC => {
                 let parsed: AnthropicConfig = Self::parse_config(config, "Anthropic")?;
@@ -79,6 +86,7 @@ mod tests {
         AppSettings {
             ai_provider: String::new(),
             open_ai_config: None,
+            deepseek_config: None,
             anthropic_config: None,
             gemini_config: None,
             ollama_config: None,
@@ -93,6 +101,7 @@ mod tests {
             vocab_note_path: None,
             vocab_note_split_files: false,
             dev_log_enabled: false,
+            max_meanings_display: 5,
         }
     }
 
@@ -112,6 +121,23 @@ mod tests {
         assert_eq!(settings.ai_provider, providers::OPENAI);
         assert!(settings.open_ai_config.is_some());
         assert_eq!(settings.open_ai_config.unwrap().model, "gpt-test");
+    }
+
+    #[test]
+    fn migrates_openai_deepseek_alias() {
+        let mut settings = blank_settings();
+        settings.ai_provider = providers::OPENAI.to_string();
+        settings.open_ai_config = Some(OpenAiConfig {
+            api_key: "sk-ds".into(),
+            model: "deepseek-v4-flash".into(),
+        });
+        assert!(settings.migrate_misfiled_deepseek());
+        assert_eq!(settings.ai_provider, providers::DEEPSEEK);
+        assert!(settings.open_ai_config.is_none());
+        assert_eq!(
+            settings.deepseek_config.as_ref().unwrap().model,
+            "deepseek-v4-flash"
+        );
     }
 
     #[test]

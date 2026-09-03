@@ -12,14 +12,14 @@ Return valid JSON matching this schema:
       "items": {"type": "string"},
       "minItems": 4,
       "maxItems": 8,
-      "description": "Words/phrases ordered by frequency. Include formal and informal."
+      "description": "English headwords/phrases only, ordered by frequency. Include formal and informal. Never Chinese glosses."
     },
     "antonyms": {
       "type": "array",
       "items": {"type": "string"},
       "minItems": 3,
       "maxItems": 6,
-      "description": "Commonly used opposites including conceptual antonyms"
+      "description": "English opposites only, including conceptual antonyms. Never Chinese."
     },
     "collocations": {
       "type": "array",
@@ -29,10 +29,12 @@ Return valid JSON matching this schema:
         "type": "object",
         "required": ["phrase", "example"],
         "properties": {
-          "phrase": {"type": "string", "description": "Natural frequently-used phrase"},
-          "example": {"type": "string", "description": "Realistic sentence showing usage"}
+          "phrase": {"type": "string", "description": "Natural frequently-used ENGLISH phrase"},
+          "example": {"type": "string", "description": "Realistic sentence showing usage (may use the explanation language)"}
         }
       }
     }
   }
 }
+
+{{word}} is an English lookup. synonyms, antonyms, and collocation.phrase MUST be English lexical items the user can click to look up next. Do not put Chinese translations in those fields. JSON must be valid.

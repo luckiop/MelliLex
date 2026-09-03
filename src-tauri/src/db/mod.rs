@@ -183,6 +183,9 @@ impl Database {
     pub fn get_settings(&self) -> Result<AppSettings, AppError> {
         let mut settings = self.settings_repo.load()?;
         self.secret_store.hydrate_provider_secrets(&mut settings)?;
+        if settings.migrate_misfiled_deepseek() {
+            self.save_settings(&settings)?;
+        }
         Ok(settings)
     }
 

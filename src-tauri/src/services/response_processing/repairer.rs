@@ -1,6 +1,13 @@
 pub struct JsonRepairer;
 
 impl JsonRepairer {
+    /// Fixes common LLM JSON mistakes: trailing commas, missing commas, smart quotes.
+    pub fn repair_syntax(input: &str) -> String {
+        let normalized = replace_smart_quotes(input);
+        let without_trailing = strip_trailing_commas(&normalized);
+        insert_missing_commas(&without_trailing)
+    }
+
     pub fn repair_truncated_json(input: &str) -> Option<RepairResult> {
         let mut stack: Vec<char> = Vec::new();
         let mut repaired = String::with_capacity(input.len() + 8);
@@ -67,6 +74,137 @@ impl JsonRepairer {
 pub struct RepairResult {
     pub text: String,
     pub appended: usize,
+}
+
+fn replace_smart_quotes(input: &str) -> String {
+    input.replace(['\u{201c}', '\u{201d}', '\u{201e}', '\u{00ab}', '\u{00bb}'], "\"")
+}
+
+fn strip_trailing_commas(input: &str) -> String {
+    let chars: Vec<char> = input.chars().collect();
+    let mut out = String::with_capacity(input.len());
+    let mut in_string = false;
+    let mut escape = false;
+    let mut i = 0;
+
+    while i < chars.len() {
+        let ch = chars[i];
+        if in_string {
+            out.push(ch);
+            if escape {
+                escape = false;
+            } else if ch == '\\' {
+                escape = true;
+            } else if ch == '"' {
+                in_string = false;
+            }
+            i += 1;
+            continue;
+        }
+
+        if ch == '"' {
+            in_string = true;
+            out.push(ch);
+            i += 1;
+            continue;
+        }
+
+        if ch == ',' {
+            let mut j = i + 1;
+            while j < chars.len() && chars[j].is_whitespace() {
+                j += 1;
+            }
+            if j < chars.len() && (chars[j] == '}' || chars[j] == ']') {
+                i += 1;
+                continue;
+            }
+        }
+
+        out.push(ch);
+        i += 1;
+    }
+
+    out
+}
+
+fn is_value_start(ch: char) -> bool {
+    matches!(ch, '{' | '[' | '"' | 't' | 'f' | 'n' | '-') || ch.is_ascii_digit()
+}
+
+fn insert_missing_commas(input: &str) -> String {
+    let chars: Vec<char> = input.chars().collect();
+    let mut out = String::with_capacity(input.len() + 16);
+    let mut i = 0;
+    let mut in_string = false;
+    let mut escape = false;
+    let mut after_value = false;
+
+    while i < chars.len() {
+        let ch = chars[i];
+
+        if in_string {
+            out.push(ch);
+            if escape {
+                escape = false;
+            } else if ch == '\\' {
+                escape = true;
+            } else if ch == '"' {
+                in_string = false;
+                after_value = true;
+            }
+            i += 1;
+            continue;
+        }
+
+        if ch.is_whitespace() {
+            out.push(ch);
+            i += 1;
+            continue;
+        }
+
+        if after_value && is_value_start(ch) {
+            out.push(',');
+        }
+
+        match ch {
+            '"' => {
+                in_string = true;
+                after_value = false;
+                out.push(ch);
+                i += 1;
+            }
+            '{' | '[' => {
+                after_value = false;
+                out.push(ch);
+                i += 1;
+            }
+            '}' | ']' => {
+                after_value = true;
+                out.push(ch);
+                i += 1;
+            }
+            ':' | ',' => {
+                after_value = false;
+                out.push(ch);
+                i += 1;
+            }
+            _ => {
+                while i < chars.len() {
+                    let next = chars[i];
+                    if next.is_whitespace()
+                        || matches!(next, ',' | '}' | ']' | '{' | '[' | ':' | '"')
+                    {
+                        break;
+                    }
+                    out.push(next);
+                    i += 1;
+                }
+                after_value = true;
+            }
+        }
+    }
+
+    out
 }
 
 #[cfg(test)]
@@ -147,6 +285,37 @@ mod tests {
     fn repair_empty_string() {
         let result = JsonRepairer::repair_truncated_json("");
         assert!(result.is_none());
+    }
+
+    #[test]
+    fn repair_missing_comma_between_objects() {
+        let input = r#"{
+  "meanings": [
+    {"number": 1, "definition": "one"}
+    {"number": 2, "definition": "two"}
+  ]
+}"#;
+        let repaired = JsonRepairer::repair_syntax(input);
+        let value: serde_json::Value = serde_json::from_str(&repaired).expect("should parse");
+        assert_eq!(value["meanings"].as_array().unwrap().len(), 2);
+    }
+
+    #[test]
+    fn repair_trailing_comma_and_missing_object_comma() {
+        let input = r#"{
+  "a": 1,
+  "b": 2
+}"#;
+        let repaired = JsonRepairer::repair_syntax(input);
+        serde_json::from_str::<serde_json::Value>(&repaired).unwrap();
+    }
+
+    #[test]
+    fn repair_trailing_comma_in_array() {
+        let input = r#"{"items": [1, 2,]}"#;
+        let repaired = JsonRepairer::repair_syntax(input);
+        let value: serde_json::Value = serde_json::from_str(&repaired).unwrap();
+        assert_eq!(value["items"].as_array().unwrap().len(), 2);
     }
 
     #[test]

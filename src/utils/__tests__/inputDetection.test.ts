@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   containsHan,
   detectInputType,
+  isEnglishLexeme,
   normalizePhrase,
   sanitizeDisplayText,
 } from '../inputDetection';
@@ -40,6 +41,11 @@ describe('inputDetection', () => {
       expect(detectInputType('  一次性 用品  ')).toBe('zh-en');
       expect(containsHan('餐桌')).toBe(true);
       expect(containsHan('table')).toBe(false);
+      expect(isEnglishLexeme('mechanical')).toBe(true);
+      expect(isEnglishLexeme('self-control')).toBe(true);
+      expect(isEnglishLexeme('ad hoc')).toBe(true);
+      expect(isEnglishLexeme('机械的')).toBe(false);
+      expect(isEnglishLexeme('メカニカル')).toBe(false);
     });
   });
 

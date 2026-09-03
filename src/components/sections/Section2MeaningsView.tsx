@@ -1,22 +1,40 @@
+import { useMemo, useState } from 'react';
 import type { WordSection2Meanings } from '../../types';
 import { HighlightedText } from '../../utils/textHighlight';
 import { useTranslation } from 'react-i18next';
+import { useStores } from '../../stores/RootStore';
 
 interface Props {
   data: WordSection2Meanings;
   word: string;
 }
 
+function displayCap(raw: number | undefined): number {
+  if (!raw || raw < 3) {
+    return 5;
+  }
+  return Math.min(8, raw);
+}
+
 export const Section2MeaningsView = ({ data, word }: Props) => {
   const { t } = useTranslation();
-  
+  const { settingsStore } = useStores();
+  const cap = displayCap(settingsStore.settings.maxMeaningsDisplay);
+  const [expanded, setExpanded] = useState(false);
+  const meanings = data.meanings;
+  const visible = useMemo(
+    () => (expanded ? meanings : meanings.slice(0, cap)),
+    [expanded, meanings, cap]
+  );
+  const hiddenCount = Math.max(0, meanings.length - visible.length);
+
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold mb-4">{t('sections.meanings')}</h2>
-      {data.meanings.map((meaning, idx) => (
+      {visible.map((meaning, idx) => (
         <div
-          key={meaning.number}
-          className={`pb-6 ${idx !== data.meanings.length - 1 ? 'border-b border-border' : ''}`}
+          key={`${meaning.number}-${idx}`}
+          className={`pb-6 ${idx !== visible.length - 1 || hiddenCount > 0 ? 'border-b border-border' : ''}`}
         >
           <div className="flex items-baseline gap-3 mb-3">
             <span className="text-[0.875rem] font-semibold text-primary">
@@ -56,6 +74,15 @@ export const Section2MeaningsView = ({ data, word }: Props) => {
           )}
         </div>
       ))}
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="text-sm text-primary hover:underline"
+        >
+          {t('sections.showAllMeanings', { count: meanings.length })}
+        </button>
+      )}
     </div>
   );
 };

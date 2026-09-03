@@ -40,6 +40,7 @@
     "subtitle": "AI 驱动的词汇与短语探索",
     "prompt": "在上方的搜索框中输入单词或短语",
     "tryWords": "试试：\"eloquent\"、\"餐桌\" 或 \"break the ice\"",
+    "versionLabel": "v{{version}} 内测",
     "features": {
       "define": {
         "title": "定义",
@@ -80,7 +81,8 @@
     "synonyms": "同义词",
     "antonyms": "反义词",
     "collocations": "常见搭配",
-    "tldr": "💡 简单来说"
+    "tldr": "💡 简单来说",
+    "showAllMeanings": "显示全部 {{count}} 条释义"
   },
   "settings": {
     "title": "设置",
@@ -124,7 +126,10 @@
       "ollamaRunning": "Ollama is running",
       "selectModel": "Select a model",
       "modelsFound": "Found {{count}} models installed locally",
-      "ollamaPrivacy": "Running locally - no data leaves your device"
+      "ollamaPrivacy": "Running locally - no data leaves your device",
+      "deepseekHint": "DeepSeek 走 api.deepseek.com，填写 platform.deepseek.com 的密钥。推荐模型：deepseek-v4-flash。",
+      "openaiHint": "OpenAI 走 api.openai.com，需要官方 OpenAI 密钥和 GPT 模型。",
+      "providerHint": "每个服务商使用各自的密钥和模型列表。"
     },
     "appearance": {
       "title": "外观",
@@ -142,7 +147,9 @@
       "fontStyle": "字体样式",
       "selectFontStyle": "选择字体样式",
       "previewWord": "eloquent",
-      "previewDescription": "口才好或善于说服。能够清晰有效地表达想法。"
+      "previewDescription": "口才好或善于说服。能够清晰有效地表达想法。",
+      "maxMeanings": "显示的释义数",
+      "maxMeaningsDesc": "模型仍会返回并缓存全部重要义项。这项设置只影响页面上先显示几条。"
     },
     "cache": {
       "title": "缓存",
@@ -321,6 +328,16 @@
     "description": "追踪你的搜索与学习进度",
     "empty": "还没有搜索历史",
     "emptyDesc": "开始搜索单词即可在此查看",
+    "heatmapTitle": "查词热度",
+    "heatmapLess": "少",
+    "heatmapMore": "多",
+    "heatmapCount": "{{date}} 查了 {{count}} 次",
+    "encouragement": [
+      "一次查词，也是在堆词汇。",
+      "好奇心值得每天练习。",
+      "每个点开的词都会留下来。",
+      "小复习，词汇会自己长。"
+    ],
     "clear": "全部清除",
     "clearConfirmTitle": "清除全部历史记录？",
     "clearConfirmDesc": "这将永久删除所有搜索历史，且无法恢复。",

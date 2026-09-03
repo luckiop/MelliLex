@@ -50,6 +50,7 @@ fn sample_settings_payload() -> AppSettings {
             api_key: "test-key".to_string(),
             model: "gpt-4o-mini".to_string(),
         }),
+        deepseek_config: None,
         anthropic_config: None,
         gemini_config: None,
         ollama_config: Some(OllamaConfig {
@@ -75,6 +76,7 @@ fn sample_settings_payload() -> AppSettings {
         vocab_note_path: None,
         vocab_note_split_files: false,
         dev_log_enabled: false,
+        max_meanings_display: 5,
     }
 }
 
@@ -150,6 +152,24 @@ fn settings_persistence() {
         .expect("capacities config missing");
     assert_eq!(capacities.space_id, "space-123");
     assert!(capacities.no_timestamp);
+}
+
+#[test]
+fn migrates_deepseek_alias_from_openai_slot() {
+    let (db, _dir) = create_db();
+    let mut settings = sample_settings_payload();
+    settings.open_ai_config = Some(OpenAiConfig {
+        api_key: "sk-deepseek".to_string(),
+        model: "deepseek-v4-flash".to_string(),
+    });
+    db.save_settings(&settings).unwrap();
+
+    let loaded = db.get_settings().unwrap();
+    assert_eq!(loaded.ai_provider, "deepseek");
+    assert!(loaded.open_ai_config.is_none());
+    let deepseek = loaded.deepseek_config.expect("deepseek config");
+    assert_eq!(deepseek.model, "deepseek-v4-flash");
+    assert_eq!(deepseek.api_key, "sk-deepseek");
 }
 
 #[test]

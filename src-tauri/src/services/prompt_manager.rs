@@ -133,22 +133,24 @@ impl PromptManager {
     fn get_language_instruction(&self, language: &str) -> String {
         format!(
                 "LANGUAGE INSTRUCTION:\n\
-                 1. Write EVERY descriptive string value (definitions, briefGloss labels, explanations, contexts, descriptions, questions, answers, memory tips, collocations) entirely in {}.\n\
+                 1. Write descriptive string values (definitions, briefGloss labels, explanations, contexts, descriptions, questions, answers, memory tips, collocation examples) entirely in {}.\n\
                  2. Keep JSON keys and enumerated values exactly as specified (e.g., level, patternType, exerciseType stay in English).\n\
                  3. Keep the English headword itself in English.\n\
-                 4. Example sentences should remain in English, followed immediately by a {} translation in parentheses.\n\
-                 5. Never fall back to English for descriptive text—only the schematic labels stay English.\n\
-                 6. Use natural, learner-friendly {} and reference cultural touchpoints familiar to {} speakers when helpful.\n\
-                 7. CRITICAL: Maintain the exact JSON schema from the prompt. If the schema requires a string array (e.g., [\"word1\", \"word2\"]), do NOT return objects (e.g., [{{\"word\": \"...\", \"definition\": \"...\"}}]). Arrays must contain only simple strings unless the schema explicitly shows otherwise.\n\
-                 8. Ensure valid UTF-8 characters and proper JSON escaping.\n\
+                 4. synonyms, antonyms, relatedWords, and collocation.phrase MUST be English words/phrases the user can click to look up next. Never put {} translations in those fields.\n\
+                 5. Example sentences should remain in English, followed immediately by a {} translation in parentheses.\n\
+                 6. Never fall back to English for definitions and other descriptive text—only schematic labels and clickable related lexemes stay English.\n\
+                 7. Use natural, learner-friendly {} and reference cultural touchpoints familiar to {} speakers when helpful.\n\
+                 8. CRITICAL: Maintain the exact JSON schema from the prompt. If the schema requires a string array (e.g., [\"word1\", \"word2\"]), do NOT return objects (e.g., [{{\"word\": \"...\", \"definition\": \"...\"}}]). Arrays must contain only simple strings unless the schema explicitly shows otherwise.\n\
+                 9. Ensure valid UTF-8 characters and proper JSON escaping.\n\
                  \n\
                  Example format (for guidance only):\n\
                  - briefGloss: \"[2–8 character {} label, not a sentence]\"\n\
                  - definition: \"[Definition written in {}]\"\n\
                  - memoryTip: \"[Mnemonic in {} referencing local culture]\"\n\
                  - example: \"She jumped for joy. ([{} translation here])\"\n\
-                 - relatedWords: [\"word1\", \"word2\", \"word3\"] (NOT objects with definitions)",
-                language, language, language, language, language, language, language, language
+                 - relatedWords / synonyms: [\"word1\", \"word2\", \"word3\"] (English lexemes only, NOT Chinese and NOT objects with definitions)",
+                language, language, language, language, language, language, language, language,
+                language
             )
     }
 
@@ -305,6 +307,8 @@ mod tests {
         assert!(prompt.contains("简要含义"));
         assert!(prompt.contains("微控制器"));
         assert!(prompt.contains("不要写成完整句子"));
+        assert!(prompt.contains("MUST be English words/phrases"));
+        assert!(prompt.contains("collocation.phrase"));
     }
 
     #[test]

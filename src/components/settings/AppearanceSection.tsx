@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import { useStores } from '../../stores/RootStore';
 
 interface AppearanceSectionProps {
   selectedFontOption: TypographyOption;
@@ -26,12 +27,21 @@ export const AppearanceSection = ({
   onApplyTypography,
 }: AppearanceSectionProps) => {
   const { t } = useTranslation();
+  const { settingsStore } = useStores();
   const previewFonts = TYPOGRAPHY_PRESETS[selectedFontOption];
+  const maxMeanings = String(settingsStore.settings.maxMeaningsDisplay ?? 5);
 
   const handleApplyClick = async () => {
     await onApplyTypography(selectedFontOption);
   };
-  
+
+  const handleMaxMeanings = async (value: string) => {
+    const parsed = Number(value);
+    if (parsed === 3 || parsed === 5 || parsed === 8) {
+      await settingsStore.updateSettings({ maxMeaningsDisplay: parsed });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -78,7 +88,24 @@ export const AppearanceSection = ({
         </div>
       </div>
 
-      <Button 
+      <div>
+        <h3 className="text-lg font-semibold text-foreground mb-2">{t('settings.appearance.maxMeanings')}</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          {t('settings.appearance.maxMeaningsDesc')}
+        </p>
+        <Select value={maxMeanings} onValueChange={(value) => void handleMaxMeanings(value)}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="3">3</SelectItem>
+            <SelectItem value="5">5</SelectItem>
+            <SelectItem value="8">8</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Button
         onClick={handleApplyClick}
         disabled={selectedFontOption === appliedFontOption || isApplyingTypography}
       >

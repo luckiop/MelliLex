@@ -6,6 +6,15 @@ export function containsHan(input: string): boolean {
   return HAN_RE.test(input);
 }
 
+/** Related-word chips that can be looked up as English, not routed to zh-en. */
+export function isEnglishLexeme(input: string): boolean {
+  const value = input.trim();
+  if (!value || containsHan(value)) {
+    return false;
+  }
+  return /^[A-Za-z]+(?:[ '\-][A-Za-z]+)*$/.test(value);
+}
+
 export function detectInputType(input: string): InputType {
   const normalized = normalizeInput(input);
   if (containsHan(normalized)) {

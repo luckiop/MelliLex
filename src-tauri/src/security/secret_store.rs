@@ -13,6 +13,7 @@ use std::sync::{Arc, Mutex};
 use zeroize::Zeroizing;
 
 pub const SECRET_OPENAI_API_KEY: &str = "secret:openai_api_key";
+pub const SECRET_DEEPSEEK_API_KEY: &str = "secret:deepseek_api_key";
 pub const SECRET_ANTHROPIC_API_KEY: &str = "secret:anthropic_api_key";
 pub const SECRET_GEMINI_API_KEY: &str = "secret:gemini_api_key";
 pub const SECRET_CAPACITIES_TOKEN: &str = "secret:capacities_api_token";
@@ -33,6 +34,12 @@ impl SecretStore {
     pub fn hydrate_provider_secrets(&self, settings: &mut AppSettings) -> Result<(), AppError> {
         if let Some(cfg) = settings.open_ai_config.as_mut() {
             if let Some(secret) = self.load_secret(SECRET_OPENAI_API_KEY)? {
+                cfg.api_key = secret;
+            }
+        }
+
+        if let Some(cfg) = settings.deepseek_config.as_mut() {
+            if let Some(secret) = self.load_secret(SECRET_DEEPSEEK_API_KEY)? {
                 cfg.api_key = secret;
             }
         }
@@ -70,6 +77,14 @@ impl SecretStore {
         )?;
 
         self.store_secret(
+            SECRET_DEEPSEEK_API_KEY,
+            settings
+                .deepseek_config
+                .as_ref()
+                .map(|cfg| cfg.api_key.as_str()),
+        )?;
+
+        self.store_secret(
             SECRET_ANTHROPIC_API_KEY,
             settings
                 .anthropic_config
@@ -99,6 +114,10 @@ impl SecretStore {
         let mut sanitized = settings.clone();
 
         if let Some(cfg) = sanitized.open_ai_config.as_mut() {
+            cfg.api_key.clear();
+        }
+
+        if let Some(cfg) = sanitized.deepseek_config.as_mut() {
             cfg.api_key.clear();
         }
 

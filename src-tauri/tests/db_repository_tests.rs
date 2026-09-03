@@ -201,6 +201,7 @@ fn test_settings_persistence() {
             api_key: "test-key".to_string(),
             model: "gpt-4".to_string(),
         }),
+        deepseek_config: None,
         anthropic_config: None,
         gemini_config: None,
         ollama_config: None,
@@ -215,6 +216,7 @@ fn test_settings_persistence() {
         vocab_note_path: None,
         vocab_note_split_files: false,
         dev_log_enabled: false,
+        max_meanings_display: 5,
     };
 
     // Save settings

@@ -40,6 +40,7 @@
     "subtitle": "AI-powered word & phrase exploration",
     "prompt": "Type a word or phrase in the search box above",
     "tryWords": "Try: \"eloquent\", \"餐桌\", or \"break the ice\"",
+    "versionLabel": "v{{version}} beta",
     "features": {
       "define": {
         "title": "Definitions",
@@ -80,7 +81,8 @@
     "synonyms": "Synonyms",
     "antonyms": "Antonyms",
     "collocations": "Common Collocations",
-    "tldr": "💡 In Simple Words"
+    "tldr": "💡 In Simple Words",
+    "showAllMeanings": "Show all {{count}} meanings"
   },
   "settings": {
     "title": "Settings",
@@ -128,7 +130,10 @@
       "apiKeyInvalid": "Invalid API key",
       "apiKeyValid_other": "API key is valid • {{count}} models loaded",
       "noOllamaModels": "No models found. Make sure Ollama is running.",
-      "ollamaPrivacy": "Running locally - no data leaves your device"
+      "ollamaPrivacy": "Running locally - no data leaves your device",
+      "deepseekHint": "DeepSeek uses api.deepseek.com. Paste a key from platform.deepseek.com. Recommended model: deepseek-v4-flash.",
+      "openaiHint": "OpenAI uses api.openai.com with a real OpenAI key and GPT models.",
+      "providerHint": "Each provider uses its own API key and model list."
     },
     "appearance": {
       "title": "Appearance",
@@ -146,7 +151,9 @@
       "preview": "Preview",
       "previewWord": "eloquent",
       "previewDescription": "Fluent or persuasive in speaking or writing. Having the ability to express ideas clearly and effectively.",
-      "effectNote": "Changes will be applied instantly across the entire app"
+      "effectNote": "Changes will be applied instantly across the entire app",
+      "maxMeanings": "Meanings shown",
+      "maxMeaningsDesc": "The model still returns every important sense and they are cached. This only limits how many you see at first."
     },
     "cache": {
       "title": "Cache",
@@ -317,6 +324,16 @@
     "noMatchesDesc": "Try a different search term or clear the filter",
     "empty": "No search history yet",
     "emptyDesc": "Start searching for words to see them here",
+    "heatmapTitle": "Lookup activity",
+    "heatmapLess": "Less",
+    "heatmapMore": "More",
+    "heatmapCount": "{{count}} lookups on {{date}}",
+    "encouragement": [
+      "One lookup at a time adds up.",
+      "Curiosity is a daily habit.",
+      "Every word you check stays with you.",
+      "Small reviews, compounding vocabulary."
+    ],
     "clear": "Clear All",
     "clearConfirmTitle": "Clear all history?",
     "clearConfirmDesc": "This will permanently delete all your search history. This action cannot be undone.",

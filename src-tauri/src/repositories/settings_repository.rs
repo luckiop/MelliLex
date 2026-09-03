@@ -35,6 +35,7 @@ impl SettingsRepository {
             Err(rusqlite::Error::QueryReturnedNoRows) => Ok(AppSettings {
                 ai_provider: "anthropic".to_string(),
                 open_ai_config: None,
+                deepseek_config: None,
                 anthropic_config: None,
                 gemini_config: None,
                 ollama_config: None,
@@ -49,6 +50,7 @@ impl SettingsRepository {
                 vocab_note_path: None,
                 vocab_note_split_files: false,
                 dev_log_enabled: false,
+                max_meanings_display: 5,
             }),
             Err(e) => Err(AppError::from(e)),
         }

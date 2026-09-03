@@ -68,6 +68,7 @@ export function createMockRootStore(overrides: Record<string, unknown> = {}): Ro
       technicalQuery: false,
       vocabNoteEnabled: false,
       exportSettings: {},
+      maxMeaningsDisplay: 5,
     },
     updateSettings: vi.fn().mockResolvedValue(undefined),
     ...overrides.settingsStore as object,

@@ -337,6 +337,8 @@ pub struct ZhEnResult {
 pub struct AppSettings {
     pub ai_provider: String,
     pub open_ai_config: Option<OpenAiConfig>,
+    #[serde(default)]
+    pub deepseek_config: Option<DeepSeekConfig>,
     pub anthropic_config: Option<AnthropicConfig>,
     pub gemini_config: Option<GeminiConfig>,
     pub ollama_config: Option<OllamaConfig>,
@@ -363,6 +365,9 @@ pub struct AppSettings {
     /// Persist debug/trace logs. Does not change lookup or API behavior.
     #[serde(default)]
     pub dev_log_enabled: bool,
+    /// How many meanings to show in the UI. The backend still caches the full list.
+    #[serde(default = "default_max_meanings_display")]
+    pub max_meanings_display: u32,
 }
 
 fn default_enable_global_lookup() -> bool {
@@ -373,11 +378,47 @@ fn default_typography_mode() -> String {
     "classic".to_string()
 }
 
+fn default_max_meanings_display() -> u32 {
+    5
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct OpenAiConfig {
     pub api_key: String,
     pub model: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DeepSeekConfig {
+    pub api_key: String,
+    pub model: String,
+}
+
+impl AppSettings {
+    /// Early internal builds sent DeepSeek traffic through the OpenAI slot.
+    /// Move that key/model onto the dedicated DeepSeek provider.
+    pub fn migrate_misfiled_deepseek(&mut self) -> bool {
+        let model = self
+            .open_ai_config
+            .as_ref()
+            .map(|cfg| cfg.model.to_ascii_lowercase())
+            .unwrap_or_default();
+        if self.ai_provider != "openai" || !model.contains("deepseek") {
+            return false;
+        }
+        if let Some(cfg) = self.open_ai_config.take() {
+            self.deepseek_config = Some(DeepSeekConfig {
+                api_key: cfg.api_key,
+                model: cfg.model,
+            });
+            self.ai_provider = "deepseek".to_string();
+            true
+        } else {
+            false
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

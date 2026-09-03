@@ -45,10 +45,17 @@ describe('WordSection3RelatedView', () => {
     expect(screen.queryByText('Antonyms')).toBeNull();
   });
 
-  it('hides collocations section when empty', () => {
+  it('hides Chinese related chips so they are not searched as zh-en', () => {
     renderWithProviders(
-      <WordSection3RelatedView data={{ ...sampleRelated, collocations: [] }} />
+      <WordSection3RelatedView
+        data={{
+          ...sampleRelated,
+          synonyms: ['mechanical', '机械的'],
+          antonyms: ['manual'],
+        }}
+      />
     );
-    expect(screen.queryByText('Common Collocations')).toBeNull();
+    expect(screen.getByText('mechanical')).toBeInTheDocument();
+    expect(screen.queryByText('机械的')).toBeNull();
   });
 });

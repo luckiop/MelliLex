@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { getVersion } from '@tauri-apps/api/app';
 import { useStores } from '../stores/RootStore';
 import { useTypingAnimation } from '../hooks/useTypingAnimation';
 import { Card } from '../components/ui/card';
@@ -21,10 +22,15 @@ import { PageHint } from '../components/onboarding/PageHintBanner';
 export const Home = observer(() => {
   const { t } = useTranslation();
   const { progressiveWordStore, phraseStore, zhEnStore, searchCoordinator, lastPageStore } = useStores();
-  
+  const [appVersion, setAppVersion] = useState('');
+
   useEffect(() => {
     lastPageStore.setLastPage('/');
   }, [lastPageStore]);
+
+  useEffect(() => {
+    void getVersion().then(setAppVersion).catch(() => undefined);
+  }, []);
 
   const { displayedWord, isTyping } = useTypingAnimation(
     progressiveWordStore.headerSection?.word
@@ -75,9 +81,14 @@ export const Home = observer(() => {
           <h1 className="text-7xl font-bold text-foreground mb-6 tracking-tight">
             {t('home.title')}
           </h1>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-xl text-muted-foreground mb-2">
             {t('home.subtitle')}
           </p>
+          {appVersion && (
+            <p className="text-xs font-mono text-muted-foreground/70 mb-8">
+              {t('home.versionLabel', { version: appVersion })}
+            </p>
+          )}
           <div className="space-y-2 text-sm text-muted-foreground">
             <p>{t('home.prompt')}</p>
             <p className="text-xs text-muted-foreground/60">
@@ -176,6 +187,12 @@ export const Home = observer(() => {
           )}
         </div>
       )}
+
+      {appVersion && (hasAnyData || isLoading) ? (
+        <p className="mt-12 text-center text-xs text-muted-foreground/70 font-mono">
+          {t('home.versionLabel', { version: appVersion })}
+        </p>
+      ) : null}
     </div>
   );
 });

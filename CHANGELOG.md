@@ -2,6 +2,16 @@
 
 All notable changes to MelliLex will be documented here.
 
+## [0.11.0] — 2026-09-03
+
+Internal beta (`0.x`). Version is shown on the home screen.
+
+- Split DeepSeek into its own provider; OpenAI again uses api.openai.com
+- Repair common lookup JSON mistakes (missing/trailing commas)
+- English-only related-word chips; Chinese glosses no longer open zh-en
+- Variable meaning count ranked by usefulness; display cap is a UI setting
+- History page GitHub-style lookup heatmap
+
 ## [0.10.0] — 2026-05-22
 
 

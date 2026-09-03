@@ -22,6 +22,7 @@ impl ProviderRegistry {
         let key = settings.ai_provider.as_str();
         let provider: Arc<dyn PromptSender> = match key {
             providers::OPENAI => build_openai_provider(settings)?,
+            providers::DEEPSEEK => build_deepseek_provider(settings)?,
             providers::ANTHROPIC => build_anthropic_provider(settings)?,
             providers::GEMINI => build_gemini_provider(settings)?,
             providers::OLLAMA => build_ollama_provider(settings)?,
@@ -37,6 +38,7 @@ impl ProviderRegistry {
     ) -> Result<Vec<AiModel>, AppError> {
         match provider {
             providers::OPENAI => OpenAIService::fetch_models_internal(credential).await,
+            providers::DEEPSEEK => OpenAIService::fetch_deepseek_models(credential).await,
             providers::ANTHROPIC => AnthropicService::fetch_models_internal(credential).await,
             providers::GEMINI => GeminiService::fetch_models_internal(credential).await,
             providers::OLLAMA => {
@@ -55,6 +57,7 @@ impl ProviderRegistry {
     ) -> Result<bool, AppError> {
         match provider {
             providers::OPENAI => OpenAIService::test_api_key_internal(credential).await,
+            providers::DEEPSEEK => OpenAIService::test_deepseek_api_key(credential).await,
             providers::ANTHROPIC => AnthropicService::test_api_key_internal(credential).await,
             providers::GEMINI => GeminiService::test_api_key_internal(credential).await,
             providers::OLLAMA => {
@@ -81,6 +84,19 @@ fn build_openai_provider(settings: &AppSettings) -> Result<Arc<dyn PromptSender>
 
     log::info!("Creating OpenAI provider with model: {}", config.model);
     Ok(Arc::new(OpenAIService::new(
+        config.api_key.clone(),
+        config.model.clone(),
+    )))
+}
+
+fn build_deepseek_provider(settings: &AppSettings) -> Result<Arc<dyn PromptSender>, AppError> {
+    let config = settings
+        .deepseek_config
+        .as_ref()
+        .ok_or_else(|| AppError::provider_not_configured(providers::DEEPSEEK))?;
+
+    log::info!("Creating DeepSeek provider with model: {}", config.model);
+    Ok(Arc::new(OpenAIService::deepseek(
         config.api_key.clone(),
         config.model.clone(),
     )))
@@ -149,6 +165,7 @@ mod tests {
                 api_key: "test".into(),
                 model: "gpt".into(),
             }),
+            deepseek_config: None,
             anthropic_config: None,
             gemini_config: None,
             ollama_config: None,
@@ -163,6 +180,7 @@ mod tests {
             vocab_note_path: None,
             vocab_note_split_files: false,
             dev_log_enabled: false,
+            max_meanings_display: 5,
         }
     }
 
@@ -170,6 +188,7 @@ mod tests {
         AppSettings {
             ai_provider: providers::ANTHROPIC.to_string(),
             open_ai_config: None,
+            deepseek_config: None,
             anthropic_config: Some(AnthropicConfig {
                 api_key: "test".into(),
                 model: "claude".into(),
@@ -187,6 +206,7 @@ mod tests {
             vocab_note_path: None,
             vocab_note_split_files: false,
             dev_log_enabled: false,
+            max_meanings_display: 5,
         }
     }
 

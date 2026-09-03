@@ -128,8 +128,9 @@ impl DictionaryService {
             .ok_or_else(|| anyhow::anyhow!("Template 'section3_related' not found"))?;
         let (response, token_usage) = self.ai_provider.send_prompt(&prompt).await?;
 
-        let related: WordSection3Related =
+        let mut related: WordSection3Related =
             ResponseParser::parse_partial(&response, "section3_related")?;
+        related = Self::english_only_related(related);
         Self::ensure_related_has_entries(word, &related, &response)?;
 
         log::info!(
@@ -172,6 +173,26 @@ impl DictionaryService {
         Ok((result, token_usage))
     }
 
+    fn english_only_related(related: WordSection3Related) -> WordSection3Related {
+        WordSection3Related {
+            synonyms: related
+                .synonyms
+                .into_iter()
+                .filter(|item| is_english_lexeme(item))
+                .collect(),
+            antonyms: related
+                .antonyms
+                .into_iter()
+                .filter(|item| is_english_lexeme(item))
+                .collect(),
+            collocations: related
+                .collocations
+                .into_iter()
+                .filter(|item| is_english_lexeme(&item.phrase))
+                .collect(),
+        }
+    }
+
     fn ensure_related_has_entries(
         word: &str,
         related: &WordSection3Related,
@@ -196,6 +217,29 @@ impl DictionaryService {
             word
         )))
     }
+}
+
+fn contains_han(value: &str) -> bool {
+    value.chars().any(|ch| ('\u{4e00}'..='\u{9fff}').contains(&ch))
+}
+
+fn is_english_lexeme(value: &str) -> bool {
+    let trimmed = value.trim();
+    if trimmed.is_empty() || contains_han(trimmed) {
+        return false;
+    }
+    let mut seen_letter = false;
+    for ch in trimmed.chars() {
+        if ch.is_ascii_alphabetic() {
+            seen_letter = true;
+            continue;
+        }
+        if matches!(ch, ' ' | '-' | '\'') {
+            continue;
+        }
+        return false;
+    }
+    seen_letter
 }
 
 fn log_token_usage(usage: &Option<TokenUsage>, context: &str) {
@@ -241,5 +285,29 @@ mod tests {
             DictionaryService::ensure_related_has_entries("candor", &section, "{}").is_ok(),
             "non-empty payload should be accepted"
         );
+    }
+
+    #[test]
+    fn drops_han_related_terms() {
+        let section = WordSection3Related {
+            synonyms: vec!["mechanical".into(), "机械的".into()],
+            antonyms: vec!["organic".into()],
+            collocations: vec![
+                crate::models::CollocationItem {
+                    phrase: "机械臂".into(),
+                    example: "x".into(),
+                },
+                crate::models::CollocationItem {
+                    phrase: "mechanical arm".into(),
+                    example: "x".into(),
+                },
+            ],
+        };
+        let filtered = DictionaryService::english_only_related(section);
+        assert_eq!(filtered.synonyms, vec!["mechanical".to_string()]);
+        assert_eq!(filtered.collocations.len(), 1);
+        assert_eq!(filtered.collocations[0].phrase, "mechanical arm");
+        assert!(is_english_lexeme("self-control"));
+        assert!(!is_english_lexeme("メカニカル"));
     }
 }

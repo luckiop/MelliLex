@@ -74,6 +74,7 @@ export type TypographyOption = 'modern' | 'classic' | 'friendly';
 export interface AppSettings {
   aiProvider: AiProviderType;
   openAiConfig?: OpenAiConfig;
+  deepseekConfig?: DeepSeekConfig;
   anthropicConfig?: AnthropicConfig;
   geminiConfig?: GeminiConfig;
   ollamaConfig?: OllamaConfig;
@@ -88,6 +89,8 @@ export interface AppSettings {
   vocabNotePath?: string;
   vocabNoteSplitFiles?: boolean;
   devLogEnabled?: boolean;
+  /** UI cap; backend still returns and caches every sense. */
+  maxMeaningsDisplay?: number;
 }
 
 export type VocabCategory = 'daily' | 'technical';
@@ -131,9 +134,14 @@ export const SUPPORTED_LANGUAGES = [
   { name: "Russian", code: "ru", nativeName: "Русский" },
 ];
 
-export type AiProviderType = 'openai' | 'anthropic' | 'gemini' | 'ollama';
+export type AiProviderType = 'deepseek' | 'openai' | 'anthropic' | 'gemini' | 'ollama';
 
 export interface OpenAiConfig {
+  apiKey: string;
+  model: string;
+}
+
+export interface DeepSeekConfig {
   apiKey: string;
   model: string;
 }

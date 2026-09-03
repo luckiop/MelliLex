@@ -108,10 +108,11 @@ impl CommandOrchestrator {
     }
 
     fn build_provider_priority_list(settings: &AppSettings) -> Vec<String> {
-        let mut priorities = Vec::with_capacity(5);
+        let mut priorities = Vec::with_capacity(6);
         priorities.push(settings.ai_provider.clone());
 
-        const FALLBACK_PROVIDERS: [&str; 4] = [
+        const FALLBACK_PROVIDERS: [&str; 5] = [
+            providers::DEEPSEEK,
             providers::ANTHROPIC,
             providers::OPENAI,
             providers::GEMINI,

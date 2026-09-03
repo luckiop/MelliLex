@@ -1,5 +1,6 @@
 import type { WordSection3Related } from '../../types';
 import { useTranslation } from 'react-i18next';
+import { isEnglishLexeme } from '../../utils/inputDetection';
 
 interface Props {
   data: WordSection3Related;
@@ -8,17 +9,20 @@ interface Props {
 
 export const WordSection3RelatedView = ({ data, onWordNavigate }: Props) => {
   const { t } = useTranslation();
+  const synonyms = data.synonyms.filter(isEnglishLexeme);
+  const antonyms = data.antonyms.filter(isEnglishLexeme);
+  const collocations = data.collocations.filter((item) => isEnglishLexeme(item.phrase));
   
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold mb-4">{t('sections.related')}</h2>
-      {data.synonyms.length > 0 && (
+      {synonyms.length > 0 && (
         <div className="space-y-2">
           <h3 className="font-semibold text-[0.8125rem] text-muted-foreground uppercase tracking-wide mb-1">
             {t('sections.synonyms')}
           </h3>
           <div className="flex flex-wrap gap-2">
-            {data.synonyms.map((synonym, i) => (
+            {synonyms.map((synonym, i) => (
               <button
                 type="button"
                 key={i}
@@ -32,13 +36,13 @@ export const WordSection3RelatedView = ({ data, onWordNavigate }: Props) => {
         </div>
       )}
 
-      {data.antonyms.length > 0 && (
+      {antonyms.length > 0 && (
         <div className="space-y-2">
           <h3 className="font-semibold text-[0.8125rem] text-muted-foreground uppercase tracking-wide mb-1">
             {t('sections.antonyms')}
           </h3>
           <div className="flex flex-wrap gap-2">
-            {data.antonyms.map((antonym, i) => (
+            {antonyms.map((antonym, i) => (
               <button
                 type="button"
                 key={i}
@@ -52,13 +56,13 @@ export const WordSection3RelatedView = ({ data, onWordNavigate }: Props) => {
         </div>
       )}
 
-      {data.collocations.length > 0 && (
+      {collocations.length > 0 && (
         <div className="space-y-2">
           <h3 className="font-semibold text-[0.8125rem] text-muted-foreground uppercase tracking-wide mb-1">
             {t('sections.collocations')}
           </h3>
           <div className="space-y-2">
-            {data.collocations.map((collocation, i) => (
+            {collocations.map((collocation, i) => (
               <div
                 key={i}
                 className="p-2 px-3 bg-card border border-border rounded text-[0.875rem]"

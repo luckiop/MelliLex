@@ -1,6 +1,6 @@
 [package]
 name = "mellilex"
-version = "0.10.0"
+version = "0.11.0"
 description = "MelliLex - AI-powered word exploration"
 authors = ["Rahul TR"]
 edition = "2021"

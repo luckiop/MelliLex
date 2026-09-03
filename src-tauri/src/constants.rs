@@ -16,7 +16,11 @@ pub mod events {
 // API Endpoints
 pub mod api {
     pub mod openai {
-        // OpenAI-compatible DeepSeek endpoints (UI still selects "OpenAI").
+        pub const CHAT_COMPLETIONS: &str = "https://api.openai.com/v1/chat/completions";
+        pub const MODELS: &str = "https://api.openai.com/v1/models";
+    }
+
+    pub mod deepseek {
         pub const CHAT_COMPLETIONS: &str = "https://api.deepseek.com/chat/completions";
         pub const MODELS: &str = "https://api.deepseek.com/models";
     }
@@ -31,6 +35,7 @@ pub mod api {
 // Provider Names
 pub mod providers {
     pub const OPENAI: &str = "openai";
+    pub const DEEPSEEK: &str = "deepseek";
     pub const ANTHROPIC: &str = "anthropic";
     pub const GEMINI: &str = "gemini";
     pub const OLLAMA: &str = "ollama";

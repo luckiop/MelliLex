@@ -16,6 +16,7 @@ import {
 import { toast } from 'sonner';
 import type { WordHistory } from '../types';
 import { ScrollText, Search } from 'lucide-react';
+import { LookupHeatmap } from '../components/history/LookupHeatmap';
 
 interface GroupedHistory {
   title: string;
@@ -53,7 +54,7 @@ export const History = observer(() => {
   const [showClearDialog, setShowClearDialog] = useState(false);
 
   useEffect(() => {
-    historyStore.loadHistory();
+    historyStore.loadHistory(2000);
   }, [historyStore]);
 
   const handleClearAll = async () => {
@@ -142,6 +143,8 @@ export const History = observer(() => {
               </div>
             </div>
           )}
+
+          {totalWords > 0 && <LookupHeatmap items={allHistoryItems} />}
 
           {totalWords > 0 && (
             <div className="flex justify-end mb-4">

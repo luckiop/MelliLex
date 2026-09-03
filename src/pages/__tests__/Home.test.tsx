@@ -25,6 +25,10 @@ vi.mock('../../components/phrase/ExportPhraseDialog', () => ({
   ExportPhraseDialog: () => <div data-testid="export-phrase-dialog" />,
 }));
 
+vi.mock('@tauri-apps/api/app', () => ({
+  getVersion: () => Promise.resolve('0.11.0'),
+}));
+
 const sampleHeader: WordSection1Header = {
   word: 'serendipity',
   pronunciation: '/ˌser.ənˈdɪp.ɪ.ti/',
@@ -69,10 +73,11 @@ describe('Home page', () => {
     PageHintService.resetForTests();
   });
 
-  it('shows welcome screen when no data and not loading', () => {
+  it('shows welcome screen when no data and not loading', async () => {
     renderWithProviders(<Home />, { route: '/' });
     expect(screen.getByText('MelliLex')).toBeInTheDocument();
     expect(screen.getByText(/AI-powered word/)).toBeInTheDocument();
+    expect(await screen.findByText('v0.11.0 beta')).toBeInTheDocument();
     expect(screen.getByText(/Type a word or phrase/)).toBeInTheDocument();
     expect(screen.getByText('Definitions')).toBeInTheDocument();
     expect(screen.getByText('Vocab notebook')).toBeInTheDocument();

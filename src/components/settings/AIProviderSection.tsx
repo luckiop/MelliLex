@@ -14,10 +14,13 @@ import {
 import { Check, Loader2, X, Zap } from 'lucide-react';
 
 const RECOMMENDED_MODEL_IDS = new Set([
+  'deepseek-v4-flash',
   'gpt-5-mini',         // OpenAI fastest
   'claude-haiku-4-5-20251001', // Anthropic fastest
   'gemini-2.5-flash-lite',     // Gemini fastest
 ]);
+
+const CUSTOM_PROVIDERS: AiProviderType[] = ['deepseek', 'openai', 'anthropic', 'gemini'];
 
 interface AIProviderSectionProps {
   selectedProvider: AiProviderType;
@@ -55,7 +58,7 @@ export const AIProviderSection = observer(({
   const { t } = useTranslation();
   const { settingsStore } = useStores();
 
-  const isCustomProvider = ['openai', 'anthropic', 'gemini'].includes(selectedProvider);
+  const isCustomProvider = CUSTOM_PROVIDERS.includes(selectedProvider);
   const isLocalProvider = selectedProvider === 'ollama';
 
   const handleFetchModels = useCallback(async () => {
@@ -106,7 +109,10 @@ export const AIProviderSection = observer(({
     setSaveStatus('idle');
 
     const settings = settingsStore.settings;
-    if (provider === 'openai' && settings.openAiConfig) {
+    if (provider === 'deepseek') {
+      setApiKey(settings.deepseekConfig?.apiKey || '');
+      setModelId(settings.deepseekConfig?.model || 'deepseek-v4-flash');
+    } else if (provider === 'openai' && settings.openAiConfig) {
       setApiKey(settings.openAiConfig.apiKey || '');
       setModelId(settings.openAiConfig.model || 'gpt-5-mini');
     } else if (provider === 'anthropic' && settings.anthropicConfig) {
@@ -150,6 +156,7 @@ export const AIProviderSection = observer(({
 
   const getDefaultModel = (provider: AiProviderType): string => {
     switch (provider) {
+      case 'deepseek': return 'deepseek-v4-flash';
       case 'openai': return 'gpt-5-mini';
       case 'anthropic': return 'claude-haiku-4-5-20251001';
       case 'gemini': return 'gemini-2.5-flash-lite';
@@ -190,6 +197,7 @@ export const AIProviderSection = observer(({
             <SelectValue placeholder={t('settings.aiProvider.selectProvider')} />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="deepseek">DeepSeek</SelectItem>
             <SelectItem value="openai">OpenAI</SelectItem>
             <SelectItem value="anthropic">Anthropic</SelectItem>
             <SelectItem value="gemini">Gemini</SelectItem>
@@ -198,6 +206,13 @@ export const AIProviderSection = observer(({
             </SelectItem>
           </SelectContent>
         </Select>
+        <p className="mt-2 text-xs text-muted-foreground">
+          {selectedProvider === 'deepseek'
+            ? t('settings.aiProvider.deepseekHint')
+            : selectedProvider === 'openai'
+              ? t('settings.aiProvider.openaiHint')
+              : t('settings.aiProvider.providerHint')}
+        </p>
       </div>
 
       {(isCustomProvider || isLocalProvider) && (

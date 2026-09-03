@@ -34,6 +34,7 @@ export class SettingsStore {
     vocabNotePath: '',
     vocabNoteSplitFiles: false,
     devLogEnabled: false,
+    maxMeaningsDisplay: 5,
   };
   loading: boolean = false;
   error: string | null = null;
@@ -116,6 +117,7 @@ export class SettingsStore {
       runInAction(() => {
         this.settings.aiProvider = provider;
         if (provider === 'openai') this.settings.openAiConfig = config;
+        if (provider === 'deepseek') this.settings.deepseekConfig = config;
         if (provider === 'anthropic') this.settings.anthropicConfig = config;
         if (provider === 'gemini') this.settings.geminiConfig = config;
         if (provider === 'ollama') this.settings.ollamaConfig = config;
@@ -164,7 +166,7 @@ export class SettingsStore {
   }
 
   get isCustomProvider() {
-    return ['openai', 'anthropic', 'gemini'].includes(this.settings.aiProvider);
+    return ['deepseek', 'openai', 'anthropic', 'gemini'].includes(this.settings.aiProvider);
   }
 
   get isLocalProvider() {

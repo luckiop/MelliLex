@@ -136,7 +136,11 @@ export const Settings = observer(() => {
     setSelectedProvider(provider || 'anthropic');
     let savedKey = '';
     
-    if (provider === 'openai' && settingsStore.settings.openAiConfig) {
+    if (provider === 'deepseek') {
+      savedKey = settingsStore.settings.deepseekConfig?.apiKey || '';
+      setApiKey(savedKey);
+      setModelId(settingsStore.settings.deepseekConfig?.model || 'deepseek-v4-flash');
+    } else if (provider === 'openai' && settingsStore.settings.openAiConfig) {
       savedKey = settingsStore.settings.openAiConfig.apiKey || '';
       setApiKey(savedKey);
       setModelId(settingsStore.settings.openAiConfig.model || 'gpt-5-mini');
@@ -162,7 +166,7 @@ export const Settings = observer(() => {
     
     setApiKeyValid(null);
     setAvailableModels([]);
-  }, [settingsStore.settings.aiProvider, settingsStore.settings.openAiConfig, settingsStore.settings.anthropicConfig, settingsStore.settings.geminiConfig, settingsStore.settings.ollamaConfig]);
+  }, [settingsStore.settings.aiProvider, settingsStore.settings.openAiConfig, settingsStore.settings.deepseekConfig, settingsStore.settings.anthropicConfig, settingsStore.settings.geminiConfig, settingsStore.settings.ollamaConfig]);
 
   const handleApplyLanguages = async () => {
     setApplyingLanguages(true);

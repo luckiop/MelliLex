@@ -10,12 +10,13 @@ Return valid JSON matching this schema:
     "meanings": {
       "type": "array",
       "minItems": 1,
-      "maxItems": 3,
+      "maxItems": 8,
+      "description": "One object per distinct sense. Ordered by importance, then by how commonly learners meet it. Include every important sense; do not stop at 3 if more matter.",
       "items": {
         "type": "object",
         "required": ["number", "partOfSpeech", "briefGloss", "definition", "memoryTip", "examples"],
         "properties": {
-          "number": {"type": "integer"},
+          "number": {"type": "integer", "description": "1-based rank: 1 = most important / most common"},
           "partOfSpeech": {"type": "string"},
           "briefGloss": {"type": "string", "description": "简要含义: a very short label, not a definition"},
           "definition": {"type": "string", "description": "Clear one-sentence full definition / 详细释义"},
@@ -27,10 +28,12 @@ Return valid JSON matching this schema:
   }
 }
 
-Order meanings by frequency. Prioritize quality over quantity.
+Split senses as separate objects in the meanings array (never merge two senses into one string). Rank by importance and everyday usefulness first, then frequency.
 
 briefGloss (简要含义) vs definition (释义):
 - briefGloss is a short equivalent/label for the heading slot, NEVER a full definition.
 - Chinese explanations: 2–8 个汉字的对应说法/标签（如 microcontroller → 微控制器；gain 技术义 → 增益）。不要写成完整句子，不要用「是一种…」「指…」等释义句式。
 - English-only fallback: 1–4 words, no sentence.
 - Keep definition as the full detailed 释义 (one clear sentence). Do not copy definition into briefGloss.
+
+JSON must be valid: commas between every object and array item, no trailing commas, no comments.

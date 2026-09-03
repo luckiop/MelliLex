@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Section2MeaningsView } from '../sections/Section2MeaningsView';
-import { renderWithProviders } from '../../test/test-utils';
+import { renderWithProviders, createMockRootStore } from '../../test/test-utils';
 import type { WordSection2Meanings } from '../../types';
 
 // Mock the HighlightedText component to avoid the async word-variations API call
@@ -58,5 +58,23 @@ describe('Section2MeaningsView', () => {
       <Section2MeaningsView data={{ meanings: [] }} word="test" />
     );
     expect(screen.getByText('Meanings')).toBeInTheDocument();
+  });
+
+  it('hides extra meanings until expanded', () => {
+    const many: WordSection2Meanings = {
+      meanings: Array.from({ length: 6 }, (_, index) => ({
+        number: index + 1,
+        partOfSpeech: 'noun',
+        definition: `Sense ${index + 1} definition`,
+        memoryTip: '',
+        examples: [`example ${index + 1}`],
+      })),
+    };
+    const store = createMockRootStore();
+    store.settingsStore.settings.maxMeaningsDisplay = 3;
+    renderWithProviders(<Section2MeaningsView data={many} word="test" />, { store });
+    expect(screen.getByText('Sense 1 definition')).toBeInTheDocument();
+    expect(screen.queryByText('Sense 4 definition')).toBeNull();
+    expect(screen.getByText(/Show all 6 meanings/)).toBeInTheDocument();
   });
 });

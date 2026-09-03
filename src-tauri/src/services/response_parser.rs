@@ -78,7 +78,24 @@ impl ResponseParser {
         match serde_json::from_str::<T>(sanitized) {
             Ok(value) => Ok(value),
             Err(err) => {
-                // Attempt repair if JSON appears truncated
+                let syntax = JsonRepairer::repair_syntax(sanitized);
+                if syntax != sanitized {
+                    if let Ok(value) = serde_json::from_str::<T>(&syntax) {
+                        log::warn!("{} JSON repaired (trailing/missing commas)", context);
+                        return Ok(value);
+                    }
+                    if let Some(repair) = JsonRepairer::repair_truncated_json(&syntax) {
+                        if let Ok(value) = serde_json::from_str::<T>(&repair.text) {
+                            log::warn!(
+                                "{} JSON repaired (syntax + {} closers)",
+                                context,
+                                repair.appended
+                            );
+                            return Ok(value);
+                        }
+                    }
+                }
+
                 if err.classify() == serde_json::error::Category::Eof {
                     if let Some(repair) = JsonRepairer::repair_truncated_json(sanitized) {
                         log::warn!(
@@ -210,5 +227,28 @@ mod tests {
         let parsed = parsed.expect("Parser should repair truncated JSON");
         assert_eq!(parsed.domain_explorations.len(), 1);
         assert_eq!(parsed.domain_explorations[0].domain, "Academic");
+    }
+
+    #[test]
+    fn parse_partial_repairs_missing_comma_between_meanings() {
+        #[derive(Deserialize)]
+        struct Wrapper {
+            meanings: Vec<Meaning>,
+        }
+        #[derive(Deserialize)]
+        struct Meaning {
+            #[allow(dead_code)]
+            number: i32,
+        }
+
+        let input = r#"{
+  "meanings": [
+    { "number": 1 }
+    { "number": 2 }
+  ]
+}"#;
+        let parsed: Wrapper =
+            ResponseParser::parse_partial(input, "section2_meanings").expect("repair missing comma");
+        assert_eq!(parsed.meanings.len(), 2);
     }
 }

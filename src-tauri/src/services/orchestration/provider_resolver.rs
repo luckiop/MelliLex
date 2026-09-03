@@ -85,6 +85,14 @@ impl ProviderResolver {
             false.hash(&mut hasher);
         }
 
+        if let Some(cfg) = &settings.deepseek_config {
+            true.hash(&mut hasher);
+            cfg.api_key.hash(&mut hasher);
+            cfg.model.hash(&mut hasher);
+        } else {
+            false.hash(&mut hasher);
+        }
+
         if let Some(cfg) = &settings.anthropic_config {
             true.hash(&mut hasher);
             cfg.api_key.hash(&mut hasher);
