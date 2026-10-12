@@ -108,6 +108,7 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .on_window_event(window_controls::handle_window_event)
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(logging::build_plugin())
         .setup(|app| {
             write_crash_log("Step 4: Setup callback started");
@@ -228,9 +229,11 @@ pub fn run() {
             // Search commands
             ping,
             check_spelling,
+            suggest_words,
             get_word_variations,
             search_word_progressive,
             search_zh_en,
+            search_translate,
             // Phrase commands
             search_phrase_progressive,
             // History commands

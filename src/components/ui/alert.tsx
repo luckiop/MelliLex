@@ -12,7 +12,7 @@ const Alert = React.forwardRef<
       'relative w-full rounded-lg border px-4 py-3 text-sm',
       variant === 'destructive'
         ? 'border-red-500 bg-red-50 text-red-900 dark:border-red-900 dark:bg-red-950/50 dark:text-red-200'
-        : 'border-gray-200 bg-white text-gray-950 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-50',
+        : 'border-border bg-card text-card-foreground',
       className
     )}
     {...props}

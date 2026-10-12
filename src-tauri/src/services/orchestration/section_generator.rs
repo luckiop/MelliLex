@@ -6,7 +6,19 @@ use crate::services::dictionary_service::DictionaryService;
 use crate::services::orchestration::ProgressiveEmitter;
 use log::info;
 use std::sync::Arc;
+use std::time::Duration;
 use tokio::task::JoinSet;
+use tokio::time::timeout;
+
+const RELATED_SECTION_TIMEOUT: Duration = Duration::from_secs(25);
+
+fn empty_related() -> WordSection3Related {
+    WordSection3Related {
+        synonyms: Vec::new(),
+        antonyms: Vec::new(),
+        collocations: Vec::new(),
+    }
+}
 
 /// Result type for parallel section generation tasks.
 pub enum SectionTaskResult {
@@ -24,6 +36,7 @@ impl SectionGenerator {
         word: &str,
         language: &str,
         technical_query: bool,
+        technical_domain: &str,
         emitter: &E,
     ) -> Result<WordProgressiveData, AppError> {
         let mut section1_data: Option<WordSection1Header> = None;
@@ -55,13 +68,20 @@ impl SectionGenerator {
             let svc = dictionary_service.clone();
             let section_word = word.to_string();
             let section_language = language.to_string();
+            let section_domain = technical_domain.to_string();
             async move {
                 log::debug!(
-                    "Generating section 2 (meanings) [parallel] in {} technical={}",
+                    "Generating section 2 (meanings) [parallel] in {} technical={} domain={}",
                     section_language,
-                    technical_query
+                    technical_query,
+                    section_domain
                 );
-                svc.generate_section2_meanings(&section_word, &section_language, technical_query)
+                svc.generate_section2_meanings(
+                    &section_word,
+                    &section_language,
+                    technical_query,
+                    &section_domain,
+                )
                     .await
                     .map(|(section, _)| SectionTaskResult::Section2(section))
                     .map_err(|e| {
@@ -80,13 +100,30 @@ impl SectionGenerator {
                     "Generating section 3 (related) [parallel] in {}",
                     section_language
                 );
-                svc.generate_section3_related(&section_word, &section_language)
-                    .await
-                    .map(|(section, _)| SectionTaskResult::Section3(section))
-                    .map_err(|e| {
-                        log::error!("Section 3 error for '{}': {}", section_word, e);
-                        AppError::from(e)
-                    })
+                match timeout(
+                    RELATED_SECTION_TIMEOUT,
+                    svc.generate_section3_related(&section_word, &section_language),
+                )
+                .await
+                {
+                    Ok(Ok((section, _))) => Ok(SectionTaskResult::Section3(section)),
+                    Ok(Err(e)) => {
+                        log::warn!(
+                            "Section 3 error for '{}': {} — continuing without related words",
+                            section_word,
+                            e
+                        );
+                        Ok(SectionTaskResult::Section3(empty_related()))
+                    }
+                    Err(_) => {
+                        log::warn!(
+                            "Section 3 timed out for '{}' after {}s — continuing without related words",
+                            section_word,
+                            RELATED_SECTION_TIMEOUT.as_secs()
+                        );
+                        Ok(SectionTaskResult::Section3(empty_related()))
+                    }
+                }
             }
         });
 

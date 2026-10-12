@@ -181,7 +181,7 @@ impl OpenAIService {
                 "messages": [
                     { "role": "user", "content": prompt }
                 ],
-                "max_tokens": 1200,
+                "max_tokens": 8192,
                 "thinking": { "type": "disabled" },
                 "response_format": { "type": "json_object" }
             }),

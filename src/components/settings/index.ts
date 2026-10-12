@@ -5,5 +5,6 @@ export { ExportSection } from './ExportSection';
 export { LanguageSection } from './LanguageSection';
 export { UILanguageSection } from './UILanguageSection';
 export { GlobalLookupSection } from './GlobalLookupSection';
+export { TechnicalDomainSection } from './TechnicalDomainSection';
 export { AboutSection } from './AboutSection';
 export { VocabSection } from './VocabSection';

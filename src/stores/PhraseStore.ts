@@ -27,6 +27,7 @@ export class PhraseStore extends BaseStore {
   currentPhrase: string = '';
   private currentPhraseKey: string = '';
   private activeOverviewPhraseKey: string | null = null;
+  private searchToken = 0;
   
   // Section States
   overviewSection: PhraseSection1Overview | null = null;
@@ -140,9 +141,9 @@ export class PhraseStore extends BaseStore {
   }
 
   private checkCompletion(): void {
-    if (this.hasOverviewSection && this.hasContextSection && this.hasRelatedSection) {
+    if (this.hasOverviewSection && this.hasContextSection) {
       this.setSuccess();
-      this.logger.info('[PhraseStore] All sections complete');
+      this.logger.info('[PhraseStore] Overview and context loaded — ready for another lookup');
     }
   }
 
@@ -155,6 +156,7 @@ export class PhraseStore extends BaseStore {
     }
 
     const normalizedKey = this.normalizePhrase(sanitizedDisplayPhrase);
+    const token = ++this.searchToken;
     this.logger.info(`[PhraseStore] Starting progressive search: ${sanitizedDisplayPhrase}`);
 
     this.resetPhraseTracking();
@@ -171,28 +173,50 @@ export class PhraseStore extends BaseStore {
     await runProgressiveSearch({
       timeoutService: this.timeoutService,
       timeoutMs: TIMEOUTS.WORD_SEARCH,
-      isLoading: () => this.isLoading,
+      isLoading: () => this.isLoading && token === this.searchToken,
       onTimeout: () => {
+        if (token !== this.searchToken) {
+          return;
+        }
+        if (this.finishIfPrimarySectionsReady()) {
+          this.logger.error(
+            `[PhraseStore] Related phrases timed out for: ${phrase}; keeping overview and context`
+          );
+          return;
+        }
         this.setError(
           `Search timed out after ${TIMEOUTS.WORD_SEARCH / 1000} seconds. Please try again.`
         );
-        // Don't reset currentPhrase so retry can work
         this.activeOverviewPhraseKey = null;
         this.logger.error(`[PhraseStore] Timeout for phrase: ${phrase}`);
       },
       onError: (err) => {
+        if (token !== this.searchToken) {
+          return;
+        }
+        if (this.finishIfPrimarySectionsReady()) {
+          this.logger.error(
+            '[PhraseStore] Search command failed after overview/context; keeping results',
+            err as Error
+          );
+          return;
+        }
         this.logger.error('[PhraseStore] Search failed', err as Error);
         this.setError(getErrorMessage(err, ERROR_MESSAGES.SEARCH_FAILED));
-        // Don't reset currentPhrase so retry can work
         this.activeOverviewPhraseKey = null;
       },
       invoke: () => api.searchPhraseProgressive(sanitizedDisplayPhrase),
       logger: this.logger,
       logPrefix: '[PhraseStore]',
     });
+
+    if (token === this.searchToken) {
+      this.finishIfPrimarySectionsReady();
+    }
   }
 
   clearSearch() {
+    this.searchToken += 1;
     this.resetPhraseTracking();
     this.overviewSection = null;
     this.contextSection = null;
@@ -240,6 +264,23 @@ export class PhraseStore extends BaseStore {
 
   private normalizePhrase(phrase: string | undefined): string {
     return normalizePhraseKey(sanitizeDisplayText(phrase));
+  }
+
+  private finishIfPrimarySectionsReady(): boolean {
+    if (!this.hasOverviewSection || !this.hasContextSection) {
+      return false;
+    }
+    if (!this.hasRelatedSection) {
+      this.hasRelatedSection = true;
+      this.relatedSection = this.relatedSection ?? {
+        variations: [],
+        similarPhrases: [],
+        oppositePhrases: [],
+        seeAlso: [],
+      };
+    }
+    this.setSuccess();
+    return true;
   }
 
   private isActivePhraseCurrent(): boolean {

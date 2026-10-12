@@ -207,7 +207,7 @@ export const History = observer(() => {
                     onClick={() => handleWordClick(item.word)}
                     className="grid grid-cols-[1fr_120px_100px_40px] gap-3 items-center px-4 py-2.5 border-b border-border last:border-b-0 hover:bg-accent transition-colors cursor-pointer"
                   >
-                    <div className="font-medium text-sm">{item.word}</div>
+                    <div className="font-medium text-sm truncate" title={item.word}>{item.word}</div>
                     <div className="text-xs text-muted-foreground whitespace-nowrap text-right">
                       {formatTime(item.timestamp, i18n.language)}
                     </div>

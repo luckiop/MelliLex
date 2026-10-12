@@ -23,7 +23,7 @@
     "clear": "Suche löschen",
     "submit": "Suche absenden",
     "technical": "Tech",
-    "technicalHint": "CS-/Regelungs-/Robotik-Bedeutung zuerst in den Bedeutungen"
+    "technicalHint": "Zuerst eine Bedeutung aus dem Bereich {{domain}}"
   },
   "navigation": {
     "home": "Definieren",

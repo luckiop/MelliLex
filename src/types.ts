@@ -84,7 +84,11 @@ export interface AppSettings {
   uiLanguage?: string; // Language for UI interface (default: auto-detected)
   enableGlobalLookup: boolean; // Enable global lookup feature
   typographyMode?: TypographyOption; // Preferred typography pairing
-  technicalQuery?: boolean; // Prefer CS/control/robotics sense first in meanings
+  technicalQuery?: boolean; // Pin a specialist sense from technicalDomain first
+  /** Field for technical lookup, e.g. "biology". */
+  technicalDomain?: string;
+  /** Double right-click pastes the clipboard into search; the next left click searches. */
+  clipboardClickSearch?: boolean;
   vocabNoteEnabled?: boolean;
   vocabNotePath?: string;
   vocabNoteSplitFiles?: boolean;
@@ -276,7 +280,13 @@ export type PhraseRegion =
   | 'british' 
   | 'australian';
 
-export type InputType = 'word' | 'phrase' | 'zh-en';
+export type InputType = 'word' | 'phrase' | 'zh-en' | 'translate';
+
+export interface TranslateResult {
+  source: string;
+  translation: string;
+  remark?: string | null;
+}
 
 export interface ZhEnEquivalent {
   expression: string;

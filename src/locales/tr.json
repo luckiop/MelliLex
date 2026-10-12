@@ -23,7 +23,7 @@
     "clear": "Temizle",
     "submit": "Aramayı gönder",
     "technical": "Teknik",
-    "technicalHint": "Anlamlarda önce CS / kontrol / robotik anlamını ver"
+    "technicalHint": "Anlamlarda önce {{domain}} anlamını ver"
   },
   "navigation": {
     "home": "Tanımla",

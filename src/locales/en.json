@@ -19,11 +19,12 @@
     "close": "Close"
   },
   "search": {
-    "placeholder": "Enter word, phrase, or Chinese...",
+    "placeholder": "Enter a word, phrase, Chinese, or a passage to translate...",
     "clear": "Clear search",
     "submit": "Submit search",
     "technical": "Tech",
-    "technicalHint": "Pin a CS / control / robotics sense first in Meanings"
+    "technicalHint": "Pin a {{domain}} sense first",
+    "suggestions": "Suggestions"
   },
   "navigation": {
     "home": "Define",
@@ -32,47 +33,128 @@
     "saved": "Saved",
     "vocab": "Vocab",
     "settings": "Settings",
+    "backHome": "Back to start",
     "lightMode": "Switch to light mode",
     "darkMode": "Switch to dark mode"
   },
   "home": {
     "title": "MelliLex",
     "subtitle": "AI-powered word & phrase exploration",
-    "prompt": "Type a word or phrase in the search box above",
-    "tryWords": "Try: \"eloquent\", \"餐桌\", or \"break the ice\"",
+    "prompt": "Type a word, phrase, Chinese, or a longer passage to translate",
+    "tryWords": "Try: \"eloquent\", \"餐桌\", \"break the ice\", or a short paragraph",
     "versionLabel": "v{{version}} beta",
     "features": {
       "define": {
         "title": "Definitions",
-        "desc": "Meanings are generated on the fly. There is no local word bank."
+        "desc": "Meanings are generated on the fly. There is no local word bank.",
+        "steps": [
+          "Click the long box at the very top. Its grey hint reads “Enter a word, phrase, Chinese, or a passage to translate...”.",
+          "Type what you want. One English word, a phrase such as break the ice, Chinese such as 餐桌, or a whole passage to translate all go in this same box.",
+          "While you type an English word, local suggestions appear under the box. Press the Down arrow until the word you want is highlighted, then press Enter. Or left-click that row.",
+          "To search exactly what you typed, press Enter, or click the magnifying glass inside the right end of the box. Hovering that glass shows “Submit search”.",
+          "If the English word looks misspelled, a window titled “Did you mean?” opens first. Click a word to look that up. Click “Cancel” to close the window. Click “Use … anyway” to keep the word you typed.",
+          "After a lookup, the arrow to the left of the search box returns to the empty home screen. Hovering it shows “Back to start”."
+        ]
       },
       "vocab": {
         "title": "Vocab notebook",
-        "desc": "One or two stars, daily or technical."
+        "desc": "One or two stars, daily or technical.",
+        "steps": [
+          "Look up a word first, and wait until its heading and meanings appear.",
+          "Under the heading, click the button labeled “Add”. One click saves it with one star.",
+          "Click the star again for two stars. Click it once more and the star disappears; the word leaves the notebook.",
+          "The button to the right of the star starts as “Daily”. Click it to switch to “Technical”, and click again to switch back. That only files the vocab entry. It does not press the “Tech” button on the search bar.",
+          "To see every saved word, click “Vocab” at the top right of the window.",
+          "On that page, click “All”, “1 star”, or “2 stars”, and also “All”, “Daily”, or “Technical”, to filter the list.",
+          "Click a word’s row to look it up again. To remove it, click the × at the far right of that row. Hovering the × shows “Remove”."
+        ]
       },
       "notes": {
         "title": "Markdown notes",
-        "desc": "Starred words can be written to a markdown file automatically."
+        "desc": "Starred words can be written to a markdown file automatically.",
+        "steps": [
+          "Click the gear at the top right. Hovering it shows “Settings”.",
+          "On the row under the Settings title, click “Vocab”.",
+          "Turn on the switch beside “Auto-append vocab notes”. While that switch is off, starred words stay inside the app and are not written to a file.",
+          "In “Markdown file path”, type a full path such as D:\\notes\\vocab.md. Or click “Browse” and choose an md file.",
+          "The path is saved when you click outside the box. Choosing a file with “Browse” also saves it. This page has no separate save button. Missing folders are created automatically.",
+          "To also split notes by stars and register, turn on “Split into 4 notebooks”. Those four files sit in the same folder as the main note.",
+          "Go back to a lookup and click “Add”, as described under “Vocab notebook”. When the file is updated, a notice says “Added to vocab notes”."
+        ]
       },
       "technical": {
         "title": "Technical lookup",
-        "desc": "Turn on Technical to prefer CS, control, and robotics senses."
+        "desc": "Turn on Technical to prefer the field you set.",
+        "steps": [
+          "Click the button labeled “Tech” to the right of the search box. It turns dark while it is on. Click it again and it turns light, which means off.",
+          "Leave it dark, then look a word up. The first meaning prefers the field you set.",
+          "To change that field, click the gear (“Settings”), then click “General” in the row under the title.",
+          "Find “Technical field”. Click “Biology”, “Medicine”, “Law”, “Economics”, or “Computing and control”. A click saves immediately.",
+          "You can also type your own field, for example biology. Then click outside the box, or press Enter inside it. That is what saves the text.",
+          "The “Apply Changes” button at the bottom of this page applies only the interface language and the explanation language. You do not need it for the technical field.",
+          "Return to lookup, check that “Tech” is still dark, then click the magnifying glass (“Submit search”)."
+        ]
       },
       "history": {
         "title": "History",
-        "desc": "Revisit words you have already looked up."
+        "desc": "Revisit words you have already looked up.",
+        "steps": [
+          "Click “History” at the top right of the window.",
+          "Past lookups are grouped under “Today”, “Yesterday”, “This Week”, and so on. Click a word’s row to look it up again.",
+          "To filter this list, use the box on this page whose hint is “Search your history”. Do not use the lookup box at the very top of the window.",
+          "To delete one row, click the × at its far right. Hovering the × shows “Delete”.",
+          "To delete everything, click “Clear All”. After the question “Clear all history?” appears, click “Clear All” again. Click “Cancel” to keep every entry."
+        ]
       },
       "settings": {
         "title": "Settings",
-        "desc": "API keys, appearance, and notebook path."
+        "desc": "API keys, appearance, and notebook path.",
+        "steps": [
+          "Click the gear at the top right. Hovering it shows “Settings”.",
+          "Under the Settings title is a row of buttons. Click one to change the page.",
+          "In “General”, change the interface language or the explanation language, then click “Apply Changes” at the bottom of that block. The technical field is on this same page, but a preset click, or Enter in its box, saves it on its own.",
+          "In “Global Lookup”, turn on “Enable Global Lookup” to hold Ctrl and right-click a word in another app. Turn on “Double right-click lookup” to put the clipboard into the search box with two quick right-clicks anywhere except Settings; the next left-click runs the search. The × in the search box, Undo on the notice, or Esc cancels that search. “Don't show again” only hides later notices; this switch still turns the feature off.",
+          "“AI Provider” is where the key is saved. For every step of creating a DeepSeek key, hover “API” beside this word.",
+          "“Appearance” chooses fonts. “Cache” clears saved meanings. “Vocab” on this row is the markdown file; see “Markdown notes”. “About” shows the version and updates."
+        ]
+      },
+      "api": {
+        "title": "API",
+        "desc": "Create a key on the DeepSeek platform, then paste it under AI provider.",
+        "open": "Open the DeepSeek platform",
+        "steps": [
+          "Click “Open the DeepSeek platform” above this list. It opens https://platform.deepseek.com/api_keys . Do not open chat.deepseek.com. That site is the chat page and does not show an API key.",
+          "Sign up or log in as the page asks. If you are not on the API keys page afterward, click “API keys” in the left sidebar of that website.",
+          "Click “Create new API key”.",
+          "You can name it MelliLex, then confirm. The key usually starts with sk- and the full value is shown only once. Copy it immediately. After you close the dialog it cannot be viewed again; create another key if you lose it.",
+          "If a later lookup fails because the balance is empty, go back to this same website and click Top up. A membership on the chat website does not pay for this balance.",
+          "Back in MelliLex, click the gear (“Settings”), then click “AI Provider” in the row under the title.",
+          "Click “Select Provider” and choose “DeepSeek” in the list.",
+          "Click the box under “API Key” and paste the key. Do not add quotes or extra spaces. Then click outside that box.",
+          "When the check succeeds, green text under the box says “API key is valid”. If it says “Invalid API key” in red, copy the whole key from the website again and paste it once more.",
+          "“Model” is usually already deepseek-v4-flash. If a dropdown appears, you can keep that model or pick another.",
+          "Click “Apply Changes” at the bottom of this block. The key is saved only when the button changes to “✓ Applied”.",
+          "Click “Define” at the top right, type a word in the search box, then click the magnifying glass (“Submit search”)."
+        ]
       }
     }
   },
   "pageHints": {
-    "home": "Meanings are generated as you search. Use Technical for specialist senses, or type Chinese for English equivalents.",
+    "home": "Meanings are generated as you search. Use Technical for specialist senses, type Chinese for English equivalents, or paste a longer passage to translate.",
     "vocab": "Star a word to save it. The list shows a short gloss. Settings can auto-write markdown notes.",
     "settings": "Add an AI API key to look up words. Vocab notes can point at a markdown path; folders are created on save.",
     "explore": "See register, usage, and practice for the current word. Open Explore from a lookup result."
+  },
+  "whatsNew": {
+    "title": "What's new in v{{version}}",
+    "subtitle": "Shown once after you install or update this version.",
+    "gotIt": "Got it",
+    "items": [
+      "Paste a longer passage, mixed Chinese–English, or a punctuated sentence in the same search box to translate into Chinese.",
+      "Remarks discuss the text for the reader — a bit longer, with one or two points. They never talk about how to translate.",
+      "Related words no longer block the next lookup. Use the back arrow to return to the empty home screen.",
+      "The Windows setup can update an existing folder: choose “Update existing folder”, pick the directory that already has mellilex.exe, then continue."
+    ]
   },
   "sections": {
     "meanings": "Meanings",
@@ -229,6 +311,28 @@
       "later": "Later",
       "downloadInstall": "Download & Install",
       "restartNow": "Restart Now"
+    },
+    "technicalDomain": {
+      "title": "Technical field",
+      "desc": "When Technical is on, the first meaning comes from this field. Change it to biology, medicine, or anything else.",
+      "placeholder": "biology",
+      "presets": {
+        "computing": "Computing and control",
+        "biology": "Biology",
+        "medicine": "Medicine",
+        "law": "Law",
+        "economics": "Economics"
+      }
+    },
+    "clipboardSearch": {
+      "enable": "Double right-click lookup",
+      "enableDesc": "Outside Settings, two quick right-clicks put the clipboard in the search box. The next left click runs the search. A normal click does nothing until then. The × in the search box, Undo on the notice, or Esc cancels.",
+      "filled": "Clipboard is in the search box",
+      "hint": "The next left click searches. Click the × in the search box, Undo, or press Esc to cancel. Turn off “Double right-click lookup” under Settings → Global Lookup.",
+      "undo": "Undo",
+      "dismiss": "Don't show again",
+      "empty": "The clipboard is empty",
+      "failed": "Could not read the clipboard"
     },
     "globalLookup": {
       "title": "Global Lookup",
@@ -416,6 +520,12 @@
     "title": "Chinese → English",
     "subtitle": "Pick the wording that matches the situation",
     "contrast": "Vs other choices"
+  },
+  "translate": {
+    "title": "Translation",
+    "source": "Source",
+    "translation": "Chinese",
+    "remark": "Remark"
   },
   "errors": {
     "cacheOperation": "Failed to perform cache operation",

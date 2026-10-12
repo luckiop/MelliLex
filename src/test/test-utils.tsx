@@ -49,6 +49,7 @@ export function createMockRootStore(overrides: Record<string, unknown> = {}): Ro
     checkSpelling: vi.fn(),
     currentInputType: 'word' as const,
     isBusy: false,
+    resetToHome: vi.fn(),
     ...overrides.searchCoordinator as object,
   };
   
@@ -66,6 +67,8 @@ export function createMockRootStore(overrides: Record<string, unknown> = {}): Ro
       theme: 'light',
       enableGlobalLookup: false,
       technicalQuery: false,
+      technicalDomain: 'computer science, control engineering, and robotics',
+      clipboardClickSearch: true,
       vocabNoteEnabled: false,
       exportSettings: {},
       maxMeaningsDisplay: 5,
@@ -84,6 +87,7 @@ export function createMockRootStore(overrides: Record<string, unknown> = {}): Ro
     customExamples: [],
     customContext: '',
     cleanup: vi.fn(),
+    resetAll: vi.fn(),
     ...overrides.exploreStore as object,
   };
   
@@ -126,8 +130,20 @@ export function createMockRootStore(overrides: Record<string, unknown> = {}): Ro
     clearSearch: vi.fn(),
     ...overrides.zhEnStore as object,
   };
+
+  store.translateStore = {
+    currentSource: '',
+    result: null,
+    isLoading: false,
+    hasError: false,
+    error: null,
+    search: vi.fn().mockResolvedValue(undefined),
+    clearSearch: vi.fn(),
+    ...overrides.translateStore as object,
+  };
   
   store.cleanup = vi.fn();
+  store.resetToHome = vi.fn();
   
   return store as RootStore;
 }

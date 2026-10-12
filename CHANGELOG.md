@@ -2,6 +2,25 @@
 
 All notable changes to MelliLex will be documented here.
 
+## [0.12.1] — 2026-09-04
+
+- Related words no longer block the next lookup; section 3 can time out on its own
+- Back arrow returns to the empty home screen
+- Search box stays one ellipsis line while a long query is showing
+- Remarks are longer reader notes and must not mention translation
+- Home always shows the beta version, even if the OS API is slow
+
+## [0.12.0] — 2026-09-04
+
+Internal beta (`0.x`).
+
+- Same search box can translate: long text, mixed Chinese–English, or sentence punctuation
+- Translation result shows source, Chinese, and an optional remark
+- One adaptive prompt (technical stays precise; literary can paraphrase)
+- Query cap for translation is 8000 characters
+- NSIS setup can update files in an existing install folder
+- First launch of a new version shows a short what’s-new note
+
 ## [0.11.0] — 2026-09-03
 
 Internal beta (`0.x`). Version is shown on the home screen.

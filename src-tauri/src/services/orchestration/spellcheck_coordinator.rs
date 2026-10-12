@@ -54,6 +54,10 @@ impl SpellCheckCoordinator {
         })
     }
 
+    pub fn suggest_words(&self, query: &str) -> Vec<String> {
+        self.text_processor.suggest_words(query)
+    }
+
     pub async fn get_word_variations(&self, word: &str) -> Result<Vec<String>, AppError> {
         let validated_word = validation::validate_word_query(word)?;
         self.text_processor

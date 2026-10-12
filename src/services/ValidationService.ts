@@ -17,7 +17,7 @@ export interface ValidationResult {
  * Word/phrase validation is handled by the backend.
  */
 export class ValidationService {
-  private static readonly MAX_SEARCH_QUERY_LENGTH = 100;
+  private static readonly MAX_SEARCH_QUERY_LENGTH = 8000;
   private static readonly MAX_NOTE_LENGTH = 500;
   private static readonly MAX_TAG_LENGTH = 30;
 

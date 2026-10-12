@@ -1,19 +1,22 @@
 use std::collections::HashMap;
 
-use crate::models::SUPPORTED_LANGUAGES;
+use crate::models::{normalize_technical_domain, SUPPORTED_LANGUAGES};
 
 /// Extra instruction appended to the meanings prompt when technical query is on.
-pub const TECHNICAL_MEANING_INSTRUCTION: &str = "\
-TECHNICAL SENSE (required, first item):\n\
-Also give a specialist definition aimed at computer science, control engineering, and robotics \
-(software, algorithms, signals, kinematics, actuators, ROS, etc.).\n\
+pub fn technical_meaning_instruction(domain: &str) -> String {
+    let domain = normalize_technical_domain(domain);
+    format!(
+        "TECHNICAL SENSE (required, first item):\n\
+Also give a specialist definition aimed at this field: {domain}.\n\
 - Put that technical sense FIRST in the \"meanings\" array as number 1.\n\
 - Then list up to 3 general-language senses in frequency order (up to 4 meanings total).\n\
-- The technical definition must name the field, be one precise sentence, and use domain examples.\n\
-- If the word is not a standard term in those fields, meaning 1 should say so briefly and give the \
-closest technical usage, then continue with general senses.\n\
+- The technical definition must name that field, be one precise sentence, and use examples from that field.\n\
+- If the word is not a standard term in that field, meaning 1 should say so briefly and give the \
+closest usage in that field, then continue with general senses.\n\
 - Keep the same JSON schema; do not drop briefGloss, memoryTip, or examples.\n\
-- Technical briefGloss should be a short domain label (e.g. 增益), not a full sentence.";
+- Technical briefGloss should be a short domain label, not a full sentence."
+    )
+}
 
 #[derive(Clone)]
 pub struct PromptManager {
@@ -81,6 +84,10 @@ impl PromptManager {
             "zh_en_equivalents".to_string(),
             include_str!("../../prompts/zh_en_equivalents.txt").to_string(),
         );
+        templates.insert(
+            "translate".to_string(),
+            include_str!("../../prompts/translate.txt").to_string(),
+        );
 
         PromptManager { templates }
     }
@@ -93,6 +100,10 @@ impl PromptManager {
 
     pub fn render_zh_en(&self, query: &str) -> Option<String> {
         self.render("zh_en_equivalents", query)
+    }
+
+    pub fn render_translate(&self, source: &str) -> Option<String> {
+        self.render("translate", source)
     }
 
     pub fn render_with_language(
@@ -116,16 +127,21 @@ impl PromptManager {
         Some(prompt)
     }
 
-    /// Meanings prompt, with an optional CS/control/robotics sense pinned first.
+    /// Meanings prompt, with an optional specialist sense for `technical_domain` pinned first.
     pub fn render_section2_meanings(
         &self,
         word: &str,
         language: &str,
         technical_query: bool,
+        technical_domain: &str,
     ) -> Option<String> {
         let mut prompt = self.render_with_language("section2_meanings", word, language)?;
         if technical_query {
-            prompt = format!("{}\n\n{}", prompt, TECHNICAL_MEANING_INSTRUCTION);
+            prompt = format!(
+                "{}\n\n{}",
+                prompt,
+                technical_meaning_instruction(technical_domain)
+            );
         }
         Some(prompt)
     }
@@ -227,8 +243,8 @@ mod tests {
         let manager = PromptManager::new();
         assert_eq!(
             manager.templates.len(),
-            13,
-            "Expected 13 templates (5 exploration + 4 word sections + 3 phrase sections + zh-en)"
+            14,
+            "Expected 14 templates (5 exploration + 4 word sections + 3 phrase sections + zh-en + translate)"
         );
         // Exploration templates
         assert!(manager.templates.contains_key("formality_analysis"));
@@ -246,6 +262,7 @@ mod tests {
         assert!(manager.templates.contains_key("phrase_section2_context"));
         assert!(manager.templates.contains_key("phrase_section3_related"));
         assert!(manager.templates.contains_key("zh_en_equivalents"));
+        assert!(manager.templates.contains_key("translate"));
     }
 
     #[test]
@@ -283,10 +300,15 @@ mod tests {
     fn section2_technical_query_pins_specialist_sense() {
         let manager = PromptManager::new();
         let normal = manager
-            .render_section2_meanings("gain", "English", false)
+            .render_section2_meanings("gain", "English", false, "")
             .expect("section2");
         let technical = manager
-            .render_section2_meanings("gain", "English", true)
+            .render_section2_meanings(
+                "gain",
+                "English",
+                true,
+                "computer science, control engineering, and robotics",
+            )
             .expect("section2 technical");
 
         assert!(normal.contains("gain"));
@@ -298,10 +320,26 @@ mod tests {
     }
 
     #[test]
+    fn section2_technical_domain_follows_the_setting() {
+        let manager = PromptManager::new();
+        let biology = manager
+            .render_section2_meanings("cell", "English", true, "biology")
+            .expect("section2 biology");
+        assert!(biology.contains("biology"));
+        assert!(!biology.contains("robotics"));
+        assert!(!biology.contains("ROS"));
+
+        let fallback = manager
+            .render_section2_meanings("cell", "English", true, "  \n")
+            .expect("section2 fallback");
+        assert!(fallback.contains("computer science, control engineering, and robotics"));
+    }
+
+    #[test]
     fn section2_prompt_requires_brief_gloss() {
         let manager = PromptManager::new();
         let prompt = manager
-            .render_section2_meanings("microcontroller", "Chinese (Simplified)", false)
+            .render_section2_meanings("microcontroller", "Chinese (Simplified)", false, "")
             .expect("section2");
         assert!(prompt.contains("briefGloss"));
         assert!(prompt.contains("简要含义"));
@@ -317,6 +355,18 @@ mod tests {
         let prompt = manager.render_zh_en("餐桌").expect("zh_en template");
         assert!(prompt.contains("餐桌"));
         assert!(prompt.contains("equivalents"));
+        assert!(!prompt.contains("{{word}}"));
+    }
+
+    #[test]
+    fn render_translate_inserts_source() {
+        let manager = PromptManager::new();
+        let prompt = manager
+            .render_translate("Bai Yu (白宇) is a lecturer.")
+            .expect("translate template");
+        assert!(prompt.contains("Bai Yu (白宇) is a lecturer."));
+        assert!(prompt.contains("remark"));
+        assert!(prompt.contains("Do not mention 翻译"));
         assert!(!prompt.contains("{{word}}"));
     }
 }

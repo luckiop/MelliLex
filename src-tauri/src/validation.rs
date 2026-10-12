@@ -2,6 +2,8 @@ use crate::errors::AppError;
 
 const MAX_WORD_LENGTH: usize = 100;
 
+const MAX_TRANSLATION_LENGTH: usize = 8000;
+
 const MAX_CONTEXT_LENGTH: usize = 1000;
 
 const MAX_MARKDOWN_LENGTH: usize = 1_000_000; // 1MB
@@ -34,6 +36,23 @@ pub fn validate_word_query(word: &str) -> Result<String, AppError> {
     }
 
     Ok(sanitized.to_string())
+}
+
+pub fn validate_translation_query(source: &str) -> Result<String, AppError> {
+    let trimmed = source.trim();
+
+    if trimmed.is_empty() {
+        return Err(AppError::validation("Translation query cannot be empty"));
+    }
+
+    if trimmed.chars().count() > MAX_TRANSLATION_LENGTH {
+        return Err(AppError::validation(format!(
+            "Translation query too long (max {} characters)",
+            MAX_TRANSLATION_LENGTH
+        )));
+    }
+
+    Ok(trimmed.to_string())
 }
 
 pub fn validate_context(context: &str) -> Result<String, AppError> {
@@ -121,6 +140,15 @@ mod tests {
         assert!(validate_word_query("   ").is_err());
         assert!(validate_word_query("!!!").is_err());
         assert!(validate_word_query(&"a".repeat(MAX_WORD_LENGTH + 1)).is_err());
+    }
+
+    #[test]
+    fn test_validate_translation_query() {
+        let long = "Bai Yu (白宇) is a lecturer in the College of Education Sciences.";
+        assert_eq!(validate_translation_query(&format!("  {long}  ")).unwrap(), long);
+        assert!(validate_translation_query("").is_err());
+        assert!(validate_translation_query(&"字".repeat(MAX_TRANSLATION_LENGTH + 1)).is_err());
+        assert!(validate_translation_query(&"字".repeat(MAX_TRANSLATION_LENGTH)).is_ok());
     }
 
     #[test]

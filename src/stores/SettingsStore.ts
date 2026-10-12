@@ -30,6 +30,8 @@ export class SettingsStore {
     enableGlobalLookup: true,
     typographyMode: DEFAULT_TYPOGRAPHY_OPTION,
     technicalQuery: false,
+    technicalDomain: 'computer science, control engineering, and robotics',
+    clipboardClickSearch: true,
     vocabNoteEnabled: false,
     vocabNotePath: '',
     vocabNoteSplitFiles: false,

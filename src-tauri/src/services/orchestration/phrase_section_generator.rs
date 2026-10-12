@@ -6,7 +6,21 @@ use crate::services::orchestration::PhraseProgressiveEmitter;
 use crate::services::phrase_service::PhraseService;
 use log::info;
 use std::sync::Arc;
+use std::time::Duration;
 use tokio::task::JoinSet;
+use tokio::time::timeout;
+
+const RELATED_SECTION_TIMEOUT: Duration = Duration::from_secs(25);
+
+fn empty_phrase_related() -> PhraseSection3Related {
+    PhraseSection3Related {
+        variations: Vec::new(),
+        similar_phrases: Vec::new(),
+        opposite_phrases: Vec::new(),
+        see_also: Vec::new(),
+        token_usage: None,
+    }
+}
 
 /// Result type for parallel phrase section generation tasks.
 pub enum PhraseSectionTaskResult {
@@ -79,13 +93,30 @@ impl PhraseSectionGenerator {
                     "Generating phrase section 3 (related) [parallel] in {}",
                     section_language
                 );
-                svc.generate_section3_related(&section_phrase, &section_language)
-                    .await
-                    .map(|(section, _)| PhraseSectionTaskResult::Section3(section))
-                    .map_err(|e| {
-                        log::error!("Phrase Section 3 error for '{}': {}", section_phrase, e);
-                        AppError::from(e)
-                    })
+                match timeout(
+                    RELATED_SECTION_TIMEOUT,
+                    svc.generate_section3_related(&section_phrase, &section_language),
+                )
+                .await
+                {
+                    Ok(Ok((section, _))) => Ok(PhraseSectionTaskResult::Section3(section)),
+                    Ok(Err(e)) => {
+                        log::warn!(
+                            "Phrase section 3 error for '{}': {} — continuing without related phrases",
+                            section_phrase,
+                            e
+                        );
+                        Ok(PhraseSectionTaskResult::Section3(empty_phrase_related()))
+                    }
+                    Err(_) => {
+                        log::warn!(
+                            "Phrase section 3 timed out for '{}' after {}s — continuing without related phrases",
+                            section_phrase,
+                            RELATED_SECTION_TIMEOUT.as_secs()
+                        );
+                        Ok(PhraseSectionTaskResult::Section3(empty_phrase_related()))
+                    }
+                }
             }
         });
 

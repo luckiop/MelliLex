@@ -23,7 +23,7 @@
     "clear": "Cancella",
     "submit": "Invia ricerca",
     "technical": "Tech",
-    "technicalHint": "Metti per primo un senso CS / controllo / robotica nei significati"
+    "technicalHint": "Metti per primo un senso di {{domain}}"
   },
   "navigation": {
     "home": "Definisci",

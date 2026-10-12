@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Home } from "./pages/Home";
@@ -7,7 +8,7 @@ import { History } from "./pages/History";
 import { Vocab } from "./pages/Vocab";
 import ExplorePage from "./pages/ExplorePage";
 import { Settings } from "./pages/Settings";
-import { RootStore, RootStoreContext } from "./stores/RootStore";
+import { RootStore, RootStoreContext, useStores } from "./stores/RootStore";
 import { AppLayout } from "./components/layout/AppLayout";
 import { TitleBar } from "./components/layout/TitleBar";
 import { Toaster } from "./components/ui/sonner";
@@ -15,8 +16,10 @@ import { api } from "./services/api";
 import { LANGUAGE_MAP } from "./i18n";
 import { reportClientError } from "./utils/devLog";
 import { useGlobalLookup } from "./hooks/useGlobalLookup";
+import { useClipboardSearchGesture } from "./hooks/useClipboardSearchGesture";
 import { useUpdateChecker } from "./hooks/useUpdateChecker";
 import { UpdateDialog } from "./components/UpdateDialog";
+import { WhatsNewBridge } from "./components/WhatsNewBridge";
 
 const rootStore = new RootStore();
 
@@ -77,7 +80,9 @@ function App() {
   return (
     <RootStoreContext.Provider value={rootStore}>
       <GlobalLookupBridge />
+      <ClipboardSearchBridge />
       <UpdateBridge />
+      <WhatsNewBridge />
       <TitleBar />
       <AppLayout>
         <Routes>
@@ -97,6 +102,26 @@ function GlobalLookupBridge() {
   useGlobalLookup();
   return null;
 }
+
+const ClipboardSearchBridge = observer(function ClipboardSearchBridge() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { settingsStore, searchCoordinator } = useStores();
+  const enabled =
+    settingsStore.settings.clipboardClickSearch !== false && location.pathname !== "/settings";
+
+  useClipboardSearchGesture({
+    enabled,
+    onSearch: async (text) => {
+      if (location.pathname !== "/") {
+        navigate("/");
+      }
+      await searchCoordinator.search(text, { source: "clipboard-gesture" });
+    },
+  });
+
+  return null;
+});
 
 function UpdateBridge() {
   const {

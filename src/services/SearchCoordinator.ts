@@ -1,6 +1,7 @@
 import type { ProgressiveWordStore } from '../stores/ProgressiveWordStore';
 import type { PhraseStore } from '../stores/PhraseStore';
 import type { ZhEnStore } from '../stores/ZhEnStore';
+import type { TranslateStore } from '../stores/TranslateStore';
 import type { HistoryStore } from '../stores/HistoryStore';
 import type { NavigationStore } from '../stores/NavigationStore';
 import type { SpellCheckResponse, InputType } from '../types';
@@ -40,13 +41,13 @@ export interface SearchResult {
  * ```
  */
 export class SearchCoordinator {
-  private searchInProgress = false;
   private _currentInputType: InputType = 'word';
 
   constructor(
     private progressiveWordStore: ProgressiveWordStore,
     private phraseStore: PhraseStore,
     private zhEnStore: ZhEnStore,
+    private translateStore: TranslateStore,
     private historyStore: HistoryStore,
     private navigationStore: NavigationStore
   ) {}
@@ -58,11 +59,13 @@ export class SearchCoordinator {
   }
 
   get isBusy(): boolean {
+    // Related-word generation may still be in flight; header + meanings already
+    // clear store loading flags so the next lookup is not blocked.
     return (
-      this.searchInProgress ||
       this.progressiveWordStore.isLoading ||
       this.phraseStore.isLoading ||
-      this.zhEnStore.isLoading
+      this.zhEnStore.isLoading ||
+      this.translateStore.isLoading
     );
   }
 
@@ -74,7 +77,7 @@ export class SearchCoordinator {
    */
   async checkSpelling(word: string): Promise<SpellCheckResponse | null> {
     const trimmedWord = word.trim();
-    if (!trimmedWord || containsHan(trimmedWord)) {
+    if (!trimmedWord || containsHan(trimmedWord) || trimmedWord.includes('-')) {
       return null;
     }
 
@@ -116,50 +119,60 @@ export class SearchCoordinator {
     this._currentInputType = inputType;
 
     const handler =
-      inputType === 'zh-en'
+      inputType === 'translate'
         ? {
-            store: this.zhEnStore,
+            store: this.translateStore,
             clearOther: () => {
               this.progressiveWordStore.clearSearch();
               this.phraseStore.clearSearch();
+              this.zhEnStore.clearSearch();
             },
-            runSearch: () => this.zhEnStore.search(trimmedInput),
+            runSearch: () => this.translateStore.search(trimmedInput),
           }
-        : inputType === 'phrase'
+        : inputType === 'zh-en'
           ? {
-              store: this.phraseStore,
+              store: this.zhEnStore,
               clearOther: () => {
                 this.progressiveWordStore.clearSearch();
-                this.zhEnStore.clearSearch();
-              },
-              runSearch: () => this.phraseStore.searchPhrase(trimmedInput),
-            }
-          : {
-              store: this.progressiveWordStore,
-              clearOther: () => {
                 this.phraseStore.clearSearch();
-                this.zhEnStore.clearSearch();
+                this.translateStore.clearSearch();
               },
-              runSearch: () => this.progressiveWordStore.searchWord(trimmedInput),
-            };
+              runSearch: () => this.zhEnStore.search(trimmedInput),
+            }
+          : inputType === 'phrase'
+            ? {
+                store: this.phraseStore,
+                clearOther: () => {
+                  this.progressiveWordStore.clearSearch();
+                  this.zhEnStore.clearSearch();
+                  this.translateStore.clearSearch();
+                },
+                runSearch: () => this.phraseStore.searchPhrase(trimmedInput),
+              }
+            : {
+                store: this.progressiveWordStore,
+                clearOther: () => {
+                  this.phraseStore.clearSearch();
+                  this.zhEnStore.clearSearch();
+                  this.translateStore.clearSearch();
+                },
+                runSearch: () => this.progressiveWordStore.searchWord(trimmedInput),
+              };
 
-    if (this.searchInProgress || handler.store.isLoading) {
-      console.info(
-        '[SearchCoordinator] Ignoring search while another operation is in progress'
-      );
-      return;
-    }
+    handler.clearOther();
+    await handler.runSearch();
+    await this.historyStore.addToHistory(trimmedInput);
+    this.navigationStore.navigateTo(trimmedInput, options?.source);
+    return { inputType, term: trimmedInput };
+  }
 
-    this.searchInProgress = true;
-
-    try {
-      handler.clearOther();
-      await handler.runSearch();
-      await this.historyStore.addToHistory(trimmedInput);
-      this.navigationStore.navigateTo(trimmedInput, options?.source);
-      return { inputType, term: trimmedInput };
-    } finally {
-      this.searchInProgress = false;
-    }
+  resetToHome() {
+    this._currentInputType = 'word';
+    this.progressiveWordStore.clearSearch();
+    this.phraseStore.clearSearch();
+    this.zhEnStore.clearSearch();
+    this.translateStore.clearSearch();
+    this.progressiveWordStore.clearCurrentWord();
+    this.navigationStore.clear();
   }
 }

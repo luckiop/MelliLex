@@ -43,7 +43,7 @@ class WordLookupSearchStrategy implements SearchContextStrategy {
   readonly type = 'word' as const;
   readonly placeholderKey = 'search.placeholder';
   readonly requiresSpellCheck = true;
-  readonly clearOnSubmit = true;
+  readonly clearOnSubmit = false;
 
   constructor(private deps: {
     navigate: NavigateFunction;

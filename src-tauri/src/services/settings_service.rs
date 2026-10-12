@@ -97,6 +97,8 @@ mod tests {
             enable_global_lookup: true,
             typography_mode: "classic".into(),
             technical_query: false,
+            technical_domain: crate::models::default_technical_domain(),
+            clipboard_click_search: true,
             vocab_note_enabled: false,
             vocab_note_path: None,
             vocab_note_split_files: false,

@@ -26,7 +26,7 @@ vi.mock('../../components/phrase/ExportPhraseDialog', () => ({
 }));
 
 vi.mock('@tauri-apps/api/app', () => ({
-  getVersion: () => Promise.resolve('0.11.0'),
+  getVersion: () => Promise.resolve('0.12.1'),
 }));
 
 const sampleHeader: WordSection1Header = {
@@ -77,14 +77,20 @@ describe('Home page', () => {
     renderWithProviders(<Home />, { route: '/' });
     expect(screen.getByText('MelliLex')).toBeInTheDocument();
     expect(screen.getByText(/AI-powered word/)).toBeInTheDocument();
-    expect(await screen.findByText('v0.11.0 beta')).toBeInTheDocument();
-    expect(screen.getByText(/Type a word or phrase/)).toBeInTheDocument();
+    expect(await screen.findByText('v0.12.1 beta')).toBeInTheDocument();
+    expect(screen.getByText(/Type a word, phrase, Chinese/)).toBeInTheDocument();
     expect(screen.getByText('Definitions')).toBeInTheDocument();
     expect(screen.getByText('Vocab notebook')).toBeInTheDocument();
     expect(screen.getByText('Markdown notes')).toBeInTheDocument();
     expect(screen.getByText('Technical lookup')).toBeInTheDocument();
     expect(screen.getByText('History')).toBeInTheDocument();
     expect(screen.getByText('Settings')).toBeInTheDocument();
+    const apiGuide = screen.getByRole('button', { name: 'API' });
+    fireEvent.mouseEnter(apiGuide);
+    expect(screen.getByRole('button', { name: 'Open the DeepSeek platform' })).toBeInTheDocument();
+    expect(screen.getByText(/Create new API key/)).toBeInTheDocument();
+    fireEvent.mouseLeave(apiGuide.closest('div')!);
+    expect(screen.queryByRole('button', { name: 'Open the DeepSeek platform' })).not.toBeInTheDocument();
     expect(screen.getByText(/Meanings are generated as you search/)).toBeInTheDocument();
   });
 
@@ -263,6 +269,49 @@ describe('Home page', () => {
     renderWithProviders(<Home />, { store, route: '/' });
     expect(screen.getByText('餐桌')).toBeInTheDocument();
     expect(screen.getByText('dining table')).toBeInTheDocument();
+    expect(screen.queryByText('serendipity')).toBeNull();
+  });
+
+  it('renders translation results instead of the English header', () => {
+    const source =
+      'Bai Yu (白宇) is a lecturer in the College of Education Sciences at HKUST(GZ).';
+    const store = createMockRootStore({
+      progressiveWordStore: {
+        headerSection: sampleHeader,
+        meaningsSection: sampleMeanings,
+        relatedSection: sampleRelated,
+        isLoading: false,
+        hasError: false,
+        error: null,
+        currentWord: 'serendipity',
+        hasHeaderSection: true,
+        searchWord: vi.fn(),
+        clearCurrentWord: vi.fn(),
+        cleanup: vi.fn(),
+      },
+      translateStore: {
+        currentSource: source,
+        result: {
+          source,
+          translation: '白宇是香港科技大学（广州）教育科学学院的讲师。',
+          remark: '这是一段学术简历。',
+        },
+        isLoading: false,
+        hasError: false,
+        error: null,
+      },
+      searchCoordinator: {
+        search: vi.fn(),
+        checkSpelling: vi.fn(),
+        currentInputType: 'translate' as const,
+        isBusy: false,
+      },
+    });
+    renderWithProviders(<Home />, { store, route: '/' });
+    expect(screen.getByText('Translation')).toBeInTheDocument();
+    expect(screen.getByText(source)).toBeInTheDocument();
+    expect(screen.getByText('白宇是香港科技大学（广州）教育科学学院的讲师。')).toBeInTheDocument();
+    expect(screen.getByText('这是一段学术简历。')).toBeInTheDocument();
     expect(screen.queryByText('serendipity')).toBeNull();
   });
 });

@@ -26,6 +26,7 @@ export class ProgressiveWordStore extends BaseStore {
   currentWord: string = '';
   private currentWordKey: string = '';
   private activeHeaderWordKey: string | null = null;
+  private searchToken = 0;
   
   // Section States
   headerSection: WordSection1Header | null = null;
@@ -142,6 +143,7 @@ export class ProgressiveWordStore extends BaseStore {
     }
 
     const normalizedKey = this.normalizeWord(trimmedWord);
+    const token = ++this.searchToken;
     this.logger.info(`[ProgressiveWordStore] Starting progressive search: ${sanitizedDisplayWord}`);
 
     this.resetWordTracking();
@@ -158,28 +160,50 @@ export class ProgressiveWordStore extends BaseStore {
     await runProgressiveSearch({
       timeoutService: this.timeoutService,
       timeoutMs: TIMEOUTS.WORD_SEARCH,
-      isLoading: () => this.isLoading,
+      isLoading: () => this.isLoading && token === this.searchToken,
       onTimeout: () => {
+        if (token !== this.searchToken) {
+          return;
+        }
+        if (this.finishIfPrimarySectionsReady()) {
+          this.logger.error(
+            `[ProgressiveWordStore] Related words timed out for: ${word}; keeping header and meanings`
+          );
+          return;
+        }
         this.setError(
           `Search timed out after ${TIMEOUTS.WORD_SEARCH / 1000} seconds. Please try again.`
         );
-        // Don't reset currentWord so retry can work
         this.activeHeaderWordKey = null;
         this.logger.error(`[ProgressiveWordStore] Timeout for word: ${word}`);
       },
       onError: (err) => {
+        if (token !== this.searchToken) {
+          return;
+        }
+        if (this.finishIfPrimarySectionsReady()) {
+          this.logger.error(
+            '[ProgressiveWordStore] Search command failed after header/meanings; keeping results',
+            err as Error
+          );
+          return;
+        }
         this.logger.error('[ProgressiveWordStore] Search failed', err as Error);
         this.setError(getErrorMessage(err, ERROR_MESSAGES.SEARCH_FAILED));
-        // Don't reset currentWord so retry can work
         this.activeHeaderWordKey = null;
       },
       invoke: () => api.searchWordProgressive(sanitizedDisplayWord),
       logger: this.logger,
       logPrefix: '[ProgressiveWordStore]',
     });
+
+    if (token === this.searchToken) {
+      this.finishIfPrimarySectionsReady();
+    }
   }
 
   clearSearch() {
+    this.searchToken += 1;
     this.resetWordTracking();
     this.headerSection = null;
     this.meaningsSection = null;
@@ -219,10 +243,27 @@ export class ProgressiveWordStore extends BaseStore {
    * Check if all sections have loaded and transition to success state
    */
   private checkComplete(): void {
-    if (this.hasHeaderSection && this.hasMeaningsSection && this.hasRelatedSection) {
+    if (this.hasHeaderSection && this.hasMeaningsSection) {
       this.setSuccess();
-      this.logger.info('[ProgressiveWordStore] All sections loaded - complete');
+      this.logger.info('[ProgressiveWordStore] Header and meanings loaded — ready for another lookup');
     }
+  }
+
+  /** Header + meanings are enough to unblock the UI if related words never arrive. */
+  private finishIfPrimarySectionsReady(): boolean {
+    if (!this.hasHeaderSection || !this.hasMeaningsSection) {
+      return false;
+    }
+    if (!this.hasRelatedSection) {
+      this.hasRelatedSection = true;
+      this.relatedSection = this.relatedSection ?? {
+        synonyms: [],
+        antonyms: [],
+        collocations: [],
+      };
+    }
+    this.setSuccess();
+    return true;
   }
 
   private normalizeWord(word: string | undefined): string {

@@ -18,6 +18,10 @@ impl TextProcessor {
         }
     }
 
+    pub fn suggest_words(&self, query: &str) -> Vec<String> {
+        self.spell_checker.suggest(query, 8)
+    }
+
     pub fn preprocess_word(&self, word: &str) -> Result<PreprocessResult> {
         let spell_check = self.spell_checker.check(word)?;
 

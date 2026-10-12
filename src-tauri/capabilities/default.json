@@ -14,6 +14,7 @@
     "opener:allow-open-path",
     "log:default",
     "updater:default",
-    "dialog:allow-save"
+    "dialog:allow-save",
+    "clipboard-manager:allow-read-text"
   ]
 }

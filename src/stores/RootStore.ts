@@ -8,6 +8,7 @@ import { ExploreStore } from './ExploreStore';
 import { LastPageStore } from './LastPageStore';
 import { VocabStore } from './VocabStore';
 import { ZhEnStore } from './ZhEnStore';
+import { TranslateStore } from './TranslateStore';
 import { EventListenerService } from '../services/EventListenerService';
 import { TimeoutService } from '../services/TimeoutService';
 import { TauriLoggerService } from '../services/LoggerService';
@@ -31,6 +32,7 @@ export class RootStore {
   lastPageStore: LastPageStore;
   vocabStore: VocabStore;
   zhEnStore: ZhEnStore;
+  translateStore: TranslateStore;
   
   // Service coordinators
   searchCoordinator: SearchCoordinator;
@@ -42,6 +44,7 @@ export class RootStore {
     this.lastPageStore = new LastPageStore();
     this.vocabStore = new VocabStore();
     this.zhEnStore = new ZhEnStore();
+    this.translateStore = new TranslateStore();
     this.settingsStore.loadSettings();
 
     this.progressiveWordStore = new ProgressiveWordStore(
@@ -62,9 +65,16 @@ export class RootStore {
       this.progressiveWordStore,
       this.phraseStore,
       this.zhEnStore,
+      this.translateStore,
       this.historyStore,
       this.navigationStore
     );
+  }
+
+  resetToHome() {
+    this.searchCoordinator.resetToHome();
+    this.exploreStore.resetAll();
+    this.lastPageStore.setLastPage('/');
   }
 
   cleanup() {

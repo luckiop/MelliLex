@@ -18,15 +18,15 @@ describe('ValidationService', () => {
       expect(result.valid).toBe(true);
     });
 
-    it('should reject queries exceeding 100 characters', () => {
-      const longQuery = 'a'.repeat(101);
+    it('should reject queries exceeding 8000 characters', () => {
+      const longQuery = 'a'.repeat(8001);
       const result = ValidationService.validateSearchQuery(longQuery);
       expect(result.valid).toBe(false);
-      expect(result.error).toBe('Search query must be 100 characters or less');
+      expect(result.error).toBe('Search query must be 8000 characters or less');
     });
 
-    it('should accept queries exactly 100 characters', () => {
-      const query = 'a'.repeat(100);
+    it('should accept queries exactly 8000 characters', () => {
+      const query = 'a'.repeat(8000);
       const result = ValidationService.validateSearchQuery(query);
       expect(result.valid).toBe(true);
     });

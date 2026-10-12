@@ -332,6 +332,16 @@ pub struct ZhEnResult {
     pub equivalents: Vec<ZhEnEquivalent>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct TranslateResult {
+    #[serde(default)]
+    pub source: String,
+    pub translation: String,
+    #[serde(default)]
+    pub remark: Option<String>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AppSettings {
@@ -353,9 +363,15 @@ pub struct AppSettings {
     pub enable_global_lookup: bool,
     #[serde(default = "default_typography_mode")]
     pub typography_mode: String,
-    /// When true, the meanings prompt asks for a CS/control/robotics sense first.
+    /// When true, the meanings prompt pins a specialist sense from `technical_domain` first.
     #[serde(default)]
     pub technical_query: bool,
+    /// Field used by technical lookup. Empty values fall back to computing and control.
+    #[serde(default = "default_technical_domain")]
+    pub technical_domain: String,
+    /// Double right-click fills the search box from the clipboard; the next left click searches.
+    #[serde(default = "default_clipboard_click_search")]
+    pub clipboard_click_search: bool,
     #[serde(default)]
     pub vocab_note_enabled: bool,
     #[serde(default)]
@@ -380,6 +396,37 @@ fn default_typography_mode() -> String {
 
 fn default_max_meanings_display() -> u32 {
     5
+}
+
+pub fn default_technical_domain() -> String {
+    "computer science, control engineering, and robotics".to_string()
+}
+
+fn default_clipboard_click_search() -> bool {
+    true
+}
+
+/// Keep a user-written field name inside the prompt: no control characters, one line, bounded length.
+pub fn normalize_technical_domain(raw: &str) -> String {
+    let mut cleaned = String::new();
+    for ch in raw.chars() {
+        if ch.is_control() {
+            cleaned.push(' ');
+        } else if ch == '"' || ch == '`' {
+            continue;
+        } else {
+            cleaned.push(ch);
+        }
+        if cleaned.chars().count() >= 80 {
+            break;
+        }
+    }
+    let collapsed = cleaned.split_whitespace().collect::<Vec<_>>().join(" ");
+    if collapsed.is_empty() {
+        default_technical_domain()
+    } else {
+        collapsed
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1055,6 +1102,25 @@ mod practice_tests {
         assert_eq!(parsed.equivalents[0].expression, "dining table");
         assert_eq!(parsed.equivalents[0].part_of_speech, "n.");
         assert!(parsed.equivalents[0].contrast.contains("table"));
+    }
+
+    #[test]
+    fn parses_translate_json() {
+        let json = r#"{
+            "source": "Bai Yu (白宇) is a lecturer.",
+            "translation": "白宇是一名讲师。",
+            "remark": "这是一段简介。"
+        }"#;
+        let parsed: TranslateResult = serde_json::from_str(json).unwrap();
+        assert_eq!(parsed.source, "Bai Yu (白宇) is a lecturer.");
+        assert_eq!(parsed.translation, "白宇是一名讲师。");
+        assert_eq!(parsed.remark.as_deref(), Some("这是一段简介。"));
+
+        let no_remark: TranslateResult = serde_json::from_str(
+            r#"{"source":"Press Save.","translation":"请按「保存」。","remark":""}"#,
+        )
+        .unwrap();
+        assert_eq!(no_remark.remark.as_deref(), Some(""));
     }
 
     #[test]

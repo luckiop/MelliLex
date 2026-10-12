@@ -3,8 +3,8 @@ use crate::db::Database;
 use crate::errors::AppError;
 use crate::models::{
     AppSettings, CachedExploreFeatures, CachedFormalityData, DomainExploration,
-    FormalityAlternative, MistakeItem, PracticeExercise, SpellCheckResponse, UsagePattern,
-    ZhEnResult,
+    FormalityAlternative, MistakeItem, PracticeExercise, SpellCheckResponse, TranslateResult,
+    UsagePattern, ZhEnResult,
 };
 use crate::services::ai_provider::AiModel;
 use crate::services::dictionary_service::DictionaryService;
@@ -179,6 +179,10 @@ impl CommandOrchestrator {
         self.spellcheck_coordinator.get_word_variations(word).await
     }
 
+    pub fn suggest_words(&self, query: &str) -> Vec<String> {
+        self.spellcheck_coordinator.suggest_words(query)
+    }
+
     pub async fn search_word_progressive(
         &self,
         word: &str,
@@ -204,8 +208,9 @@ impl CommandOrchestrator {
         let language = Self::resolve_language(&settings);
         info!("Using explanation language: {}", language);
         let technical_query = settings.technical_query;
+        let technical_domain = crate::models::normalize_technical_domain(&settings.technical_domain);
         if technical_query {
-            info!("Technical query enabled: CS/control/robotics sense first");
+            info!("Technical query enabled for field: {technical_domain}");
         }
 
         let provider_priorities = Self::build_provider_priority_list(&settings);
@@ -234,6 +239,7 @@ impl CommandOrchestrator {
             &validated_word,
             &language,
             technical_query,
+            &technical_domain,
             emitter,
         )
         .await?;
@@ -271,6 +277,36 @@ impl CommandOrchestrator {
             "Completed zh-en search for '{}' ({} equivalents)",
             validated,
             result.equivalents.len()
+        );
+        Ok(result)
+    }
+
+    pub async fn search_translate(
+        &self,
+        source: &str,
+        db: &Database,
+    ) -> Result<TranslateResult, AppError> {
+        let validated = validation::validate_translation_query(source)?;
+        info!("Translate search ({} chars)", validated.chars().count());
+
+        let settings = self.load_settings(db)?;
+        let (dictionary_service, provider_name) = self.create_dictionary_service(&settings)?;
+        let cache_scope = format!("{}:translate", provider_name);
+
+        if let Some(cached) = db.get_cached_translate(&validated, &cache_scope)? {
+            info!("Translate cache hit");
+            return Ok(cached);
+        }
+
+        let (mut result, _) = dictionary_service.generate_translate(&validated).await?;
+        if result.source.trim().is_empty() {
+            result.source = validated.clone();
+        }
+        db.cache_translate(&validated, &result, &cache_scope)?;
+        db.add_to_history(&validated, &provider_name)?;
+        info!(
+            "Completed translate search ({} chars Chinese)",
+            result.translation.chars().count()
         );
         Ok(result)
     }

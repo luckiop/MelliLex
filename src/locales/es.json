@@ -23,7 +23,7 @@
     "clear": "Borrar búsqueda",
     "submit": "Enviar búsqueda",
     "technical": "Téc",
-    "technicalHint": "Pon primero un sentido de CS / control / robótica en las definiciones"
+    "technicalHint": "Pon primero un sentido de {{domain}}"
   },
   "navigation": {
     "home": "Definir",

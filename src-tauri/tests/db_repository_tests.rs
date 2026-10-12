@@ -212,6 +212,8 @@ fn test_settings_persistence() {
         enable_global_lookup: false,
         typography_mode: "modern".to_string(),
         technical_query: false,
+        technical_domain: default_technical_domain(),
+        clipboard_click_search: true,
         vocab_note_enabled: false,
         vocab_note_path: None,
         vocab_note_split_files: false,

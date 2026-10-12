@@ -19,10 +19,17 @@ export const PhraseCard = observer(() => {
     relatedSection,
     hasOverviewSection,
     hasContextSection,
-    hasRelatedSection,
     isLoading,
     error,
   } = phraseStore;
+
+  const hasRelatedContent = Boolean(
+    relatedSection &&
+      (relatedSection.variations.length > 0 ||
+        relatedSection.similarPhrases.length > 0 ||
+        relatedSection.oppositePhrases.length > 0 ||
+        relatedSection.seeAlso.length > 0)
+  );
 
   if (error) {
     return (
@@ -65,13 +72,15 @@ export const PhraseCard = observer(() => {
         </Card>
       )}
 
-      {hasOverviewSection && (
+      {hasOverviewSection && isLoading && !hasRelatedContent && (
         <Card className="p-6 animate-fadeIn define-card define-card--accent-plum">
-          {hasRelatedSection && relatedSection ? (
-            <PhraseRelatedSection data={relatedSection} />
-          ) : (
-            <PhraseRelatedSkeleton />
-          )}
+          <PhraseRelatedSkeleton />
+        </Card>
+      )}
+
+      {hasOverviewSection && hasRelatedContent && (
+        <Card className="p-6 animate-fadeIn define-card define-card--accent-plum">
+          <PhraseRelatedSection data={relatedSection!} />
         </Card>
       )}
     </div>

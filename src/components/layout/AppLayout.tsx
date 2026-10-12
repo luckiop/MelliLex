@@ -19,7 +19,7 @@ interface AppLayoutProps {
  */
 export function AppLayout({ children }: AppLayoutProps) {
   return (
-    <div className="flex-1 relative overflow-hidden bg-background/80">
+    <div className="flex-1 relative overflow-hidden bg-background dark:bg-background/80">
       <AppHeader />
       <main
         className="absolute inset-0 overflow-y-auto overflow-x-hidden"

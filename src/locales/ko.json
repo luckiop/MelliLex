@@ -23,7 +23,7 @@
     "clear": "지우기",
     "submit": "검색 실행",
     "technical": "기술",
-    "technicalHint": "뜻풀이 맨 앞에 CS / 제어 / 로봇 전문 의미를 둡니다"
+    "technicalHint": "뜻풀이 맨 앞에 {{domain}} 전문 의미를 둡니다"
   },
   "navigation": {
     "home": "정의",

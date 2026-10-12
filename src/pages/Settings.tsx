@@ -27,7 +27,9 @@ import {
   GlobalLookupSection,
   AboutSection,
   VocabSection,
+  TechnicalDomainSection,
 } from '../components/settings';
+import { DEFAULT_TECHNICAL_DOMAIN } from '../components/settings/TechnicalDomainSection';
 
 interface SettingsSection {
   id: string;
@@ -109,6 +111,8 @@ export const Settings = observer(() => {
   const [applyingLanguages, setApplyingLanguages] = useState(false);
 
   const [globalLookupEnabled, setGlobalLookupEnabled] = useState(true);
+  const [clipboardClickSearch, setClipboardClickSearch] = useState(true);
+  const [technicalDomain, setTechnicalDomain] = useState(DEFAULT_TECHNICAL_DOMAIN);
 
   useEffect(() => {
     settingsStore.loadSettings();
@@ -119,10 +123,14 @@ export const Settings = observer(() => {
     setSelectedUILanguage(settingsStore.settings.uiLanguage || 'English');
     setSelectedExplanationLanguage(settingsStore.settings.explanationLanguage || 'English');
     setGlobalLookupEnabled(settingsStore.settings.enableGlobalLookup ?? true);
+    setClipboardClickSearch(settingsStore.settings.clipboardClickSearch !== false);
+    setTechnicalDomain(settingsStore.settings.technicalDomain?.trim() || DEFAULT_TECHNICAL_DOMAIN);
   }, [
     settingsStore.settings.uiLanguage,
     settingsStore.settings.explanationLanguage,
-    settingsStore.settings.enableGlobalLookup
+    settingsStore.settings.enableGlobalLookup,
+    settingsStore.settings.clipboardClickSearch,
+    settingsStore.settings.technicalDomain,
   ]);
 
   useEffect(() => {
@@ -188,6 +196,16 @@ export const Settings = observer(() => {
   const handleGlobalLookupEnabledChange = async (enabled: boolean) => {
     setGlobalLookupEnabled(enabled);
     await settingsStore.updateSettings({ enableGlobalLookup: enabled });
+  };
+
+  const handleClipboardClickSearchChange = async (enabled: boolean) => {
+    setClipboardClickSearch(enabled);
+    await settingsStore.updateSettings({ clipboardClickSearch: enabled });
+  };
+
+  const handleTechnicalDomainChange = async (domain: string) => {
+    setTechnicalDomain(domain);
+    await settingsStore.updateSettings({ technicalDomain: domain });
   };
 
   const handleApplyTypography = async (option: TypographyOption) => {
@@ -256,6 +274,13 @@ export const Settings = observer(() => {
                       <p>{t('settings.general.noteEnglishWords')}</p>
                     </div>
 
+                    <TechnicalDomainSection
+                      value={technicalDomain}
+                      onChange={(domain) => {
+                        void handleTechnicalDomainChange(domain);
+                      }}
+                    />
+
                     <Button
                       onClick={handleApplyLanguages}
                       disabled={
@@ -279,6 +304,10 @@ export const Settings = observer(() => {
                   <GlobalLookupSection
                     enabled={globalLookupEnabled}
                     onEnabledChange={handleGlobalLookupEnabledChange}
+                    clipboardSearchEnabled={clipboardClickSearch}
+                    onClipboardSearchChange={(enabled) => {
+                      void handleClipboardClickSearchChange(enabled);
+                    }}
                   />
                 )}
                 {section.id === 'ai-provider' && (

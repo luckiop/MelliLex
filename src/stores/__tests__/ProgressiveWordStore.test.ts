@@ -102,6 +102,18 @@ describe('ProgressiveWordStore', () => {
     expect(store.relatedSection?.synonyms).toContain('ally');
   });
 
+  it('unblocks after header and meanings even if related words never arrive', async () => {
+    apiMocks.searchWordProgressive.mockResolvedValue(undefined);
+
+    await store.searchWord('spark');
+    listener.emit(EVENTS.WORD_SECTION_1_HEADER, headerPayload('spark'));
+    listener.emit(EVENTS.WORD_SECTION_2_MEANINGS, meaningsPayload('spark'));
+
+    expect(store.hasError).toBe(false);
+    expect(store.isLoading).toBe(false);
+    expect(store.headerSection?.word).toBe('spark');
+  });
+
   it('rejects searches that normalize to an empty string', async () => {
     await store.searchWord("!!!");
 

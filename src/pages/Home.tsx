@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { getVersion } from '@tauri-apps/api/app';
+import { APP_VERSION } from '../constants/app';
 import { useStores } from '../stores/RootStore';
 import { useTypingAnimation } from '../hooks/useTypingAnimation';
 import { Card } from '../components/ui/card';
@@ -16,20 +17,23 @@ import {
 } from '../components/sections';
 import { PhraseCard } from '../components/phrase';
 import { ZhEnResultsView } from '../components/zhen/ZhEnResultsView';
+import { TranslateResultsView } from '../components/translate/TranslateResultsView';
 import { HomeFeatureGrid } from '../components/onboarding/HomeFeatureGrid';
 import { PageHint } from '../components/onboarding/PageHintBanner';
 
 export const Home = observer(() => {
   const { t } = useTranslation();
-  const { progressiveWordStore, phraseStore, zhEnStore, searchCoordinator, lastPageStore } = useStores();
-  const [appVersion, setAppVersion] = useState('');
+  const { progressiveWordStore, phraseStore, zhEnStore, translateStore, searchCoordinator, lastPageStore } = useStores();
+  const [appVersion, setAppVersion] = useState(APP_VERSION);
 
   useEffect(() => {
     lastPageStore.setLastPage('/');
   }, [lastPageStore]);
 
   useEffect(() => {
-    void getVersion().then(setAppVersion).catch(() => undefined);
+    void getVersion()
+      .then(setAppVersion)
+      .catch(() => setAppVersion(APP_VERSION));
   }, []);
 
   const { displayedWord, isTyping } = useTypingAnimation(
@@ -47,15 +51,22 @@ export const Home = observer(() => {
     phraseStore.relatedSection;
 
   const hasZhEnData = Boolean(zhEnStore.result) || zhEnStore.isLoading || zhEnStore.hasError;
-  const hasAnyData = hasWordData || hasPhraseData || hasZhEnData;
+  const hasTranslateData =
+    Boolean(translateStore.result) || translateStore.isLoading || translateStore.hasError;
+  const hasAnyData = hasWordData || hasPhraseData || hasZhEnData || hasTranslateData;
   const isWordLoading = progressiveWordStore.isLoading;
   const isPhraseLoading = phraseStore.isLoading;
-  const isLoading = isWordLoading || isPhraseLoading || zhEnStore.isLoading;
+  const isLoading = isWordLoading || isPhraseLoading || zhEnStore.isLoading || translateStore.isLoading;
   
+  const showTranslateUI =
+    hasTranslateData ||
+    (translateStore.isLoading && searchCoordinator.currentInputType === 'translate');
   const showZhEnUI =
-    hasZhEnData ||
-    (zhEnStore.isLoading && searchCoordinator.currentInputType === 'zh-en');
+    !showTranslateUI &&
+    (hasZhEnData ||
+      (zhEnStore.isLoading && searchCoordinator.currentInputType === 'zh-en'));
   const showPhraseUI =
+    !showTranslateUI &&
     !showZhEnUI &&
     (hasPhraseData || (isPhraseLoading && searchCoordinator.currentInputType === 'phrase'));
 
@@ -76,19 +87,19 @@ export const Home = observer(() => {
   return (
     <div className="container mx-auto px-8 py-12 max-w-3xl">
       <PageHint pageId="home" />
-      {!hasAnyData && !isLoading && !progressiveWordStore.hasError && !phraseStore.hasError && !zhEnStore.hasError && (
-        <div className="max-w-xl mx-auto text-center py-8">
-          <h1 className="text-7xl font-bold text-foreground mb-6 tracking-tight">
+      {!hasAnyData && !isLoading && !progressiveWordStore.hasError && !phraseStore.hasError && !zhEnStore.hasError && !translateStore.hasError && (
+        <div className="mx-auto max-w-xl py-10 text-center">
+          <h1 className="mb-3 text-5xl font-semibold tracking-tight text-foreground">
             {t('home.title')}
           </h1>
-          <p className="text-xl text-muted-foreground mb-2">
+          <p className="text-lg text-muted-foreground">
             {t('home.subtitle')}
           </p>
-          {appVersion && (
-            <p className="text-xs font-mono text-muted-foreground/70 mb-8">
+          {appVersion ? (
+            <p className="mb-5 mt-2 text-xs text-muted-foreground/80">
               {t('home.versionLabel', { version: appVersion })}
             </p>
-          )}
+          ) : null}
           <div className="space-y-2 text-sm text-muted-foreground">
             <p>{t('home.prompt')}</p>
             <p className="text-xs text-muted-foreground/60">
@@ -113,11 +124,13 @@ export const Home = observer(() => {
         />
       )}
 
+      {showTranslateUI && <TranslateResultsView />}
+
       {showZhEnUI && <ZhEnResultsView />}
 
       {showPhraseUI && <PhraseCard />}
 
-      {!showZhEnUI && !showPhraseUI && isWordLoading && (
+      {!showTranslateUI && !showZhEnUI && !showPhraseUI && isWordLoading && (
         <div className="space-y-4">
           <Card className="p-6 define-card define-card--accent-blue">
             {progressiveWordStore.headerSection ? (
@@ -147,9 +160,9 @@ export const Home = observer(() => {
 
           {progressiveWordStore.hasHeaderSection && (
             <Card className="p-6 animate-fadeIn define-card define-card--accent-plum">
-              {progressiveWordStore.relatedSection ? (
+              {hasRelatedContent(progressiveWordStore.relatedSection) ? (
                 <WordSection3RelatedView
-                  data={progressiveWordStore.relatedSection}
+                  data={progressiveWordStore.relatedSection!}
                   onWordNavigate={(word) => { searchCoordinator.search(word, { source: 'related-word' }); }}
                 />
               ) : (
@@ -160,7 +173,7 @@ export const Home = observer(() => {
         </div>
       )}
 
-      {!showZhEnUI && !showPhraseUI && !isWordLoading && hasWordData && (
+      {!showTranslateUI && !showZhEnUI && !showPhraseUI && !isWordLoading && hasWordData && (
         <div className="space-y-4">
           {progressiveWordStore.headerSection && (
             <Card className="p-6 define-card define-card--accent-blue">
@@ -177,10 +190,10 @@ export const Home = observer(() => {
             </Card>
           )}
 
-          {progressiveWordStore.relatedSection && (
+          {hasRelatedContent(progressiveWordStore.relatedSection) && (
             <Card className="p-6 define-card define-card--accent-plum">
               <WordSection3RelatedView
-                data={progressiveWordStore.relatedSection}
+                data={progressiveWordStore.relatedSection!}
                 onWordNavigate={(word) => { searchCoordinator.search(word, { source: 'related-word' }); }}
               />
             </Card>
@@ -196,3 +209,16 @@ export const Home = observer(() => {
     </div>
   );
 });
+
+function hasRelatedContent(
+  related: { synonyms: string[]; antonyms: string[]; collocations: unknown[] } | null
+): boolean {
+  if (!related) {
+    return false;
+  }
+  return (
+    related.synonyms.length > 0 ||
+    related.antonyms.length > 0 ||
+    related.collocations.length > 0
+  );
+}

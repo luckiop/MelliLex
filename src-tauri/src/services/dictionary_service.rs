@@ -1,6 +1,6 @@
 use crate::models::{
     WordSection1Header, WordSection2Meanings, WordMistakes, WordSection3Related,
-    TokenUsage, ZhEnResult,
+    TokenUsage, TranslateResult, ZhEnResult,
 };
 use crate::services::ai_provider::PromptSender;
 use crate::services::prompt_manager::PromptManager;
@@ -56,17 +56,19 @@ impl DictionaryService {
         word: &str,
         language: &str,
         technical_query: bool,
+        technical_domain: &str,
     ) -> Result<(WordSection2Meanings, Option<TokenUsage>)> {
         log::debug!(
-            "Generating section 2 (meanings) for: {} in {} (technical={})",
+            "Generating section 2 (meanings) for: {} in {} (technical={}, domain={})",
             word,
             language,
-            technical_query
+            technical_query,
+            technical_domain
         );
 
         let prompt = self
             .prompt_manager
-            .render_section2_meanings(word, language, technical_query)
+            .render_section2_meanings(word, language, technical_query, technical_domain)
             .ok_or_else(|| anyhow::anyhow!("Template 'section2_meanings' not found"))?;
         let (response, token_usage) = self.ai_provider.send_prompt(&prompt).await?;
 
@@ -169,6 +171,44 @@ impl DictionaryService {
             result.query
         );
         log_token_usage(&token_usage, "Zh-en equivalents");
+
+        Ok((result, token_usage))
+    }
+
+    pub async fn generate_translate(
+        &self,
+        source: &str,
+    ) -> Result<(TranslateResult, Option<TokenUsage>)> {
+        log::info!("Generating translation ({} chars)", source.chars().count());
+
+        let prompt = self
+            .prompt_manager
+            .render_translate(source)
+            .ok_or_else(|| anyhow::anyhow!("Template 'translate' not found"))?;
+        let (response, token_usage) = self.ai_provider.send_prompt(&prompt).await?;
+
+        let mut result: TranslateResult =
+            ResponseParser::parse_partial(&response, "translate")?;
+        if result.source.trim().is_empty() {
+            result.source = source.to_string();
+        }
+        result.translation = result.translation.trim().to_string();
+        if result.translation.is_empty() {
+            return Err(anyhow::anyhow!("Translate payload had no translation"));
+        }
+        if let Some(remark) = result.remark.as_mut() {
+            *remark = remark.trim().to_string();
+            if remark.is_empty() {
+                result.remark = None;
+            }
+        }
+
+        log::info!(
+            "Translate completed: {} chars Chinese, remark={}",
+            result.translation.chars().count(),
+            result.remark.is_some()
+        );
+        log_token_usage(&token_usage, "Translate");
 
         Ok((result, token_usage))
     }

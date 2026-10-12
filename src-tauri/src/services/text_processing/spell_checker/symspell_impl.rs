@@ -1,11 +1,14 @@
+use super::suggest::{self, DictEntry, FuzzyHit};
 use crate::services::text_processing::{SpellCheckResult, SpellChecker};
 use crate::utils::resource_path;
 use anyhow::Result;
+use std::fs;
 use std::path::Path;
 use symspell::{AsciiStringStrategy, SymSpell, Verbosity};
 
 pub struct SymSpellChecker {
     symspell: SymSpell<AsciiStringStrategy>,
+    entries: Vec<DictEntry>,
     max_edit_distance: i64,
 }
 
@@ -25,10 +28,32 @@ impl SymSpellChecker {
             ));
         }
 
+        let entries = fs::read_to_string(dict_path_str.as_ref())
+            .map(|text| suggest::load_entries(&text))
+            .unwrap_or_default();
+
         Ok(Self {
             symspell,
+            entries,
             max_edit_distance: 2,
         })
+    }
+
+    pub fn suggest(&self, query: &str, limit: usize) -> Vec<String> {
+        let Some(normalized) = suggest::normalize_query(query) else {
+            return Vec::new();
+        };
+        let fuzzy = self
+            .symspell
+            .lookup(&normalized, Verbosity::All, self.max_edit_distance)
+            .into_iter()
+            .map(|item| FuzzyHit {
+                term: item.term,
+                distance: i64::from(item.distance),
+                count: item.count,
+            })
+            .collect::<Vec<_>>();
+        suggest::suggest_from(&self.entries, &fuzzy, &normalized, limit)
     }
 }
 
@@ -65,6 +90,10 @@ impl SpellChecker for SymSpellChecker {
 
     fn name(&self) -> &str {
         "SymSpell"
+    }
+
+    fn suggest(&self, query: &str, limit: usize) -> Vec<String> {
+        Self::suggest(self, query, limit)
     }
 }
 
@@ -116,5 +145,27 @@ mod tests {
         );
     }
 
-
+    #[test]
+    fn suggests_captain_for_prefix_and_transposition() {
+        let checker = match SymSpellChecker::new() {
+            Ok(checker) => checker,
+            Err(_) => {
+                eprintln!("Skipping test: dictionary not available");
+                return;
+            }
+        };
+        let prefix = checker.suggest("capt", 8);
+        assert!(
+            prefix.iter().any(|word| word == "captain"),
+            "prefix suggestions: {prefix:?}"
+        );
+        let typo = checker.suggest("captian", 8);
+        assert_eq!(
+            typo.first().map(String::as_str),
+            Some("captain"),
+            "typo suggestions: {typo:?}"
+        );
+        assert!(checker.suggest("c", 8).is_empty());
+        assert!(checker.suggest("break the ice", 8).is_empty());
+    }
 }

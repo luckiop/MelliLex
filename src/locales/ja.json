@@ -23,7 +23,7 @@
     "clear": "クリア",
     "submit": "検索する",
     "technical": "技術",
-    "technicalHint": "意味の先頭に CS / 制御 / ロボットの専門義を置く"
+    "technicalHint": "意味の先頭に{{domain}}の専門義を置く"
   },
   "navigation": {
     "home": "定義",

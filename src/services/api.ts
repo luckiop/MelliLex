@@ -10,6 +10,7 @@ import type {
   VocabEntry,
   VocabNoteSnippet,
   VocabUpsertResult,
+  TranslateResult,
   ZhEnResult,
 } from '../types';
 import { isDevLogEnabled, reportClientError } from '../utils/devLog';
@@ -41,6 +42,14 @@ const wrapInvoke = async <T>(command: string, args?: Record<string, unknown>): P
 
 export const api = {
   // Spell Check (before word search)
+  async suggestWords(query: string): Promise<string[]> {
+    try {
+      return await invoke<string[]>('suggest_words', { query });
+    } catch {
+      return [];
+    }
+  },
+
   async checkSpelling(word: string): Promise<SpellCheckResponse> {
     logger.info(`[API] Checking spelling: ${word}`);
     const result = await wrapInvoke<SpellCheckResponse>('check_spelling', { word });
@@ -74,6 +83,15 @@ export const api = {
     logger.info(`[API] Invoking search_zh_en: ${query}`);
     const result = await wrapInvoke<ZhEnResult>('search_zh_en', { query });
     logger.info(`[API] search_zh_en complete: ${result.equivalents?.length ?? 0} equivalents`);
+    return result;
+  },
+
+  async searchTranslate(source: string): Promise<TranslateResult> {
+    logger.info(`[API] Invoking search_translate (${source.length} chars)`);
+    const result = await wrapInvoke<TranslateResult>('search_translate', { source });
+    logger.info(
+      `[API] search_translate complete (${result.translation?.length ?? 0} chars Chinese)`
+    );
     return result;
   },
 

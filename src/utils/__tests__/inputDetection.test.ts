@@ -5,6 +5,7 @@ import {
   isEnglishLexeme,
   normalizePhrase,
   sanitizeDisplayText,
+  truncateForSearchBar,
 } from '../inputDetection';
 
 describe('inputDetection', () => {
@@ -47,6 +48,29 @@ describe('inputDetection', () => {
       expect(isEnglishLexeme('机械的')).toBe(false);
       expect(isEnglishLexeme('メカニカル')).toBe(false);
     });
+
+    it('should treat mixed Chinese-English bios as translation, not zh-en', () => {
+      expect(
+        detectInputType(
+          'Bai Yu (白宇) is a lecturer in the College of Education Sciences at HKUST(GZ). He holds a PhD in'
+        )
+      ).toBe('translate');
+    });
+
+    it('should treat long text as translation even without punctuation', () => {
+      expect(detectInputType('a'.repeat(40))).toBe('translate');
+      expect(detectInputType('a'.repeat(39))).toBe('word');
+    });
+
+    it('should treat spaced sentence punctuation as translation', () => {
+      expect(detectInputType('Hello, world')).toBe('translate');
+    });
+
+    it('should keep short words with internal punctuation as words', () => {
+      expect(detectInputType("don't")).toBe('word');
+      expect(detectInputType('Hello!')).toBe('word');
+      expect(detectInputType('gpt-5.4')).toBe('word');
+    });
   });
 
   describe('normalizePhrase', () => {
@@ -83,6 +107,20 @@ describe('inputDetection', () => {
     it('should keep Chinese queries instead of stripping them', () => {
       expect(sanitizeDisplayText('餐桌')).toBe('餐桌');
       expect(sanitizeDisplayText('  一次性用品  ')).toBe('一次性用品');
+    });
+  });
+
+  describe('truncateForSearchBar', () => {
+    it('keeps short text unchanged', () => {
+      expect(truncateForSearchBar('eloquent')).toBe('eloquent');
+    });
+
+    it('collapses a long query to one ellipsis line', () => {
+      expect(
+        truncateForSearchBar(
+          'Dear Professor Albright, thank you for the letter of recommendation.'
+        )
+      ).toBe('Dear Professor Albri……');
     });
   });
 });
