@@ -4,6 +4,7 @@ import { Volume2, Share2, Lightbulb, BookOpen, MessageCircle } from 'lucide-reac
 import { toast } from 'sonner';
 import { PhraseTypeBadge, RegionBadge, FormalityBadge } from './PhraseTypeBadge';
 import { ExportPhraseDialog } from './ExportPhraseDialog';
+import { pronunciation } from '../../services/pronunciation';
 
 interface Props {
   data: PhraseSection1Overview;
@@ -11,14 +12,6 @@ interface Props {
 
 export const PhraseOverviewSection = ({ data }: Props) => {
   const { t } = useTranslation();
-
-  const handlePronounce = () => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(data.phrase);
-        utterance.rate = 0.9;
-      window.speechSynthesis.speak(utterance);
-    }
-  };
 
   const handleShare = async () => {
     const shareData = {
@@ -103,7 +96,7 @@ export const PhraseOverviewSection = ({ data }: Props) => {
 
       <div className="flex flex-wrap gap-2">
         <button
-          onClick={handlePronounce}
+          onClick={() => pronunciation.play(data.phrase)}
           className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-border rounded-lg hover:bg-accent hover:border-foreground transition-colors cursor-pointer"
         >
           <Volume2 className="w-4 h-4" />

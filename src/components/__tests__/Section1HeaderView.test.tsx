@@ -3,6 +3,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Section1HeaderView } from '../sections/Section1HeaderView';
 import { renderWithProviders, createMockRootStore } from '../../test/test-utils';
 import type { WordSection1Header } from '../../types';
+import { pronunciation } from '../../services/pronunciation';
+
+vi.mock('../../services/pronunciation', () => ({
+  pronunciation: {
+    play: vi.fn(),
+    stop: vi.fn(),
+  },
+}));
 
 // Mock sonner toast
 vi.mock('sonner', () => ({
@@ -28,6 +36,7 @@ const sampleHeader: WordSection1Header = {
 describe('Section1HeaderView', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
+    vi.mocked(pronunciation.play).mockClear();
   });
 
   afterEach(() => {
@@ -61,19 +70,10 @@ describe('Section1HeaderView', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/explore');
   });
 
-  it('calls speechSynthesis when pronounce is clicked', () => {
-    const mockSpeak = vi.fn();
-    const mockUtterance = vi.fn();
-    Object.defineProperty(window, 'speechSynthesis', {
-      value: { speak: mockSpeak },
-      writable: true,
-      configurable: true,
-    });
-    vi.stubGlobal('SpeechSynthesisUtterance', mockUtterance);
+  it('plays the word when pronounce is clicked', () => {
     renderWithProviders(<Section1HeaderView data={sampleHeader} />);
     fireEvent.click(screen.getByLabelText(/pronounce/i));
-    expect(mockSpeak).toHaveBeenCalled();
-    expect(mockUtterance).toHaveBeenCalledWith('eloquent');
+    expect(pronunciation.play).toHaveBeenCalledWith('eloquent');
   });
 
   it('adds the word to the vocab notebook from the header', () => {

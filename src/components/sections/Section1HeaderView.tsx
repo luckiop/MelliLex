@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useStores } from '../../stores/RootStore';
 import { snippetsFromMeanings } from '../../utils/vocab';
 import { VocabStarIcons } from '../vocab/VocabStarIcons';
+import { pronunciation } from '../../services/pronunciation';
 
 interface Props {
   data: WordSection1Header;
@@ -31,13 +32,6 @@ export const Section1HeaderView = observer(({ data }: Props) => {
   };
 
   const originInfo = getOriginDisplay(data.origin);
-
-  const handlePronounce = () => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(data.word);
-      window.speechSynthesis.speak(utterance);
-    }
-  };
 
   const handleExplore = () => {
     navigate('/explore');
@@ -103,7 +97,7 @@ export const Section1HeaderView = observer(({ data }: Props) => {
 
       <div className="flex items-center gap-3 pb-6 border-b border-border">
         <button
-          onClick={handlePronounce}
+          onClick={() => pronunciation.play(data.word)}
           className="p-2 hover:bg-accent rounded-lg transition-colors border border-border hover:border-foreground"
           aria-label={t('wordHeader.pronounceAriaLabel')}
         >

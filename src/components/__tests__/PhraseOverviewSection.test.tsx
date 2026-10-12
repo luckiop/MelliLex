@@ -1,8 +1,16 @@
-import { screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { screen, fireEvent } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PhraseOverviewSection } from '../phrase/PhraseOverviewSection';
 import { renderWithProviders } from '../../test/test-utils';
 import type { PhraseSection1Overview } from '../../types';
+import { pronunciation } from '../../services/pronunciation';
+
+vi.mock('../../services/pronunciation', () => ({
+  pronunciation: {
+    play: vi.fn(),
+    stop: vi.fn(),
+  },
+}));
 
 // Mock sonner toast
 vi.mock('sonner', () => ({
@@ -25,6 +33,10 @@ const sampleOverview: PhraseSection1Overview = {
 };
 
 describe('PhraseOverviewSection', () => {
+  beforeEach(() => {
+    vi.mocked(pronunciation.play).mockClear();
+  });
+
   it('renders key phrase content and badges', () => {
     renderWithProviders(<PhraseOverviewSection data={sampleOverview} />);
     expect(screen.getByText('break the ice')).toBeInTheDocument();
@@ -34,6 +46,12 @@ describe('PhraseOverviewSection', () => {
     expect(screen.getByText('Idiom')).toBeInTheDocument();
     expect(screen.getByText(/pronounce/i)).toBeInTheDocument();
     expect(screen.getByText(/share/i)).toBeInTheDocument();
+  });
+
+  it('plays the phrase when pronounce is clicked', () => {
+    renderWithProviders(<PhraseOverviewSection data={sampleOverview} />);
+    fireEvent.click(screen.getByRole('button', { name: /pronounce/i }));
+    expect(pronunciation.play).toHaveBeenCalledWith('break the ice');
   });
 
   it('shows only meaning section when no literalMeaning', () => {
