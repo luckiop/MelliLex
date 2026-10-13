@@ -336,6 +336,16 @@
     "usedIn": "Verwendet in",
     "pronounceAriaLabel": "Wort aussprechen"
   },
+  "pronunciation": {
+    "downloadTitle": "Natürliche Stimme herunterladen?",
+    "downloadDescription": "Wörter und Wendungen können eine natürliche englische Stimme verwenden, die auf diesem Computer bleibt. Der Download ist etwa 100 MB groß und erfolgt einmal. Die Systemstimme kann weiter verwendet werden.",
+    "download": "Stimme herunterladen",
+    "useSystem": "Systemstimme verwenden",
+    "downloading": "Stimme wird heruntergeladen…",
+    "preparing": "Stimme wird vorbereitet…",
+    "errorTitle": "Download der Stimme fehlgeschlagen",
+    "errorDescription": "Die natürliche Stimme konnte nicht heruntergeladen werden. Sie können es erneut versuchen oder die Systemstimme behalten."
+  },
   "errors": {
     "cacheOperation": "Cache-Vorgang fehlgeschlagen",
     "providerConfigurationRequired": "Anbieterkonfiguration erforderlich"

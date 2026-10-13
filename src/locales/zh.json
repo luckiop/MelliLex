@@ -534,6 +534,16 @@
     "translation": "译文",
     "remark": "点评"
   },
+  "pronunciation": {
+    "downloadTitle": "下载更自然的发音？",
+    "downloadDescription": "单词和短语可以使用保存在这台电脑上的自然英语语音。下载大约 100 MB，只需一次。也可以继续使用当前的系统语音。",
+    "download": "下载语音",
+    "useSystem": "使用系统语音",
+    "downloading": "正在下载语音…",
+    "preparing": "正在准备语音…",
+    "errorTitle": "语音下载失败",
+    "errorDescription": "自然语音没有下载成功。可以重试，也可以继续使用系统语音。"
+  },
   "errors": {
     "cacheOperation": "缓存操作失败",
     "providerConfigurationRequired": "需要配置供应商"

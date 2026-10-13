@@ -1,3 +1,9 @@
+// The test harness is not linked with tauri-build's manifest, so comctl32 v6
+// would stay inactive and TaskDialogIndirect would fail at process start.
+#[cfg(all(windows, test, target_env = "gnu"))]
+#[link(name = "test_manifest", kind = "static", modifiers = "+whole-archive")]
+extern "C" {}
+
 mod commands;
 mod constants;
 mod errors;
@@ -164,6 +170,7 @@ pub fn run() {
             write_crash_log("Step 8: Database initialized, managing state");
             app.manage(database);
             app.manage(CommandOrchestrator::default());
+            app.manage(services::kokoro::KokoroState::default());
 
             // Apply platform-specific visual effects (with custom title bar)
             write_crash_log("Step 9: Getting main window");
@@ -280,6 +287,10 @@ pub fn run() {
             get_log_dir,
             dev_log,
             log_client_error,
+            kokoro_status,
+            kokoro_download,
+            kokoro_reset,
+            kokoro_synthesize,
         ])
         .run(context);
     

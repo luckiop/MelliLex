@@ -336,6 +336,16 @@
     "usedIn": "Usato in",
     "pronounceAriaLabel": "Pronuncia la parola"
   },
+  "pronunciation": {
+    "downloadTitle": "Scaricare una voce naturale?",
+    "downloadDescription": "Parole e frasi possono usare una voce inglese naturale salvata su questo computer. Il download è di circa 100 MB e avviene una sola volta. Puoi continuare a usare la voce di sistema.",
+    "download": "Scarica la voce",
+    "useSystem": "Usa la voce di sistema",
+    "downloading": "Download della voce…",
+    "preparing": "Preparazione della voce…",
+    "errorTitle": "Download della voce non riuscito",
+    "errorDescription": "Non è stato possibile scaricare la voce naturale. Puoi riprovare o continuare con la voce di sistema."
+  },
   "errors": {
     "cacheOperation": "Operazione sulla cache non riuscita",
     "providerConfigurationRequired": "Configurazione del fornitore richiesta"

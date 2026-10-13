@@ -9,6 +9,7 @@ pub mod explore_cache_repository;
 pub mod explore_feature_coordinator;
 pub mod export_service;
 pub mod gemini;
+pub mod kokoro;
 pub mod http_client;
 pub mod mellilex_capture_adapter;
 pub mod mistakes_generator;

@@ -527,6 +527,16 @@
     "translation": "Chinese",
     "remark": "Remark"
   },
+  "pronunciation": {
+    "downloadTitle": "Download a natural voice?",
+    "downloadDescription": "Words and phrases can use a natural English voice kept on this computer. The download is about 100 MB and happens once. You can keep the current system voice instead.",
+    "download": "Download voice",
+    "useSystem": "Use system voice",
+    "downloading": "Downloading voice…",
+    "preparing": "Preparing voice…",
+    "errorTitle": "Voice download failed",
+    "errorDescription": "The natural voice could not be downloaded. You can try again or keep the system voice."
+  },
   "errors": {
     "cacheOperation": "Failed to perform cache operation",
     "providerConfigurationRequired": "Provider configuration required"

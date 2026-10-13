@@ -1,3 +1,17 @@
+import {
+  clearStoredEngine,
+  readStoredEngine,
+  speakWithPreferredEngine,
+  writeStoredEngine,
+  type PronunciationBackend,
+} from './pronunciationFlow';
+import {
+  cancelPronunciationPrompt,
+  clearPronunciationPrompt,
+  reportPronunciationProgress,
+  requestPronunciationChoice,
+} from './pronunciationPrompt';
+
 const ENGLISH_LANG = 'en-US';
 const SPEAK_RATE = 0.9;
 const REPLACE_DELAY_MS = 50;
@@ -5,6 +19,55 @@ const REPLACE_DELAY_MS = 50;
 const voiceBySynth = new WeakMap<SpeechSynthesis, SpeechSynthesisVoice | null>();
 const watchedSynths = new WeakSet<SpeechSynthesis>();
 let speakToken = 0;
+let generation = 0;
+let latestText = '';
+let chain: Promise<void> = Promise.resolve();
+let backendOverride: PronunciationBackend | null = null;
+let overrideEnabled = false;
+let productionBackend: PronunciationBackend | null = null;
+
+function hasTauri(): boolean {
+  return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+}
+
+function usesKokoro(): boolean {
+  return overrideEnabled || hasTauri();
+}
+
+async function resolveBackend(): Promise<PronunciationBackend | null> {
+  if (overrideEnabled) return backendOverride;
+  if (!hasTauri()) return null;
+  if (!productionBackend) {
+    const mod = await import('./kokoroBridge');
+    productionBackend = mod.createKokoroBridge();
+  }
+  return productionBackend;
+}
+
+function stopAudible() {
+  speakToken += 1;
+  getSynthesis()?.cancel();
+  (overrideEnabled ? backendOverride : productionBackend)?.stopAudio();
+}
+
+export function setPronunciationBackendForTests(backend: PronunciationBackend | null) {
+  overrideEnabled = true;
+  backendOverride = backend;
+  latestText = '';
+  generation += 1;
+  chain = Promise.resolve();
+}
+
+export function resetPronunciationForTests() {
+  overrideEnabled = false;
+  backendOverride = null;
+  productionBackend = null;
+  latestText = '';
+  generation += 1;
+  chain = Promise.resolve();
+  clearStoredEngine();
+  clearPronunciationPrompt();
+}
 
 function getSynthesis(): SpeechSynthesis | null {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
@@ -71,28 +134,79 @@ function speakNow(synth: SpeechSynthesis, text: string, token: number) {
   synth.speak(utterance);
 }
 
+function speakSystem(text: string) {
+  const spoken = text.trim();
+  if (!spoken) return;
+
+  const synth = getSynthesis();
+  if (!synth) return;
+
+  watchVoices(synth);
+  const token = ++speakToken;
+  const interrupted = synth.speaking || synth.pending;
+  if (interrupted) synth.cancel();
+
+  if (interrupted) {
+    window.setTimeout(() => speakNow(synth, spoken, token), REPLACE_DELAY_MS);
+    return;
+  }
+  speakNow(synth, spoken, token);
+}
+
+async function drain() {
+  const backend = await resolveBackend();
+  const gen = generation;
+  if (!backend) {
+    const text = latestText;
+    latestText = '';
+    if (text && gen === generation) speakSystem(text);
+    return;
+  }
+
+  while (latestText && gen === generation) {
+    const captured = latestText;
+    latestText = '';
+    await speakWithPreferredEngine({
+      backend,
+      savedChoice: readStoredEngine,
+      saveChoice: writeStoredEngine,
+      requestChoice: requestPronunciationChoice,
+      report: reportPronunciationProgress,
+      clearPrompt: clearPronunciationPrompt,
+      speakSystem,
+      isCurrent: () => gen === generation,
+      takeText: () => {
+        if (latestText) {
+          const next = latestText;
+          latestText = '';
+          return next;
+        }
+        return captured;
+      },
+    });
+  }
+}
+
 export const pronunciation = {
-  play(text: string): void {
+  play(text: string): Promise<void> {
     const spoken = text.trim();
-    if (!spoken) return;
-
-    const synth = getSynthesis();
-    if (!synth) return;
-
-    watchVoices(synth);
-    const token = ++speakToken;
-    const interrupted = synth.speaking || synth.pending;
-    if (interrupted) synth.cancel();
-
-    if (interrupted) {
-      window.setTimeout(() => speakNow(synth, spoken, token), REPLACE_DELAY_MS);
-      return;
+    if (!spoken) return Promise.resolve();
+    if (!usesKokoro()) {
+      speakSystem(spoken);
+      return Promise.resolve();
     }
-    speakNow(synth, spoken, token);
+
+    latestText = spoken;
+    stopAudible();
+    const run = chain.then(() => drain());
+    chain = run.then(() => undefined, () => undefined);
+    return run;
   },
 
   stop(): void {
-    speakToken += 1;
-    getSynthesis()?.cancel();
+    generation += 1;
+    latestText = '';
+    stopAudible();
+    cancelPronunciationPrompt();
   },
 };

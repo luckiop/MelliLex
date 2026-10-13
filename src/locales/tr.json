@@ -336,6 +336,16 @@
     "usedIn": "Kullanıldığı yerler",
     "pronounceAriaLabel": "Kelimeyi seslendir"
   },
+  "pronunciation": {
+    "downloadTitle": "Doğal bir ses indirilsin mi?",
+    "downloadDescription": "Kelimeler ve ifadeler, bu bilgisayarda saklanan doğal bir İngilizce sesle okunabilir. İndirme yaklaşık 100 MB’tır ve bir kez yapılır. Sistem sesini kullanmaya da devam edebilirsiniz.",
+    "download": "Sesi indir",
+    "useSystem": "Sistem sesini kullan",
+    "downloading": "Ses indiriliyor…",
+    "preparing": "Ses hazırlanıyor…",
+    "errorTitle": "Ses indirilemedi",
+    "errorDescription": "Doğal ses indirilemedi. Yeniden deneyebilir veya sistem sesini kullanmaya devam edebilirsiniz."
+  },
   "errors": {
     "cacheOperation": "Önbellek işlemi başarısız oldu",
     "providerConfigurationRequired": "Sağlayıcı yapılandırması gerekli"

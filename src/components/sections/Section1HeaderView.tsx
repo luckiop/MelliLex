@@ -97,7 +97,7 @@ export const Section1HeaderView = observer(({ data }: Props) => {
 
       <div className="flex items-center gap-3 pb-6 border-b border-border">
         <button
-          onClick={() => pronunciation.play(data.word)}
+          onClick={() => { void pronunciation.play(data.word); }}
           className="p-2 hover:bg-accent rounded-lg transition-colors border border-border hover:border-foreground"
           aria-label={t('wordHeader.pronounceAriaLabel')}
         >

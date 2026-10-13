@@ -96,7 +96,7 @@ export const PhraseOverviewSection = ({ data }: Props) => {
 
       <div className="flex flex-wrap gap-2">
         <button
-          onClick={() => pronunciation.play(data.phrase)}
+          onClick={() => { void pronunciation.play(data.phrase); }}
           className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-border rounded-lg hover:bg-accent hover:border-foreground transition-colors cursor-pointer"
         >
           <Volume2 className="w-4 h-4" />

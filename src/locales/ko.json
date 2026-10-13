@@ -336,6 +336,16 @@
     "usedIn": "사용 예",
     "pronounceAriaLabel": "단어 발음 듣기"
   },
+  "pronunciation": {
+    "downloadTitle": "자연스러운 음성을 다운로드할까요?",
+    "downloadDescription": "단어와 구를 이 컴퓨터에 저장되는 자연스러운 영어 음성으로 들을 수 있습니다. 다운로드는 약 100 MB이며 한 번만 받습니다. 지금 시스템 음성을 그대로 쓸 수도 있습니다.",
+    "download": "음성 다운로드",
+    "useSystem": "시스템 음성 사용",
+    "downloading": "음성을 다운로드하는 중…",
+    "preparing": "음성을 준비하는 중…",
+    "errorTitle": "음성을 다운로드하지 못했습니다",
+    "errorDescription": "자연스러운 음성을 다운로드하지 못했습니다. 다시 시도하거나 시스템 음성을 계속 사용할 수 있습니다."
+  },
   "errors": {
     "cacheOperation": "캐시 작업에 실패했습니다",
     "providerConfigurationRequired": "제공자 설정이 필요합니다"

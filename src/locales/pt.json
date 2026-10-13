@@ -336,6 +336,16 @@
     "usedIn": "Usado em",
     "pronounceAriaLabel": "Pronunciar palavra"
   },
+  "pronunciation": {
+    "downloadTitle": "Baixar uma voz natural?",
+    "downloadDescription": "Palavras e expressões podem usar uma voz inglesa natural guardada neste computador. A transferência tem cerca de 100 MB e acontece uma vez. Você pode continuar com a voz do sistema.",
+    "download": "Baixar voz",
+    "useSystem": "Usar voz do sistema",
+    "downloading": "Baixando a voz…",
+    "preparing": "Preparando a voz…",
+    "errorTitle": "Falha ao baixar a voz",
+    "errorDescription": "Não foi possível baixar a voz natural. Você pode tentar de novo ou continuar com a voz do sistema."
+  },
   "errors": {
     "cacheOperation": "Falha ao executar operação de cache",
     "providerConfigurationRequired": "Configuração do provedor necessária"

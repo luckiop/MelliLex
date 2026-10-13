@@ -1,4 +1,5 @@
 pub mod cache;
+pub mod kokoro;
 pub mod explore;
 pub mod export;
 pub mod global_lookup;
@@ -11,6 +12,7 @@ pub mod system;
 pub mod vocab;
 
 pub use cache::*;
+pub use kokoro::*;
 pub use explore::*;
 pub use export::*;
 pub use global_lookup::*;

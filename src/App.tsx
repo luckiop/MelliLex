@@ -20,6 +20,7 @@ import { useClipboardSearchGesture } from "./hooks/useClipboardSearchGesture";
 import { useUpdateChecker } from "./hooks/useUpdateChecker";
 import { UpdateDialog } from "./components/UpdateDialog";
 import { WhatsNewBridge } from "./components/WhatsNewBridge";
+import { PronunciationPromptDialog } from "./components/pronunciation/PronunciationPromptDialog";
 
 const rootStore = new RootStore();
 
@@ -93,6 +94,7 @@ function App() {
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </AppLayout>
+      <PronunciationPromptDialog />
       <Toaster />
     </RootStoreContext.Provider>
   );

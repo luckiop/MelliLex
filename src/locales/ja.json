@@ -336,6 +336,16 @@
     "usedIn": "使用例",
     "pronounceAriaLabel": "単語を発音する"
   },
+  "pronunciation": {
+    "downloadTitle": "自然な音声をダウンロードしますか？",
+    "downloadDescription": "単語とフレーズを、このパソコンに保存する自然な英語音声で読めます。ダウンロードは約 100 MB で、一度だけです。今のシステムの音声のままにもできます。",
+    "download": "音声をダウンロード",
+    "useSystem": "システムの音声を使う",
+    "downloading": "音声をダウンロードしています…",
+    "preparing": "音声を準備しています…",
+    "errorTitle": "音声をダウンロードできませんでした",
+    "errorDescription": "自然な音声をダウンロードできませんでした。やり直すか、システムの音声を使い続けられます。"
+  },
   "errors": {
     "cacheOperation": "キャッシュ操作に失敗しました",
     "providerConfigurationRequired": "プロバイダーの設定が必要です"
