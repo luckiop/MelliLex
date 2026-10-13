@@ -10,6 +10,7 @@ import type {
 import { getErrorMessage, ERROR_MESSAGES } from '../utils/errorHandler';
 import { applyTypographyOption, DEFAULT_TYPOGRAPHY_OPTION } from '../utils/typography';
 import { setDevLogEnabled } from '../utils/devLog';
+import { setVoicePrefs } from '../services/voicePrefs';
 import { ExportSettingsStore } from './ExportSettingsStore';
 
 const createDefaultExportSettings = (): ExportSettings => ({
@@ -37,6 +38,7 @@ export class SettingsStore {
     vocabNoteSplitFiles: false,
     devLogEnabled: false,
     maxMeaningsDisplay: 5,
+    voice: { volume: 1.7, speed: 0.9, speaker: 3 },
   };
   loading: boolean = false;
   error: string | null = null;
@@ -76,6 +78,7 @@ export class SettingsStore {
         
         this.exportSettingsStore.loadFromSettings(this.settings.exportSettings);
         setDevLogEnabled(this.settings.devLogEnabled ?? false);
+        setVoicePrefs(this.settings.voice);
       });
     } catch (err) {
       runInAction(() => {
@@ -103,6 +106,7 @@ export class SettingsStore {
         this.settings = updated;
         this.applyTypography(updated.typographyMode);
         setDevLogEnabled(updated.devLogEnabled ?? false);
+        setVoicePrefs(updated.voice);
       });
     } catch (err) {
       runInAction(() => {

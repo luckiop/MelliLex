@@ -47,6 +47,7 @@
     },
     "resources": [
       "WebView2Loader.dll",
+      "resources/mellilex_kokoro.dll",
       "resources/dictionaries/*",
       "resources/tesseract/*.exe",
       "resources/tesseract/*.dll",

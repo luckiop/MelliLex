@@ -28,7 +28,11 @@ function installSynthesis() {
 
 function createBackend() {
   const backend: PronunciationBackend = {
-    isInstalled: vi.fn().mockResolvedValue(false),
+    status: vi.fn().mockResolvedValue({
+      pluginReady: true,
+      runtimeReady: false,
+      modelReady: false,
+    }),
     download: vi.fn().mockImplementation(async (onProgress: (progress: number) => void) => {
       onProgress(100);
     }),
@@ -79,7 +83,7 @@ describe('pronunciation engine choice', () => {
     speak.mockClear();
     await pronunciation.play('serendipity');
     expect(speak.mock.calls[0][0].text).toBe('serendipity');
-    expect(backend.isInstalled).toHaveBeenCalledOnce();
+    expect(backend.status).toHaveBeenCalledOnce();
   });
 
   it('downloads Kokoro once and then speaks with it', async () => {
@@ -95,7 +99,11 @@ describe('pronunciation engine choice', () => {
     expect(backend.playAudio).toHaveBeenCalledOnce();
     expect(readStoredEngine()).toBe('kokoro');
 
-    vi.mocked(backend.isInstalled).mockResolvedValue(true);
+    vi.mocked(backend.status).mockResolvedValue({
+      pluginReady: true,
+      runtimeReady: true,
+      modelReady: true,
+    });
     await pronunciation.play('eloquent');
     expect(backend.download).toHaveBeenCalledOnce();
     expect(backend.synthesize).toHaveBeenLastCalledWith('eloquent');
@@ -103,7 +111,11 @@ describe('pronunciation engine choice', () => {
 
   it('uses an installed Kokoro voice without asking again', async () => {
     const backend = createBackend();
-    vi.mocked(backend.isInstalled).mockResolvedValue(true);
+    vi.mocked(backend.status).mockResolvedValue({
+      pluginReady: true,
+      runtimeReady: true,
+      modelReady: true,
+    });
     setPronunciationBackendForTests(backend);
 
     await pronunciation.play('eloquent');
@@ -136,7 +148,7 @@ describe('pronunciation engine choice', () => {
 
     await pronunciation.play('eloquent');
 
-    expect(backend.isInstalled).not.toHaveBeenCalled();
+    expect(backend.status).not.toHaveBeenCalled();
     expect(speak.mock.calls[0][0].text).toBe('eloquent');
   });
 });

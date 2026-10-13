@@ -206,6 +206,47 @@
       "selectModel": "모델 선택",
       "modelsFound": "로컬에 {{count}}개의 모델이 설치됨",
       "ollamaPrivacy": "로컬 실행 – 데이터가 기기를 떠나지 않습니다"
+    },
+    "voice": {
+      "title": "음성",
+      "description": "음량, 속도, 음색",
+      "heading": "발음",
+      "intro": "자연 음성은 이제 예전처럼 가늘게 속삭이지 않고, 더 크고 단단한 소리로 시작합니다. 오른쪽으로 밀면 더 강해집니다.",
+      "volume": "음량",
+      "volumeHint": "높일수록 더 커집니다. 너무 높으면 딱딱하고 조여 들립니다.",
+      "speed": "속도",
+      "speedHint": "낮추면 더 느리고 또렷합니다. 높이면 더 빠르고 촘촘합니다.",
+      "speaker": "음색",
+      "speakerHint": "오른쪽은 더 두껍고 단단합니다. 왼쪽은 더 가볍고 가늘습니다.",
+      "speakerSystemNote": "음색은 설치한 자연 음성에만 적용됩니다. 시스템 음성은 음량과 속도만 따릅니다.",
+      "preview": "hello 들어보기",
+      "previewing": "재생 중…",
+      "names": {
+        "sky": "Sky",
+        "nicole": "Nicole",
+        "bella": "Bella",
+        "isabella": "Isabella",
+        "af": "Neutral",
+        "sarah": "Sarah",
+        "emma": "Emma",
+        "adam": "Adam",
+        "michael": "Michael",
+        "lewis": "Lewis",
+        "george": "George"
+      },
+      "effects": {
+        "sky": "가장 가볍고 가늘다",
+        "nicole": "숨이 많은 속삭임",
+        "bella": "부드럽다",
+        "isabella": "더 부드러운 영국식",
+        "af": "분명하고 고르다",
+        "sarah": "더 단단하고 분명하다",
+        "emma": "더 밝은 영국식",
+        "adam": "더 두꺼운 남성 음성",
+        "michael": "더 낮은 남성 음성",
+        "lewis": "영국식 남성 음성",
+        "george": "가장 두껍고 낮다"
+      }
     }
   },
   "spellCheck": {
@@ -338,13 +379,20 @@
   },
   "pronunciation": {
     "downloadTitle": "자연스러운 음성을 다운로드할까요?",
-    "downloadDescription": "단어와 구를 이 컴퓨터에 저장되는 자연스러운 영어 음성으로 들을 수 있습니다. 다운로드는 약 100 MB이며 한 번만 받습니다. 지금 시스템 음성을 그대로 쓸 수도 있습니다.",
+    "downloadDescription": "처음 한 번 음성 라이브러리와 음성 모델을 확인하고, 없는 항목을 설치할 수 있습니다. 음성 모델은 약 100 MB입니다. 시스템 음성을 그대로 사용할 수도 있습니다.",
     "download": "음성 다운로드",
     "useSystem": "시스템 음성 사용",
-    "downloading": "음성을 다운로드하는 중…",
+    "downloading": "없는 음성 파일을 설치하는 중…",
     "preparing": "음성을 준비하는 중…",
-    "errorTitle": "음성을 다운로드하지 못했습니다",
-    "errorDescription": "자연스러운 음성을 다운로드하지 못했습니다. 다시 시도하거나 시스템 음성을 계속 사용할 수 있습니다."
+    "errorTitle": "음성 준비 실패",
+    "errorDescription": "음성 라이브러리 또는 음성 모델을 설치하지 못했습니다. 다시 시도하거나 시스템 음성을 계속 사용할 수 있습니다.",
+    "libraries": "음성 라이브러리",
+    "voiceModel": "음성 모델",
+    "installed": "설치됨",
+    "missing": "없음",
+    "install": "다운로드 후 설치",
+    "installLibraries": "음성 라이브러리 설치",
+    "pluginMissing": "이 앱 빌드에는 음성 구성 요소가 없어 시스템 음성만 사용할 수 있습니다."
   },
   "errors": {
     "cacheOperation": "캐시 작업에 실패했습니다",

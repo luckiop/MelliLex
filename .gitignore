@@ -18,6 +18,7 @@ dist-ssr
 # Rust build output
 target
 src-tauri/target
+src-tauri/resources/mellilex_kokoro.dll
 
 # Editor directories and files
 .vscode/*

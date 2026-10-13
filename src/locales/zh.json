@@ -353,6 +353,47 @@
       "selectModel": "选择模型",
       "modelsFound": "本地已安装 {{count}} 个模型",
       "ollamaPrivacy": "本地运行 – 数据不会离开您的设备"
+    },
+    "voice": {
+      "title": "语音",
+      "description": "音量、语速和音色",
+      "heading": "发音",
+      "intro": "自然语音现在默认比原来的细声更大、更实。继续往右拖会更明显。",
+      "volume": "音量",
+      "volumeHint": "调高会更大声。过高会发紧、发硬。",
+      "speed": "语速",
+      "speedHint": "调低更慢、咬字更清楚。调高更快、更紧凑。",
+      "speaker": "音色",
+      "speakerHint": "往右声音更厚、更实。往左更轻、更细。",
+      "speakerSystemNote": "音色只对已安装的自然语音生效。系统语音只跟随音量和语速。",
+      "preview": "试听 hello",
+      "previewing": "正在试听…",
+      "names": {
+        "sky": "Sky",
+        "nicole": "Nicole",
+        "bella": "Bella",
+        "isabella": "Isabella",
+        "af": "Neutral",
+        "sarah": "Sarah",
+        "emma": "Emma",
+        "adam": "Adam",
+        "michael": "Michael",
+        "lewis": "Lewis",
+        "george": "George"
+      },
+      "effects": {
+        "sky": "最轻、最细",
+        "nicole": "气声，细声细语",
+        "bella": "柔和",
+        "isabella": "英式，偏柔",
+        "af": "清楚、平稳",
+        "sarah": "更实、更清楚",
+        "emma": "英式，更亮",
+        "adam": "男声，更厚",
+        "michael": "男声，更低",
+        "lewis": "英式男声",
+        "george": "最厚、最低"
+      }
     }
   },
   "spellCheck": {
@@ -536,13 +577,20 @@
   },
   "pronunciation": {
     "downloadTitle": "下载更自然的发音？",
-    "downloadDescription": "单词和短语可以使用保存在这台电脑上的自然英语语音。下载大约 100 MB，只需一次。也可以继续使用当前的系统语音。",
+    "downloadDescription": "第一次会检查语音依赖库和语音模型，缺少的部分可以一并安装。语音模型大约 100 MB。也可以继续使用当前的系统语音。",
     "download": "下载语音",
     "useSystem": "使用系统语音",
-    "downloading": "正在下载语音…",
+    "downloading": "正在安装缺少的语音文件…",
     "preparing": "正在准备语音…",
-    "errorTitle": "语音下载失败",
-    "errorDescription": "自然语音没有下载成功。可以重试，也可以继续使用系统语音。"
+    "errorTitle": "语音安装失败",
+    "errorDescription": "语音依赖库或语音模型没有安装成功。可以重试，也可以继续使用系统语音。",
+    "libraries": "语音依赖库",
+    "voiceModel": "语音模型",
+    "installed": "已安装",
+    "missing": "未安装",
+    "install": "下载并安装",
+    "installLibraries": "安装语音依赖库",
+    "pluginMissing": "这个版本没有附带语音组件，只能使用系统语音。"
   },
   "errors": {
     "cacheOperation": "缓存操作失败",

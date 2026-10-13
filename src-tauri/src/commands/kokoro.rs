@@ -1,3 +1,5 @@
+use std::path::{Path, PathBuf};
+
 use base64::Engine;
 use serde::Serialize;
 use tauri::{AppHandle, Emitter, Manager, State};
@@ -11,16 +13,23 @@ struct DownloadProgress {
     progress: u8,
 }
 
-fn app_data_dir(app: &AppHandle) -> Result<std::path::PathBuf, AppError> {
+fn app_data_dir(app: &AppHandle) -> Result<PathBuf, AppError> {
     app.path()
         .app_data_dir()
         .map_err(|err| AppError::FileSystem(format!("App data directory is unavailable: {err}")))
 }
 
+fn exe_dir() -> Result<PathBuf, AppError> {
+    let exe = std::env::current_exe()
+        .map_err(|err| AppError::FileSystem(format!("App location is unavailable: {err}")))?;
+    exe.parent()
+        .map(Path::to_path_buf)
+        .ok_or_else(|| AppError::FileSystem("App location is unavailable".into()))
+}
+
 #[tauri::command]
-pub fn kokoro_status(app: AppHandle) -> Result<bool, AppError> {
-    let dir = kokoro::model_dir(&app_data_dir(&app)?);
-    Ok(kokoro::model_ready(&dir))
+pub fn kokoro_status(app: AppHandle) -> Result<kokoro::KokoroStatus, AppError> {
+    Ok(kokoro::inspect(&app_data_dir(&app)?, &exe_dir()?))
 }
 
 #[tauri::command]
@@ -29,8 +38,9 @@ pub async fn kokoro_download(
     state: State<'_, KokoroState>,
 ) -> Result<(), AppError> {
     let app_data = app_data_dir(&app)?;
+    let exe = exe_dir()?;
     let emitter = app.clone();
-    kokoro::download_model(&app_data, |progress| {
+    kokoro::install_voice(&app_data, &exe, |progress| {
         let _ = emitter.emit(
             kokoro::DOWNLOAD_EVENT,
             DownloadProgress { progress },
@@ -55,8 +65,22 @@ pub async fn kokoro_synthesize(
     state: State<'_, KokoroState>,
     text: String,
 ) -> Result<String, AppError> {
-    let dir = kokoro::model_dir(&app_data_dir(&app)?);
+    let app_data = app_data_dir(&app)?;
+    let exe = exe_dir()?;
     let engine = state.inner().clone();
-    let wav = BlockingExecutor::run(move || kokoro::synthesize(&engine, &dir, &text)).await?;
+    let db = app.state::<crate::db::Database>().inner().clone();
+    let wav = BlockingExecutor::run(move || {
+        let voice = db.get_settings()?.voice.clamped();
+        kokoro::synthesize(
+            &engine,
+            &app_data,
+            &exe,
+            &text,
+            voice.speed,
+            i32::from(voice.speaker),
+            voice.volume,
+        )
+    })
+    .await?;
     Ok(base64::engine::general_purpose::STANDARD.encode(wav))
 }

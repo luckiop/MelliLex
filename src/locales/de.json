@@ -206,6 +206,47 @@
       "selectModel": "Modell auswählen",
       "modelsFound": "{{count}} lokal installierte Modelle gefunden",
       "ollamaPrivacy": "Läuft lokal – keine Daten verlassen Ihr Gerät"
+    },
+    "voice": {
+      "title": "Stimme",
+      "description": "Lautstärke, Tempo und Klang",
+      "heading": "Aussprache",
+      "intro": "Die natürliche Stimme startet jetzt lauter und voller als das leise Flüstern zuvor. Weiter nach rechts wird der Effekt stärker.",
+      "volume": "Lautstärke",
+      "volumeHint": "Höher ist lauter. Zu hoch klingt hart und gepresst.",
+      "speed": "Tempo",
+      "speedHint": "Niedriger ist langsamer und deutlicher. Höher ist schneller und knapper.",
+      "speaker": "Klang",
+      "speakerHint": "Rechts ist voller und fester. Links ist leichter und dünner.",
+      "speakerSystemNote": "Der Klang gilt für die installierte natürliche Stimme. Die Systemstimme folgt nur Lautstärke und Tempo.",
+      "preview": "Hallo anhören",
+      "previewing": "Wird abgespielt…",
+      "names": {
+        "sky": "Sky",
+        "nicole": "Nicole",
+        "bella": "Bella",
+        "isabella": "Isabella",
+        "af": "Neutral",
+        "sarah": "Sarah",
+        "emma": "Emma",
+        "adam": "Adam",
+        "michael": "Michael",
+        "lewis": "Lewis",
+        "george": "George"
+      },
+      "effects": {
+        "sky": "am leichtesten und dünnsten",
+        "nicole": "hauchiges Flüstern",
+        "bella": "weich",
+        "isabella": "weicheres britisches Englisch",
+        "af": "klar und gleichmäßig",
+        "sarah": "voller und klarer",
+        "emma": "helleres britisches Englisch",
+        "adam": "kräftigere Männerstimme",
+        "michael": "tiefere Männerstimme",
+        "lewis": "britische Männerstimme",
+        "george": "am vollsten und tiefsten"
+      }
     }
   },
   "spellCheck": {
@@ -338,13 +379,20 @@
   },
   "pronunciation": {
     "downloadTitle": "Natürliche Stimme herunterladen?",
-    "downloadDescription": "Wörter und Wendungen können eine natürliche englische Stimme verwenden, die auf diesem Computer bleibt. Der Download ist etwa 100 MB groß und erfolgt einmal. Die Systemstimme kann weiter verwendet werden.",
+    "downloadDescription": "Beim ersten Mal prüft MelliLex die Sprachbibliotheken und das Stimmmodell und kann Fehlendes installieren. Das Stimmmodell ist etwa 100 MB groß. Die Systemstimme kann weiter verwendet werden.",
     "download": "Stimme herunterladen",
     "useSystem": "Systemstimme verwenden",
-    "downloading": "Stimme wird heruntergeladen…",
+    "downloading": "Fehlende Sprachdateien werden installiert…",
     "preparing": "Stimme wird vorbereitet…",
-    "errorTitle": "Download der Stimme fehlgeschlagen",
-    "errorDescription": "Die natürliche Stimme konnte nicht heruntergeladen werden. Sie können es erneut versuchen oder die Systemstimme behalten."
+    "errorTitle": "Spracheinrichtung fehlgeschlagen",
+    "errorDescription": "Die Sprachbibliotheken oder das Stimmmodell konnten nicht installiert werden. Sie können es erneut versuchen oder die Systemstimme behalten.",
+    "libraries": "Sprachbibliotheken",
+    "voiceModel": "Stimmmodell",
+    "installed": "Installiert",
+    "missing": "Fehlt",
+    "install": "Herunterladen und installieren",
+    "installLibraries": "Sprachbibliotheken installieren",
+    "pluginMissing": "Diese App-Version enthält keine Sprachkomponente, daher ist nur die Systemstimme verfügbar."
   },
   "errors": {
     "cacheOperation": "Cache-Vorgang fehlgeschlagen",

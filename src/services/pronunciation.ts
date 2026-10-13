@@ -5,6 +5,7 @@ import {
   writeStoredEngine,
   type PronunciationBackend,
 } from './pronunciationFlow';
+import { getVoicePrefs } from './voicePrefs';
 import {
   cancelPronunciationPrompt,
   clearPronunciationPrompt,
@@ -13,7 +14,6 @@ import {
 } from './pronunciationPrompt';
 
 const ENGLISH_LANG = 'en-US';
-const SPEAK_RATE = 0.9;
 const REPLACE_DELAY_MS = 50;
 
 const voiceBySynth = new WeakMap<SpeechSynthesis, SpeechSynthesisVoice | null>();
@@ -128,7 +128,9 @@ function speakNow(synth: SpeechSynthesis, text: string, token: number) {
   if (token !== speakToken) return;
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = ENGLISH_LANG;
-  utterance.rate = SPEAK_RATE;
+  const prefs = getVoicePrefs();
+  utterance.rate = prefs.speed;
+  utterance.volume = Math.min(1, prefs.volume / 1.7);
   const voice = resolveVoice(synth);
   if (voice) utterance.voice = voice;
   synth.speak(utterance);

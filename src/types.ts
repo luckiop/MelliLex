@@ -71,6 +71,12 @@ export interface WordHistory {
 
 export type TypographyOption = 'modern' | 'classic' | 'friendly';
 
+export interface VoiceSettings {
+  volume: number;
+  speed: number;
+  speaker: number;
+}
+
 export interface AppSettings {
   aiProvider: AiProviderType;
   openAiConfig?: OpenAiConfig;
@@ -95,6 +101,8 @@ export interface AppSettings {
   devLogEnabled?: boolean;
   /** UI cap; backend still returns and caches every sense. */
   maxMeaningsDisplay?: number;
+  /** Loudness, pace, and natural-voice speaker. */
+  voice?: VoiceSettings;
 }
 
 export type VocabCategory = 'daily' | 'technical';

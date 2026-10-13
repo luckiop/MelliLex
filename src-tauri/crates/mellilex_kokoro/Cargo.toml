@@ -1,0 +1,12 @@
+[package]
+name = "mellilex_kokoro"
+version = "0.12.1"
+description = "Optional Kokoro speech component loaded only after its libraries are installed"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+sherpa-onnx = { version = "1.13.8", default-features = false, features = ["shared"] }

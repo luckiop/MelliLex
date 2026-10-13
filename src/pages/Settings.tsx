@@ -14,6 +14,7 @@ import {
   Languages,
   Keyboard,
   BookMarked,
+  AudioLines,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { PageHint } from '../components/onboarding/PageHintBanner';
@@ -28,6 +29,7 @@ import {
   AboutSection,
   VocabSection,
   TechnicalDomainSection,
+  VoiceSection,
 } from '../components/settings';
 import { DEFAULT_TECHNICAL_DOMAIN } from '../components/settings/TechnicalDomainSection';
 
@@ -67,6 +69,12 @@ export const Settings = observer(() => {
       title: t('settings.appearance.title'),
       description: t('settings.appearance.description'),
       icon: <Palette className="w-5 h-5" />
+    },
+    {
+      id: 'voice',
+      title: t('settings.voice.title'),
+      description: t('settings.voice.description'),
+      icon: <AudioLines className="w-5 h-5" />
     },
     {
       id: 'cache',
@@ -337,6 +345,7 @@ export const Settings = observer(() => {
                     onApplyTypography={handleApplyTypography}
                   />
                 )}
+                {section.id === 'voice' && <VoiceSection />}
                 {section.id === 'cache' && <CacheSection />}
                 {section.id === 'export' && <ExportSection />}
                 {section.id === 'vocab' && <VocabSection />}

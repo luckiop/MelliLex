@@ -206,6 +206,47 @@
       "selectModel": "Sélectionner un modèle",
       "modelsFound": "{{count}} modèles installés localement",
       "ollamaPrivacy": "Fonctionne localement – aucune donnée ne quitte votre appareil"
+    },
+    "voice": {
+      "title": "Voix",
+      "description": "Volume, débit et timbre",
+      "heading": "Prononciation",
+      "intro": "La voix naturelle démarre maintenant plus fort et plus pleine que le chuchotement d’avant. Glissez vers la droite pour aller plus loin.",
+      "volume": "Volume",
+      "volumeHint": "Plus haut est plus fort. Trop haut devient dur et tendu.",
+      "speed": "Débit",
+      "speedHint": "Plus bas est plus lent et plus net. Plus haut est plus rapide et plus serré.",
+      "speaker": "Timbre",
+      "speakerHint": "À droite, la voix est plus pleine et plus solide. À gauche, plus légère et plus fine.",
+      "speakerSystemNote": "Le timbre ne concerne que la voix naturelle installée. La voix du système suit seulement le volume et le débit.",
+      "preview": "Écouter hello",
+      "previewing": "Lecture…",
+      "names": {
+        "sky": "Sky",
+        "nicole": "Nicole",
+        "bella": "Bella",
+        "isabella": "Isabella",
+        "af": "Neutral",
+        "sarah": "Sarah",
+        "emma": "Emma",
+        "adam": "Adam",
+        "michael": "Michael",
+        "lewis": "Lewis",
+        "george": "George"
+      },
+      "effects": {
+        "sky": "la plus légère et la plus fine",
+        "nicole": "chuchotement soufflé",
+        "bella": "douce",
+        "isabella": "anglais britannique plus doux",
+        "af": "claire et stable",
+        "sarah": "plus pleine et plus claire",
+        "emma": "anglais britannique plus clair",
+        "adam": "voix masculine plus épaisse",
+        "michael": "voix masculine plus grave",
+        "lewis": "voix masculine britannique",
+        "george": "la plus épaisse et la plus grave"
+      }
     }
   },
   "spellCheck": {
@@ -338,13 +379,20 @@
   },
   "pronunciation": {
     "downloadTitle": "Télécharger une voix naturelle ?",
-    "downloadDescription": "Les mots et expressions peuvent utiliser une voix anglaise naturelle conservée sur cet ordinateur. Le téléchargement fait environ 100 Mo et n’a lieu qu’une fois. La voix du système reste disponible.",
+    "downloadDescription": "La première fois, MelliLex vérifie les bibliothèques vocales et le modèle de voix, puis peut installer ce qui manque. Le modèle fait environ 100 Mo. Vous pouvez aussi garder la voix du système.",
     "download": "Télécharger la voix",
     "useSystem": "Utiliser la voix du système",
-    "downloading": "Téléchargement de la voix…",
+    "downloading": "Installation des fichiers vocaux manquants…",
     "preparing": "Préparation de la voix…",
-    "errorTitle": "Échec du téléchargement",
-    "errorDescription": "La voix naturelle n’a pas pu être téléchargée. Vous pouvez réessayer ou garder la voix du système."
+    "errorTitle": "Échec de la préparation de la voix",
+    "errorDescription": "Les bibliothèques vocales ou le modèle de voix n’ont pas pu être installés. Vous pouvez réessayer ou garder la voix du système.",
+    "libraries": "Bibliothèques vocales",
+    "voiceModel": "Modèle de voix",
+    "installed": "Installé",
+    "missing": "Manquant",
+    "install": "Télécharger et installer",
+    "installLibraries": "Installer les bibliothèques vocales",
+    "pluginMissing": "Cette version de l’application n’inclut pas le composant vocal, seule la voix du système est disponible."
   },
   "errors": {
     "cacheOperation": "Échec de l'opération de cache",

@@ -8,3 +8,4 @@ export { GlobalLookupSection } from './GlobalLookupSection';
 export { TechnicalDomainSection } from './TechnicalDomainSection';
 export { AboutSection } from './AboutSection';
 export { VocabSection } from './VocabSection';
+export { VoiceSection } from './VoiceSection';

@@ -1,9 +1,9 @@
-import type { EngineChoice, PronunciationChoice } from './pronunciationPrompt';
+import type { EngineChoice, PronunciationChoice, VoiceInstallStatus } from './pronunciationPrompt';
 
 const STORAGE_KEY = 'mellilex.pronunciationEngine';
 
 export interface PronunciationBackend {
-  isInstalled(): Promise<boolean>;
+  status(): Promise<VoiceInstallStatus>;
   download(onProgress: (progress: number) => void): Promise<void>;
   synthesize(text: string): Promise<Uint8Array>;
   playAudio(bytes: Uint8Array): Promise<void>;
@@ -15,7 +15,11 @@ export interface PronunciationFlowDeps {
   backend: PronunciationBackend;
   savedChoice(): EngineChoice | null;
   saveChoice(choice: EngineChoice): void;
-  requestChoice(phase: 'choose' | 'error', message?: string): Promise<PronunciationChoice>;
+  requestChoice(
+    phase: 'choose' | 'error',
+    message?: string,
+    status?: VoiceInstallStatus,
+  ): Promise<PronunciationChoice>;
   report(phase: 'downloading' | 'preparing', progress?: number): void;
   clearPrompt(): void;
   speakSystem(text: string): void;
@@ -51,7 +55,8 @@ export async function speakWithPreferredEngine(deps: PronunciationFlowDeps): Pro
   }
 
   let replaceModel = false;
-  if (saved === 'kokoro' || await deps.backend.isInstalled()) {
+  let status = await deps.backend.status();
+  if (voiceReady(status)) {
     try {
       if (await speakKokoro(deps, false)) return;
     } catch {
@@ -63,7 +68,7 @@ export async function speakWithPreferredEngine(deps: PronunciationFlowDeps): Pro
   let phase: 'choose' | 'error' = 'choose';
   let message = '';
   for (;;) {
-    const choice = await deps.requestChoice(phase, message);
+    const choice = await deps.requestChoice(phase, message, status);
     if (choice === 'cancelled' || !deps.isCurrent()) {
       deps.clearPrompt();
       return;
@@ -93,7 +98,13 @@ export async function speakWithPreferredEngine(deps: PronunciationFlowDeps): Pro
       phase = 'error';
       message = error instanceof Error ? error.message : String(error);
     }
+    if (!deps.isCurrent()) return;
+    status = await deps.backend.status();
   }
+}
+
+function voiceReady(status: VoiceInstallStatus) {
+  return status.pluginReady && status.runtimeReady && status.modelReady;
 }
 
 async function speakKokoro(deps: PronunciationFlowDeps, announce: boolean): Promise<boolean> {

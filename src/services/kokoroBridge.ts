@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import type { PronunciationBackend } from './pronunciationFlow';
+import type { VoiceInstallStatus } from './pronunciationPrompt';
 
 interface DownloadProgress {
   progress: number;
@@ -30,8 +31,8 @@ function decodeWav(wavBase64: string): Uint8Array {
 
 export function createKokoroBridge(): PronunciationBackend {
   return {
-    isInstalled() {
-      return invoke<boolean>('kokoro_status');
+    status() {
+      return invoke<VoiceInstallStatus>('kokoro_status');
     },
     async download(onProgress) {
       const unlisten = await listen<DownloadProgress>('kokoro-download-progress', (event) => {

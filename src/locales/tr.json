@@ -206,6 +206,47 @@
       "selectModel": "Model seçin",
       "modelsFound": "{{count}} model yerel olarak yüklü",
       "ollamaPrivacy": "Yerelde çalışır – verileriniz cihazınızdan çıkmaz"
+    },
+    "voice": {
+      "title": "Ses",
+      "description": "Ses yüksekliği, hız ve tını",
+      "heading": "Telaffuz",
+      "intro": "Doğal ses artık eskisi gibi ince bir fısıltı yerine daha yüksek ve dolu başlar. Sağa kaydırmak etkiyi artırır.",
+      "volume": "Ses yüksekliği",
+      "volumeHint": "Yükseltmek sesi büyütür. Çok yükselirse sert ve sıkışık duyulur.",
+      "speed": "Hız",
+      "speedHint": "Düşürmek daha yavaş ve daha anlaşılır yapar. Yükseltmek daha hızlı ve daha sıkı yapar.",
+      "speaker": "Tını",
+      "speakerHint": "Sağ daha dolu ve tok. Sol daha hafif ve ince.",
+      "speakerSystemNote": "Tını yalnız kurulu doğal sese uygulanır. Sistem sesi yalnızca yükseklik ve hızı izler.",
+      "preview": "hello dinle",
+      "previewing": "Çalınıyor…",
+      "names": {
+        "sky": "Sky",
+        "nicole": "Nicole",
+        "bella": "Bella",
+        "isabella": "Isabella",
+        "af": "Neutral",
+        "sarah": "Sarah",
+        "emma": "Emma",
+        "adam": "Adam",
+        "michael": "Michael",
+        "lewis": "Lewis",
+        "george": "George"
+      },
+      "effects": {
+        "sky": "en hafif ve en ince",
+        "nicole": "nefesli fısıltı",
+        "bella": "yumuşak",
+        "isabella": "daha yumuşak İngiliz aksanı",
+        "af": "net ve dengeli",
+        "sarah": "daha tok ve net",
+        "emma": "daha parlak İngiliz aksanı",
+        "adam": "daha tok erkek sesi",
+        "michael": "daha pes erkek sesi",
+        "lewis": "İngiliz erkek sesi",
+        "george": "en tok ve en pes"
+      }
     }
   },
   "spellCheck": {
@@ -338,13 +379,20 @@
   },
   "pronunciation": {
     "downloadTitle": "Doğal bir ses indirilsin mi?",
-    "downloadDescription": "Kelimeler ve ifadeler, bu bilgisayarda saklanan doğal bir İngilizce sesle okunabilir. İndirme yaklaşık 100 MB’tır ve bir kez yapılır. Sistem sesini kullanmaya da devam edebilirsiniz.",
+    "downloadDescription": "İlk seferde MelliLex konuşma kitaplıklarını ve ses modelini denetler, eksik olanları kurabilir. Ses modeli yaklaşık 100 MB’tır. Sistem sesini kullanmaya da devam edebilirsiniz.",
     "download": "Sesi indir",
     "useSystem": "Sistem sesini kullan",
-    "downloading": "Ses indiriliyor…",
+    "downloading": "Eksik konuşma dosyaları kuruluyor…",
     "preparing": "Ses hazırlanıyor…",
-    "errorTitle": "Ses indirilemedi",
-    "errorDescription": "Doğal ses indirilemedi. Yeniden deneyebilir veya sistem sesini kullanmaya devam edebilirsiniz."
+    "errorTitle": "Ses kurulumu başarısız",
+    "errorDescription": "Konuşma kitaplıkları veya ses modeli kurulamadı. Yeniden deneyebilir veya sistem sesini kullanmaya devam edebilirsiniz.",
+    "libraries": "Konuşma kitaplıkları",
+    "voiceModel": "Ses modeli",
+    "installed": "Yüklü",
+    "missing": "Eksik",
+    "install": "İndir ve kur",
+    "installLibraries": "Konuşma kitaplıklarını kur",
+    "pluginMissing": "Bu uygulama sürümünde konuşma bileşeni yok, yalnızca sistem sesi kullanılabilir."
   },
   "errors": {
     "cacheOperation": "Önbellek işlemi başarısız oldu",

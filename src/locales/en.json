@@ -346,6 +346,47 @@
       "instruction": "Place your cursor on any word",
       "methodMouse": "Hold <1>CTRL</1> and right-click",
       "note": "Works across all applications. MelliLex must be running (can be in tray)."
+    },
+    "voice": {
+      "title": "Voice",
+      "description": "Volume, pace, and tone",
+      "heading": "Pronunciation",
+      "intro": "The natural voice now starts louder and fuller than the soft whisper it used before. Drag right to go further.",
+      "volume": "Volume",
+      "volumeHint": "Higher is louder. Too high turns hard and strained.",
+      "speed": "Speed",
+      "speedHint": "Lower is slower and easier to catch. Higher is quicker and tighter.",
+      "speaker": "Tone",
+      "speakerHint": "Right is fuller and more solid. Left is lighter and thinner.",
+      "speakerSystemNote": "Tone applies to the installed natural voice. The system voice follows volume and speed only.",
+      "preview": "Play hello",
+      "previewing": "Playing…",
+      "names": {
+        "sky": "Sky",
+        "nicole": "Nicole",
+        "bella": "Bella",
+        "isabella": "Isabella",
+        "af": "Neutral",
+        "sarah": "Sarah",
+        "emma": "Emma",
+        "adam": "Adam",
+        "michael": "Michael",
+        "lewis": "Lewis",
+        "george": "George"
+      },
+      "effects": {
+        "sky": "lightest and thinnest",
+        "nicole": "breathy whisper",
+        "bella": "soft",
+        "isabella": "softer British",
+        "af": "clear and even",
+        "sarah": "fuller and clearer",
+        "emma": "brighter British",
+        "adam": "thicker male",
+        "michael": "lower male",
+        "lewis": "British male",
+        "george": "thickest and lowest"
+      }
     }
   },
   "spellCheck": {
@@ -529,13 +570,20 @@
   },
   "pronunciation": {
     "downloadTitle": "Download a natural voice?",
-    "downloadDescription": "Words and phrases can use a natural English voice kept on this computer. The download is about 100 MB and happens once. You can keep the current system voice instead.",
+    "downloadDescription": "The first time, MelliLex checks the speech libraries and the voice model, then can install whatever is missing. The voice model is about 100 MB. You can keep the current system voice instead.",
     "download": "Download voice",
     "useSystem": "Use system voice",
-    "downloading": "Downloading voice…",
+    "downloading": "Installing the missing speech files…",
     "preparing": "Preparing voice…",
-    "errorTitle": "Voice download failed",
-    "errorDescription": "The natural voice could not be downloaded. You can try again or keep the system voice."
+    "errorTitle": "Voice setup failed",
+    "errorDescription": "The speech libraries or the voice model could not be installed. You can try again or keep the system voice.",
+    "libraries": "Speech libraries",
+    "voiceModel": "Voice model",
+    "installed": "Installed",
+    "missing": "Missing",
+    "install": "Download and install",
+    "installLibraries": "Install speech libraries",
+    "pluginMissing": "This app build does not include the speech component, so only the system voice is available."
   },
   "errors": {
     "cacheOperation": "Failed to perform cache operation",

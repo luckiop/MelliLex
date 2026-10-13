@@ -183,6 +183,7 @@ mod tests {
             vocab_note_split_files: false,
             dev_log_enabled: false,
             max_meanings_display: 5,
+            voice: crate::models::VoiceSettings::default(),
         }
     }
 
@@ -211,6 +212,7 @@ mod tests {
             vocab_note_split_files: false,
             dev_log_enabled: false,
             max_meanings_display: 5,
+            voice: crate::models::VoiceSettings::default(),
         }
     }
 

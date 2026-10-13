@@ -1,11 +1,107 @@
 use std::env;
 use std::fs;
 use std::io::{Cursor, Seek, SeekFrom, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 
 fn main() {
+    let plugin_dir = build_kokoro_plugin();
+    copy_kokoro_files(&plugin_dir);
     tauri_build::build();
     embed_windows_test_manifest();
+}
+
+fn build_kokoro_plugin() -> PathBuf {
+    let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
+    let profile = env::var("PROFILE").unwrap_or_else(|_| "debug".into());
+    let target_dir = manifest_dir.join("target").join("kokoro-plugin");
+    println!("cargo:rerun-if-changed=crates/mellilex_kokoro/src/lib.rs");
+    println!("cargo:rerun-if-changed=crates/mellilex_kokoro/Cargo.toml");
+
+    let cargo = env::var("CARGO").unwrap_or_else(|_| "cargo".into());
+    let mut cmd = Command::new(cargo);
+    cmd.current_dir(&manifest_dir)
+        .arg("build")
+        .arg("-p")
+        .arg("mellilex_kokoro")
+        .arg("--target-dir")
+        .arg(&target_dir);
+    if profile == "release" {
+        cmd.arg("--release");
+    } else if profile != "debug" {
+        cmd.arg("--profile").arg(&profile);
+    }
+    let scrubbed: Vec<String> = env::vars()
+        .map(|(key, _)| key)
+        .filter(|key| {
+            key != "CARGO_HOME"
+                && (key.starts_with("CARGO")
+                    || matches!(
+                        key.as_str(),
+                        "OUT_DIR" | "PROFILE" | "DEBUG" | "OPT_LEVEL" | "TARGET" | "HOST" | "RUSTC" | "RUSTDOC" | "NUM_JOBS"
+                    ))
+        })
+        .collect();
+    for key in scrubbed {
+        cmd.env_remove(key);
+    }
+
+    let status = cmd
+        .stdin(std::process::Stdio::null())
+        .status()
+        .unwrap_or_else(|err| panic!("Failed to start the speech component build: {err}"));
+    if !status.success() {
+        panic!("Failed to build the Kokoro speech component");
+    }
+
+    let profile_name = if profile == "release" { "release" } else { "debug" };
+    target_dir.join(profile_name)
+}
+
+fn copy_kokoro_files(plugin_dir: &Path) {
+    let plugin = plugin_dir.join("mellilex_kokoro.dll");
+    if !plugin.is_file() {
+        panic!("Kokoro speech component was not produced at {}", plugin.display());
+    }
+
+    let out_dir = PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR"));
+    let profile = env::var("PROFILE").unwrap_or_else(|_| "debug".into());
+    let profile_dir = out_dir
+        .ancestors()
+        .find(|path| path.file_name().and_then(|name| name.to_str()) == Some(profile.as_str()))
+        .unwrap_or(&out_dir)
+        .to_path_buf();
+    let mut dest_dirs = vec![profile_dir.clone(), profile_dir.join("deps")];
+    if profile == "release" {
+        let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
+        dest_dirs.push(manifest_dir.join("resources"));
+    }
+    for dest_dir in dest_dirs {
+        copy_file(&plugin, &dest_dir.join("mellilex_kokoro.dll"));
+    }
+
+    for name in [
+        "sherpa-onnx-c-api.dll",
+        "onnxruntime.dll",
+        "onnxruntime_providers_shared.dll",
+    ] {
+        let source = plugin_dir.join(name);
+        if source.is_file() {
+            copy_file(&source, &profile_dir.join(name));
+        }
+    }
+}
+
+fn copy_file(source: &Path, dest: &Path) {
+    if source == dest {
+        return;
+    }
+    if let Some(parent) = dest.parent() {
+        fs::create_dir_all(parent).unwrap_or_else(|err| panic!("Failed to create {}: {err}", parent.display()));
+    }
+    fs::copy(source, dest).unwrap_or_else(|err| {
+        panic!("Failed to copy {} to {}: {err}", source.display(), dest.display())
+    });
 }
 
 const TEST_MANIFEST: &str = r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

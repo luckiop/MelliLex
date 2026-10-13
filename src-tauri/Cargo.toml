@@ -8,7 +8,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["crates/mellilex_capture"]
+members = ["crates/mellilex_capture", "crates/mellilex_kokoro"]
 resolver = "2"
 
 [lib]
@@ -58,7 +58,7 @@ backoff = { version = "0.4", features = ["tokio"] }
 base64 = "0.22"
 bzip2 = "0.5"
 futures-util = "0.3"
-sherpa-onnx = { version = "1.13.8", default-features = false, features = ["shared"] }
+libloading = "0.8"
 tar = "0.4"
 
 [target.'cfg(windows)'.dependencies]

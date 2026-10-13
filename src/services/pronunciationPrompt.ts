@@ -1,11 +1,23 @@
 export type EngineChoice = 'kokoro' | 'system';
 export type PronunciationChoice = EngineChoice | 'cancelled';
 
+export interface VoiceInstallStatus {
+  pluginReady: boolean;
+  runtimeReady: boolean;
+  modelReady: boolean;
+}
+
+export const MISSING_VOICE_STATUS: VoiceInstallStatus = {
+  pluginReady: true,
+  runtimeReady: false,
+  modelReady: false,
+};
+
 export type PronunciationPrompt =
-  | { phase: 'choose' }
+  | { phase: 'choose'; status: VoiceInstallStatus }
   | { phase: 'downloading'; progress: number }
   | { phase: 'preparing' }
-  | { phase: 'error'; message: string };
+  | { phase: 'error'; message: string; status: VoiceInstallStatus };
 
 type Listener = (prompt: PronunciationPrompt | null) => void;
 
@@ -23,10 +35,16 @@ export function subscribePronunciationPrompt(listener: Listener): () => void {
   return () => listeners.delete(listener);
 }
 
-export function requestPronunciationChoice(phase: 'choose' | 'error', message = ''): Promise<PronunciationChoice> {
+export function requestPronunciationChoice(
+  phase: 'choose' | 'error',
+  message = '',
+  status: VoiceInstallStatus = MISSING_VOICE_STATUS,
+): Promise<PronunciationChoice> {
   return new Promise((resolve) => {
     resolver = resolve;
-    prompt = phase === 'choose' ? { phase: 'choose' } : { phase: 'error', message };
+    prompt = phase === 'choose'
+      ? { phase: 'choose', status }
+      : { phase: 'error', message, status };
     emit();
   });
 }

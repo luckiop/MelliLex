@@ -199,6 +199,47 @@
       "instruction": "Coloca el cursor sobre cualquier palabra",
       "methodMouse": "Mantén <1>CTRL</1> y haz clic derecho",
       "note": "Funciona en todas las aplicaciones. MelliLex debe estar ejecutándose (puede estar en la bandeja)."
+    },
+    "voice": {
+      "title": "Voz",
+      "description": "Volumen, ritmo y timbre",
+      "heading": "Pronunciación",
+      "intro": "La voz natural ahora empieza más alta y más llena que el susurro suave de antes. Arrastra a la derecha para ir más lejos.",
+      "volume": "Volumen",
+      "volumeHint": "Más alto suena más fuerte. Demasiado alto se vuelve duro y forzado.",
+      "speed": "Velocidad",
+      "speedHint": "Más bajo es más lento y más claro. Más alto es más rápido y más compacto.",
+      "speaker": "Timbre",
+      "speakerHint": "A la derecha suena más lleno y firme. A la izquierda, más ligero y fino.",
+      "speakerSystemNote": "El timbre solo afecta a la voz natural instalada. La voz del sistema sigue el volumen y la velocidad.",
+      "preview": "Escuchar hello",
+      "previewing": "Reproduciendo…",
+      "names": {
+        "sky": "Sky",
+        "nicole": "Nicole",
+        "bella": "Bella",
+        "isabella": "Isabella",
+        "af": "Neutral",
+        "sarah": "Sarah",
+        "emma": "Emma",
+        "adam": "Adam",
+        "michael": "Michael",
+        "lewis": "Lewis",
+        "george": "George"
+      },
+      "effects": {
+        "sky": "la más ligera y fina",
+        "nicole": "susurro con aire",
+        "bella": "suave",
+        "isabella": "inglés británico más suave",
+        "af": "clara y pareja",
+        "sarah": "más llena y clara",
+        "emma": "inglés británico más brillante",
+        "adam": "voz masculina más gruesa",
+        "michael": "voz masculina más grave",
+        "lewis": "voz masculina británica",
+        "george": "la más gruesa y grave"
+      }
     }
   },
   "spellCheck": {
@@ -331,13 +372,20 @@
   },
   "pronunciation": {
     "downloadTitle": "¿Descargar una voz natural?",
-    "downloadDescription": "Las palabras y frases pueden usar una voz inglesa natural guardada en este equipo. La descarga ocupa unos 100 MB y se hace una sola vez. También puedes seguir con la voz del sistema.",
+    "downloadDescription": "La primera vez, MelliLex comprueba las bibliotecas de voz y el modelo de voz, y puede instalar lo que falte. El modelo ocupa unos 100 MB. También puedes seguir con la voz del sistema.",
     "download": "Descargar voz",
     "useSystem": "Usar voz del sistema",
-    "downloading": "Descargando la voz…",
+    "downloading": "Instalando los archivos de voz que faltan…",
     "preparing": "Preparando la voz…",
-    "errorTitle": "No se pudo descargar la voz",
-    "errorDescription": "No se pudo descargar la voz natural. Puedes intentarlo de nuevo o seguir con la voz del sistema."
+    "errorTitle": "No se pudo preparar la voz",
+    "errorDescription": "No se pudieron instalar las bibliotecas de voz o el modelo de voz. Puedes intentarlo de nuevo o seguir con la voz del sistema.",
+    "libraries": "Bibliotecas de voz",
+    "voiceModel": "Modelo de voz",
+    "installed": "Instalado",
+    "missing": "Falta",
+    "install": "Descargar e instalar",
+    "installLibraries": "Instalar bibliotecas de voz",
+    "pluginMissing": "Esta versión de la aplicación no incluye el componente de voz, así que solo está disponible la voz del sistema."
   },
   "errors": {
     "cacheOperation": "Error al ejecutar la operación de caché",

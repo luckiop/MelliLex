@@ -13,7 +13,14 @@ import {
   submitPronunciationChoice,
   subscribePronunciationPrompt,
   type PronunciationPrompt,
+  type VoiceInstallStatus,
 } from '../../services/pronunciationPrompt';
+
+function installLabel(status: VoiceInstallStatus, t: (key: string) => string) {
+  if (!status.runtimeReady && !status.modelReady) return t('pronunciation.install');
+  if (!status.runtimeReady) return t('pronunciation.installLibraries');
+  return t('pronunciation.download');
+}
 
 export function PronunciationPromptDialog() {
   const { t } = useTranslation();
@@ -23,6 +30,7 @@ export function PronunciationPromptDialog() {
 
   const busy = prompt?.phase === 'downloading' || prompt?.phase === 'preparing';
   const failed = prompt?.phase === 'error';
+  const status = prompt?.phase === 'choose' || prompt?.phase === 'error' ? prompt.status : null;
 
   return (
     <Dialog
@@ -52,6 +60,23 @@ export function PronunciationPromptDialog() {
           </DialogDescription>
         </DialogHeader>
 
+        {status && (
+          <ul className="space-y-2 text-sm">
+            <li className="flex items-center justify-between gap-4">
+              <span>{t('pronunciation.libraries')}</span>
+              <span>{status.runtimeReady ? t('pronunciation.installed') : t('pronunciation.missing')}</span>
+            </li>
+            <li className="flex items-center justify-between gap-4">
+              <span>{t('pronunciation.voiceModel')}</span>
+              <span>{status.modelReady ? t('pronunciation.installed') : t('pronunciation.missing')}</span>
+            </li>
+          </ul>
+        )}
+
+        {status && !status.pluginReady && (
+          <p className="text-sm text-muted-foreground">{t('pronunciation.pluginMissing')}</p>
+        )}
+
         {prompt?.phase === 'downloading' && (
           <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
             <div
@@ -61,13 +86,16 @@ export function PronunciationPromptDialog() {
           </div>
         )}
 
-        {!busy && (
+        {!busy && status && (
           <DialogFooter>
             <Button variant="outline" onClick={() => submitPronunciationChoice('system')}>
               {t('pronunciation.useSystem')}
             </Button>
-            <Button onClick={() => submitPronunciationChoice('kokoro')}>
-              {t('pronunciation.download')}
+            <Button
+              disabled={!status.pluginReady}
+              onClick={() => submitPronunciationChoice('kokoro')}
+            >
+              {installLabel(status, t)}
             </Button>
           </DialogFooter>
         )}

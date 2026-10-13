@@ -206,6 +206,47 @@
       "selectModel": "モデルを選択",
       "modelsFound": "ローカルに{{count}}個のモデルがインストールされています",
       "ollamaPrivacy": "ローカルで実行 – データは端末から送信されません"
+    },
+    "voice": {
+      "title": "音声",
+      "description": "音量、速さ、声質",
+      "heading": "発音",
+      "intro": "自然音声は、以前の細いささやきより大きく、しっかりした声から始まります。右へ動かすとさらに強くなります。",
+      "volume": "音量",
+      "volumeHint": "上げるほど大きくなります。上げすぎると硬く、詰まった声になります。",
+      "speed": "速さ",
+      "speedHint": "下げるとゆっくりで聞き取りやすくなります。上げると速く、きびきびします。",
+      "speaker": "声質",
+      "speakerHint": "右ほど厚くしっかりします。左ほど軽く細くなります。",
+      "speakerSystemNote": "声質はインストールした自然音声だけに効きます。システムの音声は音量と速さだけが変わります。",
+      "preview": "hello を試聴",
+      "previewing": "再生中…",
+      "names": {
+        "sky": "Sky",
+        "nicole": "Nicole",
+        "bella": "Bella",
+        "isabella": "Isabella",
+        "af": "Neutral",
+        "sarah": "Sarah",
+        "emma": "Emma",
+        "adam": "Adam",
+        "michael": "Michael",
+        "lewis": "Lewis",
+        "george": "George"
+      },
+      "effects": {
+        "sky": "いちばん軽く細い",
+        "nicole": "息の多いささやき",
+        "bella": "柔らかい",
+        "isabella": "柔らかめのイギリス英語",
+        "af": "はっきりして安定",
+        "sarah": "より実があり明瞭",
+        "emma": "明るめのイギリス英語",
+        "adam": "厚みのある男声",
+        "michael": "低めの男声",
+        "lewis": "イギリス英語の男声",
+        "george": "いちばん厚く低い"
+      }
     }
   },
   "spellCheck": {
@@ -338,13 +379,20 @@
   },
   "pronunciation": {
     "downloadTitle": "自然な音声をダウンロードしますか？",
-    "downloadDescription": "単語とフレーズを、このパソコンに保存する自然な英語音声で読めます。ダウンロードは約 100 MB で、一度だけです。今のシステムの音声のままにもできます。",
+    "downloadDescription": "最初の一度だけ、音声ライブラリと音声モデルを確認し、足りないものをインストールできます。音声モデルは約 100 MB です。システムの音声のままにすることもできます。",
     "download": "音声をダウンロード",
     "useSystem": "システムの音声を使う",
-    "downloading": "音声をダウンロードしています…",
+    "downloading": "不足している音声ファイルをインストールしています…",
     "preparing": "音声を準備しています…",
-    "errorTitle": "音声をダウンロードできませんでした",
-    "errorDescription": "自然な音声をダウンロードできませんでした。やり直すか、システムの音声を使い続けられます。"
+    "errorTitle": "音声の準備に失敗しました",
+    "errorDescription": "音声ライブラリまたは音声モデルをインストールできませんでした。再試行するか、システムの音声を使い続けられます。",
+    "libraries": "音声ライブラリ",
+    "voiceModel": "音声モデル",
+    "installed": "インストール済み",
+    "missing": "未インストール",
+    "install": "ダウンロードしてインストール",
+    "installLibraries": "音声ライブラリをインストール",
+    "pluginMissing": "このアプリには音声コンポーネントが含まれていないため、システムの音声だけが使えます。"
   },
   "errors": {
     "cacheOperation": "キャッシュ操作に失敗しました",

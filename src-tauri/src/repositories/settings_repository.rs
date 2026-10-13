@@ -51,8 +51,9 @@ impl SettingsRepository {
                 vocab_note_enabled: false,
                 vocab_note_path: None,
                 vocab_note_split_files: false,
-                dev_log_enabled: false,
-                max_meanings_display: 5,
+        dev_log_enabled: false,
+        max_meanings_display: 5,
+        voice: crate::models::VoiceSettings::default(),
             }),
             Err(e) => Err(AppError::from(e)),
         }

@@ -219,6 +219,7 @@ fn test_settings_persistence() {
         vocab_note_split_files: false,
         dev_log_enabled: false,
         max_meanings_display: 5,
+        voice: VoiceSettings::default(),
     };
 
     // Save settings

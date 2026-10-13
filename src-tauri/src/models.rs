@@ -384,6 +384,9 @@ pub struct AppSettings {
     /// How many meanings to show in the UI. The backend still caches the full list.
     #[serde(default = "default_max_meanings_display")]
     pub max_meanings_display: u32,
+    /// Loudness, pace, and Kokoro speaker. Missing values keep the louder, fuller defaults.
+    #[serde(default)]
+    pub voice: VoiceSettings,
 }
 
 fn default_enable_global_lookup() -> bool {
@@ -441,6 +444,60 @@ pub struct OpenAiConfig {
 pub struct DeepSeekConfig {
     pub api_key: String,
     pub model: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct VoiceSettings {
+    /// Playback gain. 1.7 is louder than the raw model, which sits too quietly.
+    #[serde(default = "default_voice_volume")]
+    pub volume: f32,
+    /// Kokoro and system-voice rate. 1 is the model's natural pace.
+    #[serde(default = "default_voice_speed")]
+    pub speed: f32,
+    /// Kokoro speaker id. 3 is af_sarah, fuller than the breathy af_nicole.
+    #[serde(default = "default_voice_speaker")]
+    pub speaker: u8,
+}
+
+pub fn default_voice_volume() -> f32 {
+    1.7
+}
+
+pub fn default_voice_speed() -> f32 {
+    0.9
+}
+
+pub fn default_voice_speaker() -> u8 {
+    3
+}
+
+impl Default for VoiceSettings {
+    fn default() -> Self {
+        Self {
+            volume: default_voice_volume(),
+            speed: default_voice_speed(),
+            speaker: default_voice_speaker(),
+        }
+    }
+}
+
+impl VoiceSettings {
+    pub fn clamped(self) -> Self {
+        Self {
+            volume: finite_clamped(self.volume, default_voice_volume(), 0.8, 2.2),
+            speed: finite_clamped(self.speed, default_voice_speed(), 0.7, 1.3),
+            speaker: self.speaker.min(10),
+        }
+    }
+}
+
+fn finite_clamped(value: f32, fallback: f32, min: f32, max: f32) -> f32 {
+    if value.is_finite() {
+        value.clamp(min, max)
+    } else {
+        fallback
+    }
 }
 
 impl AppSettings {
