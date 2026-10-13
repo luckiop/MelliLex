@@ -150,10 +150,10 @@
     "subtitle": "Shown once after you install or update this version.",
     "gotIt": "Got it",
     "items": [
-      "Paste a longer passage, mixed Chinese–English, or a punctuated sentence in the same search box to translate into Chinese.",
-      "Remarks discuss the text for the reader — a bit longer, with one or two points. They never talk about how to translate.",
-      "Related words no longer block the next lookup. Use the back arrow to return to the empty home screen.",
-      "The Windows setup can update an existing folder: choose “Update existing folder”, pick the directory that already has mellilex.exe, then continue."
+      "Words and phrases can use a natural English voice. The first time you press pronounce, MelliLex checks the speech libraries and the voice model and can install whatever is missing. You can keep the system voice instead.",
+      "Voice settings change volume, speed, and tone. The default is louder and fuller than the previous soft whisper.",
+      "Each combination of text and voice settings keeps its own recording. Changing a slider does not erase the others, and pressing pronounce again does not run the model.",
+      "Storage shows how much lookup results, spoken audio, and logs use, and can delete each by age. The voice model, speech libraries, vocabulary, and history stay."
     ]
   },
   "sections": {
@@ -238,8 +238,8 @@
       "maxMeaningsDesc": "The model still returns every important sense and they are cached. This only limits how many you see at first."
     },
     "cache": {
-      "title": "Cache",
-      "description": "Manage cached definitions and explorations",
+      "title": "Storage",
+      "description": "See lookup results, spoken audio, and logs, and clear each by age",
       "clearCache": "Clear Cache",
       "clearDefinitions": "Clear Definition Cache",
       "clearDefinitionsDesc": "Remove all cached word and phrase definitions",
@@ -253,7 +253,39 @@
       "confirmClearExplorations": "This will remove all cached exploration data. You can rebuild the cache by exploring words again.",
       "successAll": "Successfully cleared all cache",
       "successDefinitions": "Successfully cleared definition cache",
-      "successExplorations": "Successfully cleared exploration cache"
+      "successExplorations": "Successfully cleared exploration cache",
+      "heading": "On this computer",
+      "intro": "Lookup results, spoken audio, and logs can each be cleared by age. Changing a slider records another copy and leaves the earlier voice settings in place. The voice model, vocabulary, and history stay.",
+      "loading": "Reading storage…",
+      "loadFailed": "Storage could not be read.",
+      "refresh": "Read again",
+      "total": "About {{size}}",
+      "clearable": "Can be cleared",
+      "kept": "Stays",
+      "lookups": "Lookup results",
+      "lookupsHint": "Saved word and phrase answers, including explorations. Clearing them shrinks this part of the database file.",
+      "voice": "Spoken audio",
+      "voiceHint": "Each volume, speed, and tone keeps its own recording. Changing a slider records another copy and does not erase the others.",
+      "logs": "Logs",
+      "logsHint": "Diagnostic files. A log that is still open is emptied; one that cannot be closed stays.",
+      "model": "Voice model",
+      "modelHint": "The installed natural voice. This is not cache.",
+      "runtime": "Speech libraries",
+      "runtimeHint": "Libraries the natural voice needs in order to run.",
+      "database": "Database",
+      "databaseHint": "Vocabulary, history, and settings. Lookup results are stored in this file too.",
+      "meta": "{{n}} items",
+      "oldest": "oldest is {{days}} days ago",
+      "olderAmount": "{{size}} is older than {{days}} days",
+      "noneOlder": "nothing is older than {{days}} days",
+      "ageLabel": "Older than",
+      "days": "{{n}} days",
+      "deleteOlder": "Delete older",
+      "deleteAll": "Delete all",
+      "confirmOlder": "This removes {{kind}} older than {{days}} days. Click the same button again to confirm.",
+      "confirmAll": "This removes all {{kind}}. Click the same button again to confirm.",
+      "cleared": "Removed {{n}}",
+      "clearedSkipped": "Removed {{n}}. {{skipped}} were still in use and stayed."
     },
     "export": {
       "title": "Export",

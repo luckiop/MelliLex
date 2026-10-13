@@ -113,8 +113,8 @@
       "previewDescription": "Fluide ou persuasif à l'oral et à l'écrit. Capable d'exprimer des idées clairement et efficacement."
     },
     "cache": {
-      "title": "Cache",
-      "description": "Gérer les définitions et explorations en cache",
+      "title": "Espace",
+      "description": "Voir les résultats, la voix et les journaux, et effacer chacun selon son âge",
       "clearCache": "Effacer le cache",
       "clearDefinitions": "Effacer le cache des définitions",
       "clearDefinitionsDesc": "Supprimer toutes les définitions de mots et expressions en cache",
@@ -128,7 +128,39 @@
       "confirmClearExplorations": "Cela supprimera toutes les données d'exploration en cache. Vous pouvez reconstruire le cache en explorant à nouveau des mots.",
       "successAll": "Tout le cache a été effacé avec succès",
       "successDefinitions": "Cache des définitions effacé avec succès",
-      "successExplorations": "Cache des explorations effacé avec succès"
+      "successExplorations": "Cache des explorations effacé avec succès",
+      "heading": "Sur cet ordinateur",
+      "intro": "Les résultats, les enregistrements et les journaux se vident chacun selon leur âge. Déplacer un curseur enregistre une autre copie et laisse les précédentes. Le modèle vocal, le vocabulaire et l’historique restent.",
+      "loading": "Lecture de l’espace…",
+      "loadFailed": "Impossible de lire l’espace.",
+      "refresh": "Relire",
+      "total": "Environ {{size}}",
+      "clearable": "Peut être effacé",
+      "kept": "Reste",
+      "lookups": "Résultats de recherche",
+      "lookupsHint": "Réponses enregistrées pour les mots, les expressions et les explorations. Les effacer réduit cette part du fichier de base.",
+      "voice": "Enregistrements",
+      "voiceHint": "Chaque volume, débit et timbre garde son enregistrement. Déplacer un curseur en enregistre un autre et n’efface pas les autres.",
+      "logs": "Journaux",
+      "logsHint": "Fichiers de diagnostic. Le journal encore ouvert est vidé ; celui qui ne peut pas se fermer reste.",
+      "model": "Modèle vocal",
+      "modelHint": "La voix naturelle installée. Ce n’est pas un cache.",
+      "runtime": "Bibliothèques vocales",
+      "runtimeHint": "Bibliothèques nécessaires à la voix naturelle.",
+      "database": "Base de données",
+      "databaseHint": "Vocabulaire, historique et réglages. Les résultats sont aussi dans ce fichier.",
+      "meta": "{{n}} éléments",
+      "oldest": "le plus ancien date de {{days}} jours",
+      "olderAmount": "{{size}} ont plus de {{days}} jours",
+      "noneOlder": "rien n’a plus de {{days}} jours",
+      "ageLabel": "Plus de",
+      "days": "{{n}} jours",
+      "deleteOlder": "Effacer les plus anciens",
+      "deleteAll": "Tout effacer",
+      "confirmOlder": "Ceci efface {{kind}} de plus de {{days}} jours. Cliquez encore sur le même bouton.",
+      "confirmAll": "Ceci efface tous les {{kind}}. Cliquez encore sur le même bouton.",
+      "cleared": "{{n}} retirés",
+      "clearedSkipped": "{{n}} retirés. {{skipped}} étaient encore utilisés et sont restés."
     },
     "export": {
       "title": "Exporter",
@@ -424,5 +456,16 @@
       "british": "UK",
       "australian": "AU"
     }
+  },
+  "whatsNew": {
+    "title": "Nouveautés de la v{{version}}",
+    "subtitle": "Affiché une fois après l’installation ou la mise à jour de cette version.",
+    "gotIt": "Compris",
+    "items": [
+      "Les mots et expressions peuvent utiliser une voix anglaise naturelle. Au premier appui, MelliLex vérifie les bibliothèques et le modèle, et peut installer ce qui manque. La voix du système reste possible.",
+      "Voix règle le volume, le débit et le timbre. Le réglage de départ est plus fort et plus plein que le chuchotement précédent.",
+      "Chaque texte et chaque réglage garde son enregistrement. Déplacer un curseur n’efface pas les précédents, et un nouvel appui ne relance pas le modèle.",
+      "Espace montre la place des résultats, de l’audio et des journaux, et permet de vider chacun selon son âge. Le modèle, les bibliothèques, le vocabulaire et l’historique restent."
+    ]
   }
 }

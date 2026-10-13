@@ -113,8 +113,8 @@
       "previewDescription": "Redegewandt oder überzeugend im Sprechen oder Schreiben. Die Fähigkeit besitzend, Ideen klar und wirkungsvoll auszudrücken."
     },
     "cache": {
-      "title": "Cache",
-      "description": "Verwalte gespeicherte Definitionen und Erkundungen",
+      "title": "Speicher",
+      "description": "Suchergebnisse, Sprache und Protokolle sehen und einzeln nach Alter löschen",
       "clearCache": "Cache leeren",
       "clearDefinitions": "Definitions-Cache leeren",
       "clearDefinitionsDesc": "Alle gespeicherten Wort- und Redewendungsdefinitionen entfernen",
@@ -128,7 +128,39 @@
       "confirmClearExplorations": "Dadurch werden alle gespeicherten Erkundungen gelöscht. Erzeuge sie erneut, indem du Wörter erneut erkundest.",
       "successAll": "Gesamter Cache erfolgreich geleert",
       "successDefinitions": "Definitions-Cache erfolgreich geleert",
-      "successExplorations": "Erkundungs-Cache erfolgreich geleert"
+      "successExplorations": "Erkundungs-Cache erfolgreich geleert",
+      "heading": "Auf diesem Computer",
+      "intro": "Suchergebnisse, Sprachaufnahmen und Protokolle lassen sich getrennt nach Alter löschen. Ein Regler nimmt eine weitere Aufnahme auf und lässt die früheren stehen. Sprachmodell, Wortschatz und Verlauf bleiben.",
+      "loading": "Speicher wird gelesen…",
+      "loadFailed": "Der Speicher konnte nicht gelesen werden.",
+      "refresh": "Erneut lesen",
+      "total": "Etwa {{size}}",
+      "clearable": "Kann gelöscht werden",
+      "kept": "Bleibt",
+      "lookups": "Suchergebnisse",
+      "lookupsHint": "Gespeicherte Antworten zu Wörtern, Wendungen und Erkundungen. Löschen verkleinert diesen Teil der Datenbankdatei.",
+      "voice": "Sprachaufnahmen",
+      "voiceHint": "Jede Lautstärke, jedes Tempo und jede Klangfarbe behält eine eigene Aufnahme. Ein Regler nimmt eine weitere auf und löscht die anderen nicht.",
+      "logs": "Protokolle",
+      "logsHint": "Diagnosedateien. Eine noch geöffnete Datei wird geleert; eine, die sich nicht schließen lässt, bleibt.",
+      "model": "Sprachmodell",
+      "modelHint": "Die installierte natürliche Stimme. Das ist kein Cache.",
+      "runtime": "Sprachbibliotheken",
+      "runtimeHint": "Bibliotheken, die die natürliche Stimme zum Laufen braucht.",
+      "database": "Datenbank",
+      "databaseHint": "Wortschatz, Verlauf und Einstellungen. Suchergebnisse liegen ebenfalls in dieser Datei.",
+      "meta": "{{n}} Einträge",
+      "oldest": "ältester ist vor {{days}} Tagen",
+      "olderAmount": "{{size}} sind älter als {{days}} Tage",
+      "noneOlder": "nichts ist älter als {{days}} Tage",
+      "ageLabel": "Älter als",
+      "days": "{{n}} Tage",
+      "deleteOlder": "Ältere löschen",
+      "deleteAll": "Alle löschen",
+      "confirmOlder": "{{kind}} älter als {{days}} Tage werden gelöscht. Dieselbe Schaltfläche erneut klicken.",
+      "confirmAll": "Alle {{kind}} werden gelöscht. Dieselbe Schaltfläche erneut klicken.",
+      "cleared": "{{n}} entfernt",
+      "clearedSkipped": "{{n}} entfernt. {{skipped}} waren noch in Gebrauch und blieben."
     },
     "export": {
       "title": "Exportieren",
@@ -424,5 +456,16 @@
       "british": "UK",
       "australian": "AU"
     }
+  },
+  "whatsNew": {
+    "title": "Neu in v{{version}}",
+    "subtitle": "Wird einmal angezeigt, nachdem diese Version installiert oder aktualisiert wurde.",
+    "gotIt": "Verstanden",
+    "items": [
+      "Wörter und Wendungen können eine natürliche englische Stimme nutzen. Beim ersten Antippen prüft MelliLex die Bibliotheken und das Sprachmodell und kann Fehlendes installieren. Die Systemstimme bleibt wählbar.",
+      "Unter Stimme lassen sich Lautstärke, Tempo und Klang einstellen. Die Vorgabe ist lauter und voller als das frühere Flüstern.",
+      "Jeder Text und jede Einstellung behält eine eigene Aufnahme. Ein Regler löscht die früheren nicht, und ein erneutes Antippen startet das Modell nicht neu.",
+      "Speicher zeigt, wie viel Suchergebnisse, Aufnahmen und Protokolle belegen, und kann jedes nach Alter löschen. Sprachmodell, Bibliotheken, Wortschatz und Verlauf bleiben."
+    ]
   }
 }

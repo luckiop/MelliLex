@@ -2,6 +2,15 @@
 
 All notable changes to MelliLex will be documented here.
 
+## [0.13.0] — 2026-10-13
+
+Internal beta (`0.x`). Implementation map: `src/release/v0_13_0.ts`.
+
+- Words and phrases can use an in-process Kokoro voice. The app still starts without its libraries; the first pronounce installs whatever is missing, or keeps the system voice
+- Voice settings control volume, speed, and tone. The default is louder and fuller than the previous breathy voice
+- A recording is kept per text and per slider setting. Changing a slider does not erase the others, and a repeat click does not run the model again
+- Settings shows storage for lookup results, spoken audio, and logs, with a separate age delete for each. The voice model, speech libraries, vocabulary, and history stay
+
 ## [0.12.1] — 2026-09-04
 
 - Related words no longer block the next lookup; section 3 can time out on its own

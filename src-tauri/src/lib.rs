@@ -270,6 +270,8 @@ pub fn run() {
             get_cached_exploration_features,
             // Cache commands
             get_cache_stats,
+            storage_report,
+            storage_clear,
             clear_all_cache,
             clear_definition_cache,
             clear_exploration_cache,

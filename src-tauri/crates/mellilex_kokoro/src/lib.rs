@@ -1,3 +1,10 @@
+//! 0.13.0 Kokoro plugin. Map: `src/release/v0_13_0.ts`.
+//!
+//! This cdylib is loaded only after the sherpa libraries are present, so the
+//! main executable can start without them. `speed` and `sid` are arguments of
+//! `mellilex_kokoro_synthesize`. Loudness is applied by the host before the
+//! WAV is written; this library does not change sample amplitude.
+
 use std::collections::HashMap;
 use std::ffi::CStr;
 use std::os::raw::c_char;

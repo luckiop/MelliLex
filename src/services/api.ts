@@ -12,6 +12,9 @@ import type {
   VocabUpsertResult,
   TranslateResult,
   ZhEnResult,
+  StorageClearResult,
+  StorageKind,
+  StorageReport,
 } from '../types';
 import { isDevLogEnabled, reportClientError } from '../utils/devLog';
 
@@ -186,6 +189,14 @@ export const api = {
   },
 
   // Cache Management
+  async storageReport(): Promise<StorageReport> {
+    return await wrapInvoke<StorageReport>('storage_report');
+  },
+
+  async storageClear(kind: StorageKind, olderThanDays: number | null): Promise<StorageClearResult> {
+    return await wrapInvoke<StorageClearResult>('storage_clear', { kind, olderThanDays });
+  },
+
   async clearAllCache(): Promise<void> {
     return await wrapInvoke('clear_all_cache');
   },

@@ -117,8 +117,8 @@
       "previewDescription": "Fluido o persuasivo al hablar o escribir. Con la capacidad de expresar ideas de manera clara y efectiva."
     },
     "cache": {
-      "title": "Caché",
-      "description": "Administra definiciones y exploraciones en caché",
+      "title": "Almacenamiento",
+      "description": "Ver resultados, voz y registros, y borrar cada uno por antigüedad",
       "clearCache": "Limpiar caché",
       "clearDefinitions": "Limpiar caché de definiciones",
       "clearDefinitionsDesc": "Eliminar todas las definiciones de palabras y frases en caché",
@@ -132,7 +132,39 @@
       "confirmClearExplorations": "Esto eliminará todas las exploraciones en caché. Puedes reconstruirlas explorando palabras de nuevo.",
       "successAll": "Todo el caché se limpió correctamente",
       "successDefinitions": "El caché de definiciones se limpió correctamente",
-      "successExplorations": "El caché de exploraciones se limpió correctamente"
+      "successExplorations": "El caché de exploraciones se limpió correctamente",
+      "heading": "En este equipo",
+      "intro": "Los resultados, el audio hablado y los registros se pueden borrar por separado según su antigüedad. Mover un control graba otra copia y deja las anteriores. El modelo de voz, el vocabulario y el historial se quedan.",
+      "loading": "Leyendo el almacenamiento…",
+      "loadFailed": "No se pudo leer el almacenamiento.",
+      "refresh": "Leer de nuevo",
+      "total": "Unos {{size}}",
+      "clearable": "Se puede borrar",
+      "kept": "Se queda",
+      "lookups": "Resultados de búsqueda",
+      "lookupsHint": "Respuestas guardadas de palabras, frases y exploraciones. Borrarlas reduce esa parte del archivo de la base.",
+      "voice": "Audio hablado",
+      "voiceHint": "Cada volumen, velocidad y timbre guarda su propia grabación. Mover un control graba otra copia y no borra las demás.",
+      "logs": "Registros",
+      "logsHint": "Archivos de diagnóstico. El registro que sigue abierto se vacía; el que no se puede cerrar se queda.",
+      "model": "Modelo de voz",
+      "modelHint": "La voz natural instalada. No es caché.",
+      "runtime": "Bibliotecas de voz",
+      "runtimeHint": "Bibliotecas que la voz natural necesita para funcionar.",
+      "database": "Base de datos",
+      "databaseHint": "Vocabulario, historial y ajustes. Los resultados también están en este archivo.",
+      "meta": "{{n}} elementos",
+      "oldest": "el más antiguo es de hace {{days}} días",
+      "olderAmount": "{{size}} tiene más de {{days}} días",
+      "noneOlder": "no hay nada con más de {{days}} días",
+      "ageLabel": "Más de",
+      "days": "{{n}} días",
+      "deleteOlder": "Borrar lo anterior",
+      "deleteAll": "Borrar todo",
+      "confirmOlder": "Esto borra {{kind}} con más de {{days}} días. Pulsa el mismo botón otra vez para confirmar.",
+      "confirmAll": "Esto borra todo {{kind}}. Pulsa el mismo botón otra vez para confirmar.",
+      "cleared": "Se borraron {{n}}",
+      "clearedSkipped": "Se borraron {{n}}. {{skipped}} seguían en uso y se quedaron."
     },
     "export": {
       "title": "Exportar",
@@ -417,5 +449,16 @@
       "british": "UK",
       "australian": "AU"
     }
+  },
+  "whatsNew": {
+    "title": "Novedades de v{{version}}",
+    "subtitle": "Se muestra una vez después de instalar o actualizar esta versión.",
+    "gotIt": "Entendido",
+    "items": [
+      "Las palabras y frases pueden usar una voz inglesa natural. La primera vez que pulses pronunciar, MelliLex comprueba las bibliotecas y el modelo de voz y puede instalar lo que falte. También puedes quedarte con la voz del sistema.",
+      "En Voz se ajustan el volumen, la velocidad y el timbre. El valor inicial es más alto y más lleno que el susurro anterior.",
+      "Cada texto y cada ajuste de voz guardan su propia grabación. Mover un control no borra las anteriores, y volver a pronunciar no ejecuta el modelo.",
+      "Almacenamiento muestra cuánto ocupan los resultados, el audio y los registros, y permite borrar cada uno por antigüedad. El modelo de voz, las bibliotecas, el vocabulario y el historial se quedan."
+    ]
   }
 }

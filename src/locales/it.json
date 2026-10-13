@@ -113,8 +113,8 @@
       "previewDescription": "Fluente o persuasivo nel parlare o nello scrivere. Capace di esprimere idee in modo chiaro ed efficace."
     },
     "cache": {
-      "title": "Cache",
-      "description": "Gestisci definizioni ed esplorazioni memorizzate",
+      "title": "Spazio",
+      "description": "Vedi risultati, voce e registri, e cancella ciascuno in base all’età",
       "clearCache": "Svuota cache",
       "clearDefinitions": "Svuota cache definizioni",
       "clearDefinitionsDesc": "Elimina tutte le definizioni di parole e espressioni salvate",
@@ -128,7 +128,39 @@
       "confirmClearExplorations": "Questo rimuoverà tutte le esplorazioni memorizzate. Puoi ricrearle esplorando di nuovo le parole.",
       "successAll": "Cache completamente svuotata",
       "successDefinitions": "Cache delle definizioni svuotata",
-      "successExplorations": "Cache delle esplorazioni svuotata"
+      "successExplorations": "Cache delle esplorazioni svuotata",
+      "heading": "Su questo computer",
+      "intro": "Risultati, audio e registri si cancellano ciascuno in base all’età. Spostare un cursore registra un’altra copia e lascia le precedenti. Il modello vocale, il vocabolario e la cronologia restano.",
+      "loading": "Lettura dello spazio…",
+      "loadFailed": "Impossibile leggere lo spazio.",
+      "refresh": "Leggi di nuovo",
+      "total": "Circa {{size}}",
+      "clearable": "Si può cancellare",
+      "kept": "Resta",
+      "lookups": "Risultati di ricerca",
+      "lookupsHint": "Risposte salvate di parole, frasi ed esplorazioni. Cancellarle riduce quella parte del file del database.",
+      "voice": "Audio parlato",
+      "voiceHint": "Ogni volume, velocità e timbro tiene la propria registrazione. Spostare un cursore ne registra un’altra e non cancella le altre.",
+      "logs": "Registri",
+      "logsHint": "File di diagnostica. Il registro ancora aperto viene svuotato; quello che non si chiude resta.",
+      "model": "Modello vocale",
+      "modelHint": "La voce naturale installata. Non è cache.",
+      "runtime": "Librerie vocali",
+      "runtimeHint": "Librerie necessarie alla voce naturale.",
+      "database": "Database",
+      "databaseHint": "Vocabolario, cronologia e impostazioni. I risultati sono in questo file.",
+      "meta": "{{n}} elementi",
+      "oldest": "il più vecchio è di {{days}} giorni fa",
+      "olderAmount": "{{size}} hanno più di {{days}} giorni",
+      "noneOlder": "niente ha più di {{days}} giorni",
+      "ageLabel": "Più di",
+      "days": "{{n}} giorni",
+      "deleteOlder": "Cancella i più vecchi",
+      "deleteAll": "Cancella tutto",
+      "confirmOlder": "Questo cancella {{kind}} più vecchi di {{days}} giorni. Premi di nuovo lo stesso pulsante.",
+      "confirmAll": "Questo cancella tutti i {{kind}}. Premi di nuovo lo stesso pulsante.",
+      "cleared": "Rimossi {{n}}",
+      "clearedSkipped": "Rimossi {{n}}. {{skipped}} erano ancora in uso e sono rimasti."
     },
     "export": {
       "title": "Esporta",
@@ -424,5 +456,16 @@
       "british": "UK",
       "australian": "AU"
     }
+  },
+  "whatsNew": {
+    "title": "Novità della v{{version}}",
+    "subtitle": "Compare una volta dopo l’installazione o l’aggiornamento di questa versione.",
+    "gotIt": "Ho capito",
+    "items": [
+      "Parole e frasi possono usare una voce inglese naturale. Al primo tocco MelliLex controlla librerie e modello e può installare ciò che manca. Si può tenere la voce di sistema.",
+      "Voce regola volume, velocità e timbro. L’impostazione iniziale è più forte e più piena del sussurro precedente.",
+      "Ogni testo e ogni impostazione tengono la propria registrazione. Spostare un cursore non cancella le precedenti, e un nuovo tocco non esegue di nuovo il modello.",
+      "Spazio mostra quanto occupano risultati, audio e registri, e può cancellare ciascuno in base all’età. Modello, librerie, vocabolario e cronologia restano."
+    ]
   }
 }

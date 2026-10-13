@@ -1,6 +1,6 @@
 [package]
 name = "mellilex_kokoro"
-version = "0.12.1"
+version = "0.13.0"
 description = "Optional Kokoro speech component loaded only after its libraries are installed"
 edition = "2021"
 publish = false

@@ -113,8 +113,8 @@
       "previewDescription": "Fluente ou persuasivo ao falar ou escrever. Com a capacidade de expressar ideias de forma clara e eficaz."
     },
     "cache": {
-      "title": "Cache",
-      "description": "Gerenciar definições e explorações em cache",
+      "title": "Espaço",
+      "description": "Ver resultados, voz e registos, e apagar cada um pela idade",
       "clearCache": "Limpar Cache",
       "clearDefinitions": "Limpar Cache de Definições",
       "clearDefinitionsDesc": "Remover todas as definições de palavras e expressões em cache",
@@ -128,7 +128,39 @@
       "confirmClearExplorations": "Isso removerá todos os dados de exploração em cache. Você pode reconstruir o cache explorando palavras novamente.",
       "successAll": "Todo o cache foi limpo com sucesso",
       "successDefinitions": "Cache de definições limpo com sucesso",
-      "successExplorations": "Cache de explorações limpo com sucesso"
+      "successExplorations": "Cache de explorações limpo com sucesso",
+      "heading": "Neste computador",
+      "intro": "Resultados, áudio e registos podem ser apagados à parte, pela idade. Mover um controlo grava outra cópia e deixa as anteriores. O modelo de voz, o vocabulário e o histórico ficam.",
+      "loading": "A ler o espaço…",
+      "loadFailed": "Não foi possível ler o espaço.",
+      "refresh": "Ler outra vez",
+      "total": "Cerca de {{size}}",
+      "clearable": "Pode ser apagado",
+      "kept": "Fica",
+      "lookups": "Resultados de pesquisa",
+      "lookupsHint": "Respostas guardadas de palavras, expressões e explorações. Apagá-las reduz essa parte do ficheiro da base.",
+      "voice": "Áudio falado",
+      "voiceHint": "Cada volume, velocidade e timbre guarda a sua gravação. Mover um controlo grava outra cópia e não apaga as outras.",
+      "logs": "Registos",
+      "logsHint": "Ficheiros de diagnóstico. O registo ainda aberto é esvaziado; o que não fecha fica.",
+      "model": "Modelo de voz",
+      "modelHint": "A voz natural instalada. Não é cache.",
+      "runtime": "Bibliotecas de voz",
+      "runtimeHint": "Bibliotecas de que a voz natural precisa para correr.",
+      "database": "Base de dados",
+      "databaseHint": "Vocabulário, histórico e definições. Os resultados também estão neste ficheiro.",
+      "meta": "{{n}} itens",
+      "oldest": "o mais antigo tem {{days}} dias",
+      "olderAmount": "{{size}} têm mais de {{days}} dias",
+      "noneOlder": "nada tem mais de {{days}} dias",
+      "ageLabel": "Mais de",
+      "days": "{{n}} dias",
+      "deleteOlder": "Apagar os antigos",
+      "deleteAll": "Apagar tudo",
+      "confirmOlder": "Isto apaga {{kind}} com mais de {{days}} dias. Clique outra vez no mesmo botão.",
+      "confirmAll": "Isto apaga todos os {{kind}}. Clique outra vez no mesmo botão.",
+      "cleared": "Removidos {{n}}",
+      "clearedSkipped": "Removidos {{n}}. {{skipped}} ainda estavam em uso e ficaram."
     },
     "export": {
       "title": "Exportar",
@@ -424,5 +456,16 @@
       "british": "UK",
       "australian": "AU"
     }
+  },
+  "whatsNew": {
+    "title": "Novidades da v{{version}}",
+    "subtitle": "Aparece uma vez depois de instalar ou atualizar esta versão.",
+    "gotIt": "Percebi",
+    "items": [
+      "Palavras e expressões podem usar uma voz inglesa natural. Na primeira pronúncia, o MelliLex verifica as bibliotecas e o modelo e pode instalar o que faltar. A voz do sistema continua disponível.",
+      "Em Voz ajustam-se volume, velocidade e timbre. O valor inicial é mais alto e mais cheio do que o sussurro anterior.",
+      "Cada texto e cada definição de voz guardam a sua gravação. Mover um controlo não apaga as anteriores, e pronunciar outra vez não volta a correr o modelo.",
+      "Espaço mostra quanto ocupam os resultados, o áudio e os registos, e pode apagar cada um pela idade. O modelo, as bibliotecas, o vocabulário e o histórico ficam."
+    ]
   }
 }

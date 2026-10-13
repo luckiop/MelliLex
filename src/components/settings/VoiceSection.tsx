@@ -1,3 +1,6 @@
+// 0.13.0 voice controls. Map: src/release/v0_13_0.ts.
+// Sliders persist VoiceSettings. Playback reads them from the database, and
+// the voice cache keeps one recording per setting instead of replacing it.
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui/button';

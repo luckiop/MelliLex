@@ -26,7 +26,7 @@ vi.mock('../../components/phrase/ExportPhraseDialog', () => ({
 }));
 
 vi.mock('@tauri-apps/api/app', () => ({
-  getVersion: () => Promise.resolve('0.12.1'),
+  getVersion: () => Promise.resolve('0.13.0'),
 }));
 
 const sampleHeader: WordSection1Header = {
@@ -77,7 +77,7 @@ describe('Home page', () => {
     renderWithProviders(<Home />, { route: '/' });
     expect(screen.getByText('MelliLex')).toBeInTheDocument();
     expect(screen.getByText(/AI-powered word/)).toBeInTheDocument();
-    expect(await screen.findByText('v0.12.1 beta')).toBeInTheDocument();
+    expect(await screen.findByText('v0.13.0 beta')).toBeInTheDocument();
     expect(screen.getByText(/Type a word, phrase, Chinese/)).toBeInTheDocument();
     expect(screen.getByText('Definitions')).toBeInTheDocument();
     expect(screen.getByText('Vocab notebook')).toBeInTheDocument();

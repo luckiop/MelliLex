@@ -276,6 +276,82 @@ impl Database {
         let phrase_deleted = self.phrase_cache_repo.clear_old(days)?;
         Ok(word_deleted + phrase_deleted)
     }
+
+    pub fn lookup_usage(&self, cutoffs: [i64; 3]) -> Result<LookupUsage, AppError> {
+        let conn = sync::lock(&self.conn, "lookup usage")?;
+        let mut usage = LookupUsage::default();
+        for (table, column) in [
+            ("cached_definitions", "definition"),
+            ("cached_explorations", "exploration_data"),
+            ("cached_phrases", "definition"),
+        ] {
+            usage.add(query_lookup_table(&conn, table, column, cutoffs)?);
+        }
+        Ok(usage)
+    }
+
+    pub fn compact(&self) -> Result<(), AppError> {
+        let conn = sync::lock(&self.conn, "compact database")?;
+        conn.execute_batch("VACUUM").map_err(AppError::from)
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct LookupUsage {
+    pub count: u64,
+    pub bytes: u64,
+    pub oldest_unix: Option<i64>,
+    pub older_bytes: [u64; 3],
+}
+
+impl LookupUsage {
+    fn add(&mut self, row: LookupUsage) {
+        self.count += row.count;
+        self.bytes += row.bytes;
+        self.oldest_unix = match (self.oldest_unix, row.oldest_unix) {
+            (Some(left), Some(right)) => Some(left.min(right)),
+            (Some(left), None) => Some(left),
+            (None, right) => right,
+        };
+        for (slot, bytes) in self.older_bytes.iter_mut().zip(row.older_bytes) {
+            *slot += bytes;
+        }
+    }
+}
+
+fn query_lookup_table(
+    conn: &rusqlite::Connection,
+    table: &str,
+    column: &str,
+    cutoffs: [i64; 3],
+) -> Result<LookupUsage, AppError> {
+    let sql = format!(
+        "SELECT COUNT(*),
+                COALESCE(SUM(LENGTH({column})), 0),
+                MIN(cached_at),
+                COALESCE(SUM(CASE WHEN cached_at < ?1 THEN LENGTH({column}) ELSE 0 END), 0),
+                COALESCE(SUM(CASE WHEN cached_at < ?2 THEN LENGTH({column}) ELSE 0 END), 0),
+                COALESCE(SUM(CASE WHEN cached_at < ?3 THEN LENGTH({column}) ELSE 0 END), 0)
+         FROM {table}"
+    );
+    let row = conn
+        .query_row(&sql, cutoffs, |row| {
+            Ok((
+                row.get::<_, i64>(0)?,
+                row.get::<_, i64>(1)?,
+                row.get::<_, Option<i64>>(2)?,
+                row.get::<_, i64>(3)?,
+                row.get::<_, i64>(4)?,
+                row.get::<_, i64>(5)?,
+            ))
+        })
+        .map_err(AppError::from)?;
+    Ok(LookupUsage {
+        count: row.0.max(0) as u64,
+        bytes: row.1.max(0) as u64,
+        oldest_unix: row.2,
+        older_bytes: [row.3.max(0) as u64, row.4.max(0) as u64, row.5.max(0) as u64],
+    })
 }
 
 #[cfg(test)]

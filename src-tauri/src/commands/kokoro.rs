@@ -70,8 +70,12 @@ pub async fn kokoro_synthesize(
     let engine = state.inner().clone();
     let db = app.state::<crate::db::Database>().inner().clone();
     let wav = BlockingExecutor::run(move || {
-        let voice = db.get_settings()?.voice.clamped();
-        kokoro::synthesize(
+        let voice = crate::services::voice_cache::quantize(db.get_settings()?.voice);
+        let cache_dir = crate::services::voice_cache::dir(&app_data);
+        if let Some(cached) = crate::services::voice_cache::read(&cache_dir, &text, &voice) {
+            return Ok(cached);
+        }
+        let wav = kokoro::synthesize(
             &engine,
             &app_data,
             &exe,
@@ -79,7 +83,11 @@ pub async fn kokoro_synthesize(
             voice.speed,
             i32::from(voice.speaker),
             voice.volume,
-        )
+        )?;
+        if let Err(err) = crate::services::voice_cache::store(&cache_dir, &text, &voice, &wav) {
+            log::warn!("Spoken audio was not cached: {err}");
+        }
+        Ok(wav)
     })
     .await?;
     Ok(base64::engine::general_purpose::STANDARD.encode(wav))

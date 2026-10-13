@@ -77,6 +77,32 @@ export interface VoiceSettings {
   speaker: number;
 }
 
+export type StorageKind = 'lookups' | 'voice' | 'logs';
+
+export interface StorageSlice {
+  bytes: number;
+  count: number;
+  oldestUnix: number | null;
+  older7: number;
+  older30: number;
+  older90: number;
+}
+
+export interface StorageReport {
+  totalBytes: number;
+  lookups: StorageSlice;
+  voice: StorageSlice;
+  logs: StorageSlice;
+  modelBytes: number;
+  runtimeBytes: number;
+  databaseBytes: number;
+}
+
+export interface StorageClearResult {
+  removed: number;
+  skipped: number;
+}
+
 export interface AppSettings {
   aiProvider: AiProviderType;
   openAiConfig?: OpenAiConfig;

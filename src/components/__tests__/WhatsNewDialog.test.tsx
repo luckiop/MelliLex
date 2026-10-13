@@ -7,10 +7,10 @@ describe('WhatsNewDialog', () => {
   it('lists the current version notes', () => {
     const onDismiss = vi.fn();
     renderWithProviders(
-      <WhatsNewDialog open version="0.12.0" onDismiss={onDismiss} />
+      <WhatsNewDialog open version="0.13.0" onDismiss={onDismiss} />
     );
-    expect(screen.getByText("What's new in v0.12.0")).toBeInTheDocument();
-    expect(screen.getByText(/search box to translate/i)).toBeInTheDocument();
+    expect(screen.getByText("What's new in v0.13.0")).toBeInTheDocument();
+    expect(screen.getByText(/natural English voice/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
     expect(onDismiss).toHaveBeenCalled();
   });

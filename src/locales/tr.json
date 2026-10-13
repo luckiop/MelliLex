@@ -113,8 +113,8 @@
       "previewDescription": "Konuşmada veya yazmada akıcı ya da ikna edici. Fikirleri açık ve etkili bir şekilde ifade etme yeteneğine sahip."
     },
     "cache": {
-      "title": "Önbellek",
-      "description": "Kaydedilen tanımları ve keşifleri yönetin",
+      "title": "Alan",
+      "description": "Arama, ses ve günlüklerin kapladığı yeri görün ve her birini yaşına göre silin",
       "clearCache": "Önbelleği temizle",
       "clearDefinitions": "Tanım önbelleğini temizle",
       "clearDefinitionsDesc": "Kaydedilen tüm kelime tanımlarını ve deyimleri kaldır",
@@ -128,7 +128,39 @@
       "confirmClearExplorations": "Kaydedilen tüm keşifler silinecek. Kelimeleri tekrar keşfederek yeniden oluşturabilirsiniz.",
       "successAll": "Önbellek tamamen temizlendi",
       "successDefinitions": "Tanım önbelleği temizlendi",
-      "successExplorations": "Keşif önbelleği temizlendi"
+      "successExplorations": "Keşif önbelleği temizlendi",
+      "heading": "Bu bilgisayarda",
+      "intro": "Arama sonuçları, ses kayıtları ve günlükler kendi yaşlarına göre ayrı silinir. Bir kaydırıcıyı oynatmak yeni bir kayıt ekler, eskilerini silmez. Ses modeli, sözlük ve geçmiş kalır.",
+      "loading": "Alan okunuyor…",
+      "loadFailed": "Alan okunamadı.",
+      "refresh": "Yeniden oku",
+      "total": "Yaklaşık {{size}}",
+      "clearable": "Silinebilir",
+      "kept": "Kalır",
+      "lookups": "Arama sonuçları",
+      "lookupsHint": "Kaydedilmiş sözcük, öbek ve keşif yanıtları. Silmek veritabanı dosyasının bu kısmını küçültür.",
+      "voice": "Ses kayıtları",
+      "voiceHint": "Her ses yüksekliği, hız ve tını kendi kaydını tutar. Kaydırıcı yeni bir kayıt ekler, diğerlerini silmez.",
+      "logs": "Günlükler",
+      "logsHint": "Tanı dosyaları. Hâlâ açık olan günlük boşaltılır; kapanamayan kalır.",
+      "model": "Ses modeli",
+      "modelHint": "Kurulu doğal ses. Bu önbellek değildir.",
+      "runtime": "Ses kitaplıkları",
+      "runtimeHint": "Doğal sesin çalışması için gereken kitaplıklar.",
+      "database": "Veritabanı",
+      "databaseHint": "Sözlük, geçmiş ve ayarlar. Arama sonuçları da bu dosyadadır.",
+      "meta": "{{n}} öğe",
+      "oldest": "en eskisi {{days}} gün önce",
+      "olderAmount": "{{days}} günden eski olan yaklaşık {{size}}",
+      "noneOlder": "{{days}} günden eski bir şey yok",
+      "ageLabel": "Daha eski",
+      "days": "{{n}} gün",
+      "deleteOlder": "Eskileri sil",
+      "deleteAll": "Tümünü sil",
+      "confirmOlder": "{{days}} günden eski {{kind}} silinir. Aynı düğmeye bir kez daha basın.",
+      "confirmAll": "Tüm {{kind}} silinir. Aynı düğmeye bir kez daha basın.",
+      "cleared": "{{n}} silindi",
+      "clearedSkipped": "{{n}} silindi. {{skipped}} hâlâ kullanılıyordu ve kaldı."
     },
     "export": {
       "title": "Dışa Aktar",
@@ -442,5 +474,16 @@
       "british": "UK",
       "australian": "AU"
     }
+  },
+  "whatsNew": {
+    "title": "v{{version}} yenilikleri",
+    "subtitle": "Bu sürüm kurulduktan veya güncellendikten sonra bir kez gösterilir.",
+    "gotIt": "Tamam",
+    "items": [
+      "Sözcükler ve öbekler daha doğal bir İngilizce sesle okunabilir. Telaffuza ilk basışta MelliLex ses kitaplıklarını ve ses modelini denetler, eksik olanı kurabilir. Sistem sesi de kalabilir.",
+      "Sesteki kaydırıcılar yükseklik, hız ve tınıyı ayarlar. Başlangıç, önceki ince fısıltıdan daha yüksek ve daha doludur.",
+      "Aynı metin ve aynı ses ayarı kendi kaydını tutar. Bir kaydırıcı eskileri silmez, yeniden telaffuz modeli tekrar çalıştırmaz.",
+      "Alan, arama sonuçlarının, ses kayıtlarının ve günlüklerin yerini gösterir ve her birini yaşına göre silebilir. Ses modeli, kitaplıklar, sözlük ve geçmiş kalır."
+    ]
   }
 }
