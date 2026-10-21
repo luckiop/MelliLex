@@ -84,6 +84,17 @@ export const getErrorMessage = (error: unknown, fallback: string): string => {
  * Check if error indicates a provider configuration issue.
  * This includes API key problems, provider not set up, or connection failures.
  */
+/**
+ * The lookup UI timer, or a provider that accepted the request and then
+ * never finished the body.
+ */
+export const isModelStallError = (error: unknown): boolean => {
+  const message = typeof error === 'string' ? error : parseError(error).message;
+  return /response body did not finish|Search timed out after|no HTTP response within/i.test(
+    message
+  );
+};
+
 export const isProviderConfigError = (error: unknown): boolean => {
   const parsed = parseError(error);
   

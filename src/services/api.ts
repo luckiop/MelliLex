@@ -5,6 +5,7 @@ import type {
   WordHistory,
   AppSettings,
   AiModel,
+  ConnectivityReport,
   CachedExploreFeatures,
   SpellCheckResponse,
   VocabEntry,
@@ -172,6 +173,18 @@ export const api = {
 
   async testApiKey(provider: string, apiKey: string): Promise<boolean> {
   return await wrapInvoke<boolean>('test_api_key', { provider, apiKey });
+  },
+
+  async probeModelConnectivity(
+    provider: string,
+    apiKey: string,
+    model: string,
+  ): Promise<ConnectivityReport> {
+    return await wrapInvoke<ConnectivityReport>('probe_model_connectivity', {
+      provider,
+      apiKey,
+      model,
+    });
   },
 
   // Utility

@@ -234,6 +234,17 @@ export interface AiModel {
   name: string;
 }
 
+export interface ConnectivityReport {
+  ok: boolean;
+  reason: string;
+  elapsedMs: number;
+  httpStatus: number | null;
+  provider: string;
+  model: string;
+  replyPreview: string | null;
+  rawError: string;
+}
+
 // Word Exploration Types
 
 // Must match Rust enum in models.rs

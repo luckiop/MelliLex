@@ -3,7 +3,10 @@ use crate::models::TokenUsage;
 use crate::services::ai_provider::{AiModel, PromptSender};
 use crate::services::http_client::{RetriableClient, RetryIntent};
 use crate::services::model_info::ModelInfoService;
-use crate::services::provider_http::{ensure_success, log_status_if_error};
+use crate::services::provider_http::{
+    ensure_success, exchange, log_status_if_error, ExchangeFailure, ExchangeSuccess,
+    LOOKUP_BODY_TIMEOUT, LOOKUP_HEADER_TIMEOUT, PROBE_BODY_TIMEOUT, PROBE_HEADER_TIMEOUT,
+};
 use anyhow::Result;
 use async_trait::async_trait;
 use log::{debug, info};
@@ -167,13 +170,21 @@ impl OpenAIService {
     }
 
     fn request_body(&self, prompt: &str) -> serde_json::Value {
+        self.chat_body(prompt, false)
+    }
+
+    fn probe_body(&self, prompt: &str) -> serde_json::Value {
+        self.chat_body(prompt, true)
+    }
+
+    fn chat_body(&self, prompt: &str, probe: bool) -> serde_json::Value {
         match self.kind {
             CompatKind::OpenAi => serde_json::json!({
                 "model": self.model,
                 "messages": [
                     { "role": "user", "content": prompt }
                 ],
-                "max_completion_tokens": 16000,
+                "max_completion_tokens": if probe { 64 } else { 16000 },
                 "response_format": { "type": "json_object" }
             }),
             CompatKind::DeepSeek => serde_json::json!({
@@ -181,11 +192,70 @@ impl OpenAIService {
                 "messages": [
                     { "role": "user", "content": prompt }
                 ],
-                "max_tokens": 8192,
+                "max_tokens": if probe { 64 } else { 8192 },
                 "thinking": { "type": "disabled" },
                 "response_format": { "type": "json_object" }
             }),
         }
+    }
+
+    async fn post_chat(
+        &self,
+        body: serde_json::Value,
+        header_timeout: std::time::Duration,
+        body_timeout: std::time::Duration,
+    ) -> Result<ExchangeSuccess, ExchangeFailure> {
+        let label = format!("{} chat completions", self.kind.label());
+        let api_key = self.api_key.clone();
+        let chat_url = self.kind.chat_url();
+        let retry_key = format!("{}.chat_completions", self.kind.retry_prefix());
+        exchange(
+            &label,
+            header_timeout,
+            body_timeout,
+            self.client
+                .send_with_retry(&retry_key, RetryIntent::NonIdempotent, |http| {
+                    let body = body.clone();
+                    let api_key = api_key.clone();
+                    let client = http.clone();
+                    async move {
+                        client
+                            .post(chat_url)
+                            .bearer_auth(api_key)
+                            .json(&body)
+                            .send()
+                            .await
+                    }
+                }),
+        )
+        .await
+    }
+
+    pub async fn probe_openai(
+        api_key: &str,
+        model: &str,
+    ) -> Result<ExchangeSuccess, ExchangeFailure> {
+        Self::probe_kind(CompatKind::OpenAi, api_key, model).await
+    }
+
+    pub async fn probe_deepseek(
+        api_key: &str,
+        model: &str,
+    ) -> Result<ExchangeSuccess, ExchangeFailure> {
+        Self::probe_kind(CompatKind::DeepSeek, api_key, model).await
+    }
+
+    async fn probe_kind(
+        kind: CompatKind,
+        api_key: &str,
+        model: &str,
+    ) -> Result<ExchangeSuccess, ExchangeFailure> {
+        let service = Self::with_kind(api_key.to_string(), model.to_string(), kind);
+        let prompt = "Return a JSON object {\"reply\":\"pong\"} and nothing else.";
+        let body = service.probe_body(prompt);
+        service
+            .post_chat(body, PROBE_HEADER_TIMEOUT, PROBE_BODY_TIMEOUT)
+            .await
     }
 }
 
@@ -230,37 +300,21 @@ impl PromptSender for OpenAIService {
         log::info!("Sending prompt to {} (model: {})", label, self.model);
         log::debug!("Prompt length: {} characters", prompt.len());
 
-        let body = self.request_body(prompt);
-        let api_key = self.api_key.clone();
-        let chat_url = self.kind.chat_url();
-        let retry_key = format!("{}.chat_completions", self.kind.retry_prefix());
-        let resp = self
-            .client
-            .send_with_retry(&retry_key, RetryIntent::NonIdempotent, |http| {
-                let body = body.clone();
-                let api_key = api_key.clone();
-                let client = http.clone();
-                async move {
-                    client
-                        .post(chat_url)
-                        .bearer_auth(api_key)
-                        .json(&body)
-                        .send()
-                        .await
-                }
-            })
+        let posted = self
+            .post_chat(
+                self.request_body(prompt),
+                LOOKUP_HEADER_TIMEOUT,
+                LOOKUP_BODY_TIMEOUT,
+            )
             .await
-            .map_err(|e| {
-                log::error!("{} HTTP request failed: {}", label, e);
-                e
-            })?;
-
-        let status = resp.status();
-        log::debug!("{} response status: {}", label, status);
-
-        let resp = ensure_success(&format!("{} chat completions", label), resp).await?;
-        let text = resp.text().await?;
-        log::debug!("{} response length: {} bytes", label, text.len());
+            .map_err(ExchangeFailure::into_anyhow)?;
+        let text = posted.body;
+        log::debug!(
+            "{} response status: {} length: {} bytes",
+            label,
+            posted.status,
+            text.len()
+        );
 
         if let Ok(v) = serde_json::from_str::<OpenAIResponse>(&text) {
             if let Some(choice) = v.choices.first() {

@@ -1,6 +1,7 @@
 pub mod ai_provider;
 pub mod anthropic;
 pub mod command_orchestrator;
+pub mod connectivity;
 #[cfg(test)]
 mod command_orchestrator_tests;
 pub mod dictionary_service;

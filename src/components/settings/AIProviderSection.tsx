@@ -1,8 +1,9 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import type { AiProviderType, AiModel } from '../../types';
+import type { AiProviderType, AiModel, ConnectivityReport } from '../../types';
 import { api } from '../../services/api';
+import { parseError } from '../../utils/errorHandler';
 import { useStores } from '../../stores/RootStore';
 import {
   Select,
@@ -11,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { Check, Loader2, X, Zap } from 'lucide-react';
+import { Activity, Check, Loader2, X, Zap } from 'lucide-react';
 
 const RECOMMENDED_MODEL_IDS = new Set([
   'deepseek-v4-flash',
@@ -57,9 +58,94 @@ export const AIProviderSection = observer(({
 }: AIProviderSectionProps) => {
   const { t } = useTranslation();
   const { settingsStore } = useStores();
+  const [probing, setProbing] = useState(false);
+  const [probeResult, setProbeResult] = useState<ConnectivityReport | null>(null);
+
+  const providerLabel = (provider: string) => {
+    switch (provider) {
+      case 'deepseek': return 'DeepSeek';
+      case 'openai': return 'OpenAI';
+      case 'anthropic': return 'Anthropic';
+      case 'gemini': return 'Gemini';
+      case 'ollama': return 'Ollama';
+      default: return provider;
+    }
+  };
+
+  const probeSummary = (report: ConnectivityReport) => {
+    const seconds = (report.elapsedMs / 1000).toFixed(1);
+    const status = report.httpStatus ?? '—';
+    const provider = providerLabel(report.provider);
+    switch (report.reason) {
+      case 'ok':
+        return t('settings.aiProvider.connectivity.ok', { model: report.model, seconds });
+      case 'not_configured':
+        return t('settings.aiProvider.connectivity.notConfigured');
+      case 'timeout_after_headers':
+        return t('settings.aiProvider.connectivity.timeoutAfterHeaders', {
+          provider,
+          model: report.model,
+          status,
+          seconds,
+        });
+      case 'timeout':
+        return t('settings.aiProvider.connectivity.timeout', { provider, seconds });
+      case 'network':
+        return t('settings.aiProvider.connectivity.network');
+      case 'http_error':
+        return t('settings.aiProvider.connectivity.httpError', { provider, status });
+      case 'empty_reply':
+        return t('settings.aiProvider.connectivity.emptyReply');
+      case 'unsupported':
+        return t('settings.aiProvider.connectivity.unsupported');
+      default:
+        return t('settings.aiProvider.connectivity.unknown');
+    }
+  };
 
   const isCustomProvider = CUSTOM_PROVIDERS.includes(selectedProvider);
   const isLocalProvider = selectedProvider === 'ollama';
+
+  const handleProbeConnectivity = async () => {
+    if ((isCustomProvider && !apiKey.trim()) || !modelId.trim()) {
+      setProbeResult({
+        ok: false,
+        reason: 'not_configured',
+        elapsedMs: 0,
+        httpStatus: null,
+        provider: selectedProvider,
+        model: modelId,
+        replyPreview: null,
+        rawError: 'API key or model is empty',
+      });
+      return;
+    }
+
+    setProbing(true);
+    setProbeResult(null);
+    try {
+      const report = await api.probeModelConnectivity(
+        selectedProvider,
+        isLocalProvider ? '' : apiKey,
+        modelId,
+      );
+      setProbeResult(report);
+    } catch (error) {
+      const raw = parseError(error).message;
+      setProbeResult({
+        ok: false,
+        reason: 'unknown',
+        elapsedMs: 0,
+        httpStatus: null,
+        provider: selectedProvider,
+        model: modelId,
+        replyPreview: null,
+        rawError: raw,
+      });
+    } finally {
+      setProbing(false);
+    }
+  };
 
   const handleFetchModels = useCallback(async () => {
     if (!apiKey.trim()) return;
@@ -107,6 +193,7 @@ export const AIProviderSection = observer(({
     setApiKeyValid(null);
     setAvailableModels([]);
     setSaveStatus('idle');
+    setProbeResult(null);
 
     const settings = settingsStore.settings;
     if (provider === 'deepseek') {
@@ -229,6 +316,7 @@ export const AIProviderSection = observer(({
                       setApiKey(e.target.value);
                       setApiKeyValid(null);
                       setAvailableModels([]);
+                      setProbeResult(null);
                     }}
                     onBlur={() => {
                       if (apiKey.trim()) {
@@ -264,7 +352,10 @@ export const AIProviderSection = observer(({
               {settingsStore.ollamaModels.length > 0 ? (
                 <Select
                   value={modelId}
-                  onValueChange={setModelId}
+                  onValueChange={(value) => {
+                    setModelId(value);
+                    setProbeResult(null);
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder={t('settings.aiProvider.selectModel')} />
@@ -292,7 +383,10 @@ export const AIProviderSection = observer(({
                 <div className="space-y-2">
                   <Select
                     value={modelId}
-                    onValueChange={setModelId}
+                    onValueChange={(value) => {
+                    setModelId(value);
+                    setProbeResult(null);
+                  }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder={t('settings.aiProvider.selectModel')} />
@@ -318,13 +412,59 @@ export const AIProviderSection = observer(({
                 <input
                   type="text"
                   value={modelId}
-                  onChange={(e) => setModelId(e.target.value)}
+                  onChange={(e) => {
+                    setModelId(e.target.value);
+                    setProbeResult(null);
+                  }}
                   placeholder={`e.g., ${getDefaultModel(selectedProvider)}`}
                   className="w-full px-4 py-2 border border-input rounded-lg focus:border-ring focus:outline-none bg-background text-foreground"
                 />
               )}
             </div>
           )}
+
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={handleProbeConnectivity}
+              disabled={probing}
+              className="w-full px-4 py-2 rounded-lg border border-input bg-background text-foreground hover:bg-muted transition-colors font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-60"
+            >
+              {probing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Activity className="h-4 w-4" />}
+              {probing
+                ? t('settings.aiProvider.connectivity.checking')
+                : t('settings.aiProvider.connectivity.button')}
+            </button>
+            <p className="text-xs text-muted-foreground">
+              {t('settings.aiProvider.connectivity.hint')}
+            </p>
+            {probeResult && (
+              <div
+                role="status"
+                className={`rounded-lg border px-3 py-3 text-sm ${
+                  probeResult.ok
+                    ? 'border-green-600/40 bg-green-600/10 text-green-800 dark:text-green-300'
+                    : 'border-destructive/40 bg-destructive/10 text-destructive'
+                }`}
+              >
+                <p>{probeSummary(probeResult)}</p>
+                {probeResult.replyPreview && (
+                  <p className="mt-2 text-foreground">
+                    <span className="font-medium">{t('settings.aiProvider.connectivity.reply')}: </span>
+                    {probeResult.replyPreview}
+                  </p>
+                )}
+                {probeResult.rawError && (
+                  <div className="mt-2">
+                    <p className="text-xs font-medium">{t('settings.aiProvider.connectivity.raw')}</p>
+                    <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-all text-xs text-foreground/80">
+                      {probeResult.rawError}
+                    </pre>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           <button
             onClick={handleSaveConfiguration}

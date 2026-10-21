@@ -211,7 +211,23 @@
       "ollamaPrivacy": "Running locally - no data leaves your device",
       "deepseekHint": "DeepSeek 走 api.deepseek.com，填写 platform.deepseek.com 的密钥。推荐模型：deepseek-v4-flash。",
       "openaiHint": "OpenAI 走 api.openai.com，需要官方 OpenAI 密钥和 GPT 模型。",
-      "providerHint": "每个服务商使用各自的密钥和模型列表。"
+      "providerHint": "每个服务商使用各自的密钥和模型列表。",
+      "connectivity": {
+        "button": "检测连通性",
+        "checking": "正在检测…",
+        "hint": "用这一页上的密钥和模型发一句最短请求，看模型能不能把正文返回来。",
+        "ok": "{{model}} 已返回，用时 {{seconds}} 秒。",
+        "reply": "模型回复",
+        "raw": "原始报错",
+        "notConfigured": "先填写 API 密钥和模型，再检测。",
+        "timeoutAfterHeaders": "已经连上 {{provider}}（HTTP {{status}}），但 {{model}} 在 {{seconds}} 秒内没有把正文传完。查词会因此一直等到超时。",
+        "timeout": "{{seconds}} 秒内没有收到 {{provider}} 的 HTTP 响应。",
+        "network": "请求没有完成。",
+        "httpError": "{{provider}} 返回了错误（HTTP {{status}}）。",
+        "emptyReply": "连接是通的，但模型没有返回文本。",
+        "unsupported": "这个服务商不能检测。",
+        "unknown": "检测失败。"
+      }
     },
     "appearance": {
       "title": "外观",
@@ -626,7 +642,9 @@
   },
   "errors": {
     "cacheOperation": "缓存操作失败",
-    "providerConfigurationRequired": "需要配置供应商"
+    "providerConfigurationRequired": "需要配置供应商",
+    "modelStalled": "模型没有在时限内把结果传回来，所以这次查词会显示超时。",
+    "rawError": "原始报错"
   },
   "phrase": {
     "title": "短语",

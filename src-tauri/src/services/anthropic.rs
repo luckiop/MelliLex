@@ -8,7 +8,10 @@ use crate::constants::headers;
 use crate::models::TokenUsage;
 use crate::services::ai_provider::{AiModel, PromptSender};
 use crate::services::http_client::{RetriableClient, RetryIntent};
-use crate::services::provider_http::ensure_success;
+use crate::services::provider_http::{
+    exchange, ExchangeFailure, ExchangeSuccess, LOOKUP_BODY_TIMEOUT, LOOKUP_HEADER_TIMEOUT,
+    PROBE_BODY_TIMEOUT, PROBE_HEADER_TIMEOUT,
+};
 
 pub struct AnthropicService {
     api_key: String,
@@ -73,6 +76,48 @@ impl AnthropicService {
         debug!("Anthropic API key test result: {}", is_valid);
         Ok(is_valid)
     }
+
+    pub async fn probe_completion(
+        api_key: &str,
+        model: &str,
+    ) -> Result<ExchangeSuccess, ExchangeFailure> {
+        let service = Self::new(api_key.to_string(), model.to_string());
+        let request_body = AnthropicRequest {
+            model: service.model.clone(),
+            max_tokens: 32,
+            messages: vec![Message {
+                role: "user".to_string(),
+                content: vec![MessageContent {
+                    content_type: "text".to_string(),
+                    text: "Reply with the single word pong.".to_string(),
+                }],
+            }],
+        };
+        let api_key = service.api_key.clone();
+        exchange(
+            "Anthropic probe",
+            PROBE_HEADER_TIMEOUT,
+            PROBE_BODY_TIMEOUT,
+            service
+                .client
+                .send_with_retry("anthropic.probe", RetryIntent::NonIdempotent, |http| {
+                    let request_body = request_body.clone();
+                    let api_key = api_key.clone();
+                    let client = http.clone();
+                    async move {
+                        client
+                            .post(anthropic_api::MESSAGES)
+                            .header(headers::X_API_KEY, api_key)
+                            .header(headers::ANTHROPIC_VERSION, anthropic_api::VERSION)
+                            .header(headers::CONTENT_TYPE, "application/json")
+                            .json(&request_body)
+                            .send()
+                            .await
+                    }
+                }),
+        )
+        .await
+    }
 }
 
 #[async_trait]
@@ -100,27 +145,30 @@ impl AnthropicService {
         };
 
         let api_key = self.api_key.clone();
-        let resp = self
-            .client
-            .send_with_retry("anthropic.messages", RetryIntent::NonIdempotent, |http| {
-                let request_body = request_body.clone();
-                let api_key = api_key.clone();
-                let client = http.clone();
-                async move {
-                    client
-                        .post(anthropic_api::MESSAGES)
-                        .header(headers::X_API_KEY, api_key)
-                        .header(headers::ANTHROPIC_VERSION, anthropic_api::VERSION)
-                        .header(headers::CONTENT_TYPE, "application/json")
-                        .json(&request_body)
-                        .send()
-                        .await
-                }
-            })
-            .await?;
-
-        let resp = ensure_success("Anthropic messages", resp).await?;
-        let api_response: AnthropicResponse = resp.json().await?;
+        let posted = exchange(
+            "Anthropic messages",
+            LOOKUP_HEADER_TIMEOUT,
+            LOOKUP_BODY_TIMEOUT,
+            self.client
+                .send_with_retry("anthropic.messages", RetryIntent::NonIdempotent, |http| {
+                    let request_body = request_body.clone();
+                    let api_key = api_key.clone();
+                    let client = http.clone();
+                    async move {
+                        client
+                            .post(anthropic_api::MESSAGES)
+                            .header(headers::X_API_KEY, api_key)
+                            .header(headers::ANTHROPIC_VERSION, anthropic_api::VERSION)
+                            .header(headers::CONTENT_TYPE, "application/json")
+                            .json(&request_body)
+                            .send()
+                            .await
+                    }
+                }),
+        )
+        .await
+        .map_err(ExchangeFailure::into_anyhow)?;
+        let api_response: AnthropicResponse = serde_json::from_str(&posted.body)?;
 
         let token_usage = api_response.usage.map(|usage| TokenUsage {
             prompt_tokens: usage.input_tokens,

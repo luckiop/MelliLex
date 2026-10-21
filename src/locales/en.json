@@ -215,7 +215,23 @@
       "ollamaPrivacy": "Running locally - no data leaves your device",
       "deepseekHint": "DeepSeek uses api.deepseek.com. Paste a key from platform.deepseek.com. Recommended model: deepseek-v4-flash.",
       "openaiHint": "OpenAI uses api.openai.com with a real OpenAI key and GPT models.",
-      "providerHint": "Each provider uses its own API key and model list."
+      "providerHint": "Each provider uses its own API key and model list.",
+      "connectivity": {
+        "button": "Check connectivity",
+        "checking": "Checking…",
+        "hint": "Sends one short request with the key and model on this page, and reports whether a reply comes back.",
+        "ok": "{{model}} replied in {{seconds}}s.",
+        "reply": "Model reply",
+        "raw": "Raw error",
+        "notConfigured": "Enter an API key and a model before checking.",
+        "timeoutAfterHeaders": "Connected to {{provider}} (HTTP {{status}}), but {{model}} did not finish the reply within {{seconds}}s. Lookups keep spinning until they time out for the same reason.",
+        "timeout": "No HTTP response from {{provider}} within {{seconds}}s.",
+        "network": "The request did not complete.",
+        "httpError": "{{provider}} returned an error (HTTP {{status}}).",
+        "emptyReply": "The connection worked, but the model returned no text.",
+        "unsupported": "This provider cannot be checked.",
+        "unknown": "The check failed."
+      }
     },
     "appearance": {
       "title": "Appearance",
@@ -619,7 +635,9 @@
   },
   "errors": {
     "cacheOperation": "Failed to perform cache operation",
-    "providerConfigurationRequired": "Provider configuration required"
+    "providerConfigurationRequired": "Provider configuration required",
+    "modelStalled": "The model did not finish a reply in time, so this lookup times out.",
+    "rawError": "Raw error"
   },
   "phrase": {
     "inANutshell": "In a nutshell",

@@ -260,6 +260,7 @@ pub fn run() {
             list_ollama_models,
             fetch_available_models,
             test_api_key,
+            probe_model_connectivity,
             // Exploration feature commands
             generate_contextual_examples,
             generate_formality_analysis,

@@ -1,6 +1,10 @@
 use crate::errors::AppError;
 use crate::models::TokenUsage;
 use crate::services::ai_provider::{AiModel, PromptSender};
+use crate::services::provider_http::{
+    exchange, ExchangeFailure, ExchangeSuccess, LOOKUP_BODY_TIMEOUT, LOOKUP_HEADER_TIMEOUT,
+    PROBE_BODY_TIMEOUT, PROBE_HEADER_TIMEOUT,
+};
 use anyhow::Result;
 use async_trait::async_trait;
 use log::{debug, error, info, warn};
@@ -75,6 +79,26 @@ impl OllamaService {
                 Ok(false)
             }
         }
+    }
+
+    pub async fn probe_completion(
+        endpoint: &str,
+        model: &str,
+    ) -> Result<ExchangeSuccess, ExchangeFailure> {
+        let service = Self::new(endpoint.to_string(), model.to_string());
+        let request_payload = serde_json::json!({
+            "model": service.model,
+            "prompt": "Reply with the single word pong.",
+            "stream": false,
+        });
+        let url = service.generate_url();
+        exchange(
+            "Ollama probe",
+            PROBE_HEADER_TIMEOUT,
+            PROBE_BODY_TIMEOUT,
+            service.client.post(&url).json(&request_payload).send(),
+        )
+        .await
     }
 
     pub async fn detect(&self, endpoint: &str) -> bool {
@@ -152,21 +176,17 @@ impl PromptSender for OllamaService {
             "stream": false,
         });
 
-        let response = self
-            .client
-            .post(self.generate_url())
-            .json(&request_payload)
-            .send()
-            .await?;
+        let url = self.generate_url();
+        let posted = exchange(
+            "Ollama generate",
+            LOOKUP_HEADER_TIMEOUT,
+            LOOKUP_BODY_TIMEOUT,
+            self.client.post(&url).json(&request_payload).send(),
+        )
+        .await
+        .map_err(ExchangeFailure::into_anyhow)?;
 
-        if !response.status().is_success() {
-            let status = response.status();
-            let error_text = response.text().await.unwrap_or_default();
-            error!("Ollama API error: status={}, body={}", status, error_text);
-            return Err(anyhow::anyhow!("Ollama API error: {}", status));
-        }
-
-        let payload: serde_json::Value = response.json().await?;
+        let payload: serde_json::Value = serde_json::from_str(&posted.body)?;
 
         let content = payload["response"]
             .as_str()

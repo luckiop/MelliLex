@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 import { Button } from './ui/button';
 import { Settings, AlertTriangle, RefreshCw } from 'lucide-react';
-import { isProviderConfigError, getProviderConfigErrorMessage } from '../utils/errorHandler';
+import { isProviderConfigError, getProviderConfigErrorMessage, isModelStallError } from '../utils/errorHandler';
 
 interface Props {
   error: string | null;
@@ -21,13 +21,19 @@ export const ProviderErrorAlert = ({ error, rawError, onRetry }: Props) => {
   
   if (!error) return null;
   
+  const stall = isModelStallError(rawError ?? error);
   const isConfigError = rawError 
     ? isProviderConfigError(rawError) 
     : isProviderConfigError({ message: error });
   
-  const displayMessage = isConfigError 
+  const displayMessage = stall
+    ? t('errors.modelStalled')
+    : isConfigError
     ? getProviderConfigErrorMessage(rawError ?? { message: error })
     : error;
+  const rawText = stall
+    ? (typeof rawError === 'string' ? rawError : error)
+    : null;
 
   const handleGoToSettings = () => {
     navigate('/settings');
@@ -43,8 +49,16 @@ export const ProviderErrorAlert = ({ error, rawError, onRetry }: Props) => {
           </AlertTitle>
           <AlertDescription className="mt-2">
             <p className="mb-3">{displayMessage}</p>
+            {rawText && (
+              <div className="mb-3">
+                <p className="text-xs font-medium">{t('errors.rawError')}</p>
+                <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-all text-xs opacity-80">
+                  {rawText}
+                </pre>
+              </div>
+            )}
             <div className="flex gap-2">
-              {isConfigError && (
+              {(isConfigError || stall) && (
                 <Button 
                   variant="outline" 
                   size="sm" 

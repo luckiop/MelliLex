@@ -8,7 +8,10 @@ use serde::{Deserialize, Serialize};
 use crate::models::TokenUsage;
 use crate::services::ai_provider::{AiModel, PromptSender};
 use crate::services::http_client::{RetriableClient, RetryIntent};
-use crate::services::provider_http::{ensure_success, log_status_if_error};
+use crate::services::provider_http::{
+    ensure_success, exchange, log_status_if_error, ExchangeFailure, ExchangeSuccess,
+    LOOKUP_BODY_TIMEOUT, LOOKUP_HEADER_TIMEOUT, PROBE_BODY_TIMEOUT, PROBE_HEADER_TIMEOUT,
+};
 
 /// Known Gemini models, ordered by priority (first = highest / default).
 /// Fastest models come first so they are the default selection.
@@ -163,6 +166,40 @@ impl GeminiService {
         debug!("Gemini API key test result: {}", is_valid);
         Ok(is_valid)
     }
+
+    pub async fn probe_completion(
+        api_key: &str,
+        model: &str,
+    ) -> Result<ExchangeSuccess, ExchangeFailure> {
+        let service = Self::new(api_key.to_string(), model.to_string());
+        let request_body = GeminiRequest {
+            contents: vec![Content {
+                parts: vec![Part {
+                    text: "Reply with the single word pong.".to_string(),
+                }],
+            }],
+            generation_config: GenerationConfig {
+                max_output_tokens: 32,
+                response_mime_type: None,
+                thinking_config: Some(ThinkingConfig { thinking_budget: 0 }),
+            },
+        };
+        let url = service.get_api_url();
+        exchange(
+            "Gemini probe",
+            PROBE_HEADER_TIMEOUT,
+            PROBE_BODY_TIMEOUT,
+            service
+                .client
+                .send_with_retry("gemini.probe", RetryIntent::NonIdempotent, |http| {
+                    let request_body = request_body.clone();
+                    let url = url.clone();
+                    let client = http.clone();
+                    async move { client.post(&url).json(&request_body).send().await }
+                }),
+        )
+        .await
+    }
 }
 
 #[async_trait]
@@ -185,26 +222,26 @@ impl PromptSender for GeminiService {
         };
 
         let url = self.get_api_url();
-        let resp = self
-            .client
-            .send_with_retry("gemini.generate", RetryIntent::NonIdempotent, |http| {
-                let request_body = request_body.clone();
-                let url = url.clone();
-                let client = http.clone();
-                async move { client.post(&url).json(&request_body).send().await }
-            })
-            .await
-            .map_err(|e| {
-                error!("Gemini HTTP request failed: {}", e);
-                e
-            })?;
-
-        let status = resp.status();
-        debug!("Gemini response status: {}", status);
-
-        let resp = ensure_success("Gemini generate", resp).await?;
-        let text = resp.text().await?;
-        debug!("Gemini response length: {} bytes", text.len());
+        let posted = exchange(
+            "Gemini generate",
+            LOOKUP_HEADER_TIMEOUT,
+            LOOKUP_BODY_TIMEOUT,
+            self.client
+                .send_with_retry("gemini.generate", RetryIntent::NonIdempotent, |http| {
+                    let request_body = request_body.clone();
+                    let url = url.clone();
+                    let client = http.clone();
+                    async move { client.post(&url).json(&request_body).send().await }
+                }),
+        )
+        .await
+        .map_err(ExchangeFailure::into_anyhow)?;
+        let text = posted.body;
+        debug!(
+            "Gemini response status: {} length: {} bytes",
+            posted.status,
+            text.len()
+        );
 
         if let Ok(gemini_resp) = serde_json::from_str::<GeminiResponse>(&text) {
             if let Some(candidate) = gemini_resp.candidates.first() {

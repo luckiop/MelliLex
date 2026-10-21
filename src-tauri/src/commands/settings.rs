@@ -3,6 +3,7 @@ use crate::errors::AppError;
 use crate::models::AppSettings;
 use crate::services::ai_provider::AiModel;
 use crate::services::command_orchestrator::CommandOrchestrator;
+use crate::services::connectivity::{probe_provider, ConnectivityReport};
 use crate::services::vocab_note::{ensure_note_file, ensure_split_files, resolve_note_path};
 use crate::utils::blocking::BlockingExecutor;
 use tauri::State;
@@ -85,6 +86,20 @@ pub async fn fetch_available_models(
     orchestrator
         .fetch_available_models(&provider, &api_key, &db)
         .await
+}
+
+#[tauri::command]
+pub async fn probe_model_connectivity(
+    provider: String,
+    api_key: String,
+    model: String,
+) -> Result<ConnectivityReport, AppError> {
+    log::info!(
+        "Probing model connectivity for provider {} model {}",
+        provider,
+        model
+    );
+    Ok(probe_provider(&provider, &api_key, &model).await)
 }
 
 #[tauri::command]

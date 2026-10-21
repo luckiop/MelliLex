@@ -57,6 +57,15 @@ describe('ProviderErrorAlert', () => {
     expect(screen.queryByRole('button', { name: /settings/i })).toBeNull();
   });
 
+  it('shows the raw provider error when a lookup stalls', () => {
+    const raw = 'DeepSeek chat completions: HTTP 200 OK received in 371ms, but the response body did not finish within 75s';
+    renderWithProviders(<ProviderErrorAlert error={raw} />);
+    expect(screen.getByText(/did not finish a reply in time/i)).toBeInTheDocument();
+    expect(screen.getByText(/raw error/i)).toBeInTheDocument();
+    expect(screen.getByText(raw)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /settings/i })).toBeInTheDocument();
+  });
+
   it('detects provider config errors from message patterns', () => {
     renderWithProviders(
       <ProviderErrorAlert error="Invalid API key provided" />
